@@ -1,0 +1,11 @@
+{
+    "name": "husky-validation",
+    "version": "0.1.0",
+    "description": "",
+    "devDependencies": {
+        "grunt": "~0.4.1"
+    },
+    "engines": {
+        "node": ">=0.8.0"
+    }
+}

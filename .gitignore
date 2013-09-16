@@ -1,0 +1,7 @@
+# Tools
+/bower_components/
+/node_modules/
+
+# IDEs
+.idea/*
+*.iml
