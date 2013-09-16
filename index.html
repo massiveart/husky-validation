@@ -1,15 +1,72 @@
 <html>
-    <head><title>Husky Validation</title></head>
-    <body>
-        <h1>Husky Validation</h1>
+    <head>
+        <title>Husky Validation</title>
+        <style type="text/css">
+            .husky-validate-error {
+                background-color: red;
+            }
 
-        <p>
-            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-            dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-            clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
-            consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-            sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no
-            sea takimata sanctus est Lorem ipsum dolor sit amet.
-        </p>
+            .husky-validate-success {
+                background-color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="content">
+            <h1>Husky Validation</h1>
+
+            <p>
+                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+                labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et
+                ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
+                dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
+                magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+                clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+            </p>
+
+            <form id="contact-form">
+                <label>FirstName</label>
+                <input type="text"
+                       name="firstName"
+                       data-validate="true"
+                       data-required="true"
+                       data-prop="firstName"/> <br/>
+
+                <label>LastName</label>
+                <input type="text"
+                       name="lastName"
+                       data-validate="true"
+                       data-prop="lastName"/> <br/>
+
+                <label>BirthDay</label>
+                <input type="text"
+                       name="birthday"
+                       data-validate="true"
+                       data-type="date"
+                       data-trigger="keyup"
+                       data-prop="birthDay"/> <br/>
+
+                <label>Wage</label>
+                <input type="text"
+                       name="wage"
+                       data-validate="true"
+                       data-type="decimal"
+                       data-min="1000"
+                       data-max="1500"
+                       data-prop="wage"/> <br/>
+
+                <label data-type="external" data-prop="phoneType.id">Telefon Typ:</label>
+                <input type="text"
+                       name="phone"
+                       data-validate="true"
+                       data-minlength="6"
+                       data-maxlength="12"
+                       data-prop="phone"/> <br/>
+
+                <input type="submit" value="Send"/>
+            </form>
+        </div>
+
+        <script data-main="index.js" type="text/javascript" src="bower_components/requirejs/require.js"></script>
     </body>
 </html>
