@@ -8,33 +8,28 @@
  *
  */
 
+require.config({
+    paths: {
+        min: 'js/validators/min',
+        max: 'js/validators/max',
+        minlength: 'js/validators/minlength',
+        maxlength: 'js/validators/maxlength',
+        required: 'js/validators/required',
+        date: 'js/types/date',
+        decimal: 'js/types/decimal'
+    }
+});
+
 define([
-    'jquery',
-    'js/validators/min',
-    'js/validators/max',
-    'js/validators/minlength',
-    'js/validators/maxlength',
-    'js/validators/required',
-    'js/types/date',
-    'js/types/decimal'
-], function($, Min, Max, MinLength, MaxLength, Required, Date, Decimal) {
+    'jquery'
+], function($) {
 
     return function(el, options) {
         var defaults = {
-                trigger: 'focusout'
+                trigger: 'focusout',    // default validate trigger
+                addclasses: true        // add error and success classes
             },
-            ignoredData = ['validate', 'type', 'prop'],
-            providedValidators = {
-                min: Min,
-                max: Max,
-                minlength: MinLength,
-                maxlength: MaxLength,
-                required: Required
-            },
-            providedTypes = {
-                date: Date,
-                decimal: Decimal
-            },
+            ignoredData = ['validate', 'type', 'prop', 'trigger'],
             valid;
 
         var result = {
@@ -80,13 +75,15 @@ define([
             },
 
             initValidators: function() {
-                this.validators = [];
+                this.validators = {};
 
                 // create validators for each of the constraints
                 $.each(this.data, function(key, val) {
                     // if a validator exists
-                    if (providedValidators.hasOwnProperty(key) && !!val) {
-                        this.validators.push(new providedValidators[key](this.$el));
+                    if ($.inArray(key, ignoredData) == -1 && !!val) {
+                        require([key], function(Validator) {
+                            this.validators[key] = new Validator(this.$el);
+                        }.bind(this));
                     }
                 }.bind(this));
             },
@@ -94,12 +91,15 @@ define([
             initType: function() {
                 this.type = null;
                 // if type exists
-                if (this.data.hasOwnProperty('type') && providedTypes.hasOwnProperty(this.data['type'])) {
-                    this.type = new providedTypes[this.data['type']](this.$el);
+                if (this.data.hasOwnProperty('type')) {
+                    require([this.data['type']], function(Type) {
+                        this.type = new Type(this.$el);
+                    }.bind(this));
                 }
             },
 
-            validate: function() {
+            validate: function(force) {
+                // TODO cache only if value changed or force is set
                 if (!this.hasConstraints()) {
                     // delete state
                     this.reset();
@@ -111,6 +111,7 @@ define([
                 $.each(this.validators, function(key, validator) {
                     if (!validator.validate()) {
                         result = false;
+                        // TODO Messages
                     }
                 });
 
@@ -124,7 +125,7 @@ define([
             },
 
             hasConstraints: function() {
-                return this.validators.length > 0 || this.type != null;
+                return Object.keys(this.validators).length > 0 || this.type != null;
             },
 
             reset: function() {
@@ -134,17 +135,48 @@ define([
 
             setValid: function(state) {
                 valid = state;
-                this.reset();
+                if (!!this.options.addclasses) {
+                    this.reset();
 
-                if (!!state) {
-                    this.$el.addClass('husky-validate-success');
-                } else {
-                    this.$el.addClass('husky-validate-error');
+                    if (!!state) {
+                        this.$el.addClass('husky-validate-success');
+                    } else {
+                        this.$el.addClass('husky-validate-error');
+                    }
                 }
             },
 
             isValid: function() {
                 return valid;
+            },
+
+            updateConstraint: function(name, options) {
+                if ($.inArray(name, Object.keys(this.validators)) > -1) {
+                    this.validators[name].updateConstraint(options);
+                    this.validate(true);
+                } else {
+                    throw "No constraint with name: " + name;
+                }
+            },
+
+            deleteConstraint: function(name) {
+                if ($.inArray(name, Object.keys(this.validators)) > -1) {
+                    delete this.validators[name];
+                    this.validate(true);
+                } else {
+                    throw "No constraint with name: " + name;
+                }
+            },
+
+            addConstraint: function(name, options) {
+                if ($.inArray(name, Object.keys(this.validators)) == -1) {
+                    require([name], function(Validator) {
+                        this.validators[name] = new Validator(this.$el, options);
+                        this.validate(true);
+                    }.bind(this));
+                } else {
+                    throw "Constraint with name: " + name + " already exists";
+                }
             }
         };
 

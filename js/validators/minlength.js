@@ -9,26 +9,21 @@
  */
 
 define([
-    'jquery'
-], function($) {
+    'jquery',
+    'js/validators/default'
+], function($, Default) {
 
-    return function($el) {
+    return function($el, options) {
         var defaults = {
             minlength: 0
         };
 
-        var result = {
-
-            initialize: function() {
-                this.$el = $el;
-                this.data = $.extend({}, defaults, this.$el.data());
-            },
-
+        var result = $.extend({}, new Default($el, defaults, options, 'minlength'), {
             validate: function() {
                 var val = this.$el.val();
                 return val.length >= this.data.minlength;
             }
-        };
+        });
 
         result.initialize();
         return result;

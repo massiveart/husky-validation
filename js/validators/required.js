@@ -9,34 +9,32 @@
  */
 
 define([
-    'jquery'
-], function($) {
+    'jquery',
+    'js/validators/default'
+], function($, Default) {
 
-    return function($el) {
+    return function($el, options) {
         var defaults = {};
 
-        var result = {
-
-            initialize: function() {
-                this.$el = $el;
-                this.data = $.extend({}, defaults, this.$el.data());
-            },
-
+        var result = $.extend({}, new Default($el, defaults, options, 'required'), {
             validate: function() {
-                var val = this.$el.val();
-                // for checkboxes and select multiples. Check there is at least one required value
-                if ('object' === typeof val) {
-                    for (var i in val) {
-                        if (this.validate(val[i])) {
-                            return true;
+                if (!!this.data.required) {
+                    var val = this.$el.val();
+                    // for checkboxes and select multiples. Check there is at least one required value
+                    if ('object' === typeof val) {
+                        for (var i in val) {
+                            if (this.validate(val[i])) {
+                                return true;
+                            }
                         }
+                        return false;
                     }
-                    return false;
+                    // parsleyJS notNull && notBlank
+                    return val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
                 }
-                // parsleyJS notNull && notBlank
-                return val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+                return true;
             }
-        };
+        });
 
         result.initialize();
         return result;

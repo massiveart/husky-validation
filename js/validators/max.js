@@ -9,26 +9,21 @@
  */
 
 define([
-    'jquery'
-], function($) {
+    'jquery',
+    'js/validators/default'
+], function($, Default) {
 
-    return function($el) {
+    return function($el, options) {
         var defaults = {
             max: 999
         };
 
-        var result = {
-
-            initialize: function() {
-                this.$el = $el;
-                this.data = $.extend({}, defaults, this.$el.data());
-            },
-
+        var result = $.extend({}, new Default($el, defaults, options, 'max'), {
             validate: function() {
                 var val = this.$el.val();
                 return Number(val) <= this.data.max;
             }
-        };
+        });
 
         result.initialize();
         return result;

@@ -14,7 +14,13 @@ define([
 ], function($, Element) {
 
     return function($el, options) {
-        var defaults = {},
+        var defaults = {
+                submitEvent: true,          // avoid submit if not valid
+                element: {                  // defaults for element
+                    trigger: 'focusout',    // default validate trigger
+                    addclasses: true        // add error and success classes
+                }
+            },
             elements = [],
             valid;
 
@@ -23,27 +29,32 @@ define([
                 this.options = $.extend({}, defaults, options);
                 this.$el = $el;
 
-                var defaults = {};
-                if (this.options.hasOwnProperty('default-trigger')) {
-                    defaults['trigger'] = this.options['default-trigger'];
-                }
+                // override defaults for element
+                var elementDefaults = this.options['element'];
 
+                // find to validate fields
                 this.$el.find('*[data-validate="true"]').each(function() {
-                    elements.push(new Element(this, defaults));
+                    elements.push(new Element(this, elementDefaults));
                 });
+
+                // debug
                 console.log('validation: elements', elements);
 
                 this.bindDomEvents();
             },
 
             bindDomEvents: function() {
-                this.$el.on('submit', function() {
-                    return this.validate();
-                }.bind(this));
+                if (!!this.options.submitEvent) {
+                    // avoid submit if not valid
+                    this.$el.on('submit', function() {
+                        return this.validate();
+                    }.bind(this));
+                }
             },
 
             validate: function() {
                 var result = true;
+                // validate each element
                 $.each(elements, function(key, element) {
                     if (!element.validate()) {
                         result = false;
@@ -56,6 +67,18 @@ define([
 
             isValid: function() {
                 return valid;
+            },
+
+            updateConstraint: function(selector, name, options) {
+                $(selector).data('element').updateConstraint(name, options);
+            },
+
+            deleteConstraint: function(selector, name) {
+                $(selector).data('element').deleteConstraint(name);
+            },
+
+            addConstraint: function(selector, name, options) {
+                $(selector).data('element').addConstraint(name, options);
             }
         };
 
