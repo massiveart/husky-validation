@@ -8,9 +8,7 @@
  *
  */
 
-define([
-    'jquery'
-], function($) {
+define([], function() {
 
     return function($el, options) {
         var defaults = {

@@ -9,9 +9,8 @@
  */
 
 define([
-    'jquery',
     'js/validators/default'
-], function($, Default) {
+], function(Default) {
 
     return function($el) {
         var defaults = {

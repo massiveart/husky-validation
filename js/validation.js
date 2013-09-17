@@ -9,9 +9,8 @@
  */
 
 define([
-    'jquery',
     'js/element'
-], function($, Element) {
+], function(Element) {
 
     return function($el, options) {
         var defaults = {

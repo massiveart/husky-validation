@@ -20,9 +20,7 @@ require.config({
     }
 });
 
-define([
-    'jquery'
-], function($) {
+define([], function() {
 
     return function(el, options) {
         var defaults = {
@@ -158,10 +156,10 @@ define([
                     throw "No constraint with name: " + name;
                 }
             },
-
             deleteConstraint: function(name) {
                 if ($.inArray(name, Object.keys(this.validators)) > -1) {
                     delete this.validators[name];
+                    this.$el.removeData(name);
                     this.validate(true);
                 } else {
                     throw "No constraint with name: " + name;
