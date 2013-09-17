@@ -14,6 +14,7 @@ main_js: "documentation.js"
         <li><a href="#form">Form Options</a></li>
         <li><a href="#field">Field Options</a></li>
         <li><a href="#validators">Built-In Validators</a></li>
+        <li><a href="#types">Build-In Types</a></li>
     </ol>
 
     <h2 id="install">Installation</h2>
@@ -138,28 +139,67 @@ define(['js/validation'], function(Validation) {
         <tbody>
             <tr>
                 <td>Required</td>
-                <td>data-required</td>
+                <td>data-required="true"</td>
                 <td>Validate that a required field has been filled.</td>
             </tr>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>Max</td>
+                <td>data-max="100"</td>
+                <td>Validates that a given number is less than some maximum number.</td>
             </tr>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>Min</td>
+                <td>data-min="20"</td>
+                <td>Validates that a given number is greater than some minimum number.</td>
             </tr>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>Min Length</td>
+                <td>dta-minlength="3"</td>
+                <td>Validates that the length of a string is at least as long as the given limit.</td>
             </tr>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>Max Length</td>
+                <td>data-maxlength="10"</td>
+                <td>Validates that the length of a string is not larger than the given limit.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="types">Build-In Types</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>API</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Date</td>
+                <td>data-type="date"</td>
+                <td>Validates that a value is a valid ISO date.</td>
+            </tr>
+            <tr>
+                <td>Decimal</td>
+                <td>data-type="decimal"</td>
+                <td>Validates that a value is a valid number.</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>data-type="email"</td>
+                <td>Validates that a value is a valid email address.</td>
+            </tr>
+            <tr>
+                <td>Url</td>
+                <td>
+                    data-type="url"<br>
+                    data-url-strict="true"
+                </td>
+                <td>
+                    Strict=false: Validates that a value is a valid url.<br>
+                    Strict=true: Validates that a value is a valid strict URL, ie: with one of http, https, ftp, git allowed protocols.
+                </td>
             </tr>
         </tbody>
     </table>
