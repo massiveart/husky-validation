@@ -8,23 +8,24 @@
  *
  */
 
-define([], function() {
+define([
+    'js/types/default'
+], function(Default) {
 
     return function($el, options) {
         var defaults = {
             regExp: /^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/
         };
 
-        var result = {
-            initialize: function() {
-                this.options = $.extend({}, defaults, options);
-                this.$el = $el;
+        var result = $.extend({}, new Default($el, defaults, options, 'decimal'), {
+            initializeSub:function(){
+                // TODO internationalization
             },
 
             validate: function() {
-                return this.options.regExp.test(this.$el.val());
+                return this.data.regExp.test(this.$el.val());
             }
-        };
+        });
 
         result.initialize();
         return result;

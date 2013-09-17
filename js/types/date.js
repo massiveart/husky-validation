@@ -8,23 +8,25 @@
  *
  */
 
-define([], function() {
+define([
+    'js/types/default'
+], function(Default) {
 
     return function($el, options) {
         var defaults = {
             regExp: /^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$/
         };
 
-        var result = {
-            initialize: function() {
-                this.options = $.extend({}, defaults, options);
-                this.$el = $el;
+        var result = $.extend({}, new Default($el, defaults, options, 'date'), {
+            initializeSub:function(){
+                // TODO internationalization
             },
 
             validate: function() {
-                return this.options.regExp.test(this.$el.val());
+                return this.data.regExp.test(this.$el.val());
             }
-        };
+        });
+
 
         result.initialize();
         return result;

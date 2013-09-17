@@ -13,6 +13,8 @@ module.exports = function(grunt) {
 
             'js/types/date',
             'js/types/decimal',
+            'js/types/email',
+            'js/types/url',
 
             'js/validators/default',
             'js/validators/max',

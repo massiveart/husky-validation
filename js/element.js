@@ -16,7 +16,9 @@ require.config({
         maxlength: 'js/validators/maxlength',
         required: 'js/validators/required',
         date: 'js/types/date',
-        decimal: 'js/types/decimal'
+        decimal: 'js/types/decimal',
+        email: 'js/types/email',
+        url: 'js/types/url'
     }
 });
 
@@ -59,6 +61,8 @@ define([], function() {
             bindDomEvents: function() {
                 // build trigger
                 var triggers = ( !this.options.trigger ? '' : this.options.trigger );
+                // break if no trigger is set
+                if (triggers === '' || triggers === 'none')return;
 
                 // always bind change event, for better UX when a select is invalid
                 if (this.$el.is('select')) {
