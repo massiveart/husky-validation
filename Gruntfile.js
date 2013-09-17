@@ -7,21 +7,39 @@ module.exports = function(grunt) {
 
     var requireJS = {
         baseUrl: '.',
+        paths: {
+            'validation': 'js/validation',
+            'validation-element': 'js/validation',
+
+            'type/default': 'js/types/default',
+            'type/date': 'js/types/date',
+            'type/decimal': 'js/types/decimal',
+            'type/email': 'js/types/email',
+            'type/url ': 'js/types/url',
+
+            'validator/default': 'js/validators/default',
+            'validator/min': 'js/validators/min',
+            'validator/max': 'js/validators/max',
+            'validator/minlength': 'js/validators/minlength',
+            'validator/maxlength': 'js/validators/maxlength',
+            'validator/required': 'js/validators/required'
+        },
         include: [
-            'js/validation',
-            'js/element',
+            'validation',
+            'element',
 
-            'js/types/date',
-            'js/types/decimal',
-            'js/types/email',
-            'js/types/url',
+            'type/default',
+            'type/date',
+            'type/decimal',
+            'type/email',
+            'type/url',
 
-            'js/validators/default',
-            'js/validators/max',
-            'js/validators/maxlength',
-            'js/validators/min',
-            'js/validators/minlength',
-            'js/validators/required'
+            'validator/default',
+            'validator/max',
+            'validator/maxlength',
+            'validator/min',
+            'validator/minlength',
+            'validator/required'
         ],
         out: 'dist/validation.js'
     };

@@ -8,20 +8,6 @@
  *
  */
 
-require.config({
-    paths: {
-        min: 'js/validators/min',
-        max: 'js/validators/max',
-        minlength: 'js/validators/minlength',
-        maxlength: 'js/validators/maxlength',
-        required: 'js/validators/required',
-        date: 'js/types/date',
-        decimal: 'js/types/decimal',
-        email: 'js/types/email',
-        url: 'js/types/url'
-    }
-});
-
 define([], function() {
 
     return function(el, options) {
@@ -83,7 +69,7 @@ define([], function() {
                 $.each(this.data, function(key, val) {
                     // if a validator exists
                     if ($.inArray(key, ignoredData) == -1 && !!val) {
-                        require([key], function(Validator) {
+                        require(['validator/' + key], function(Validator) {
                             this.validators[key] = new Validator(this.$el);
                         }.bind(this));
                     }
@@ -94,7 +80,7 @@ define([], function() {
                 this.type = null;
                 // if type exists
                 if (this.data.hasOwnProperty('type')) {
-                    require([this.data['type']], function(Type) {
+                    require(['type/' + this.data['type']], function(Type) {
                         this.type = new Type(this.$el);
                     }.bind(this));
                 }
@@ -172,7 +158,7 @@ define([], function() {
 
             addConstraint: function(name, options) {
                 if ($.inArray(name, Object.keys(this.validators)) == -1) {
-                    require([name], function(Validator) {
+                    require(['validator/' + name], function(Validator) {
                         this.validators[name] = new Validator(this.$el, options);
                         this.validate(true);
                     }.bind(this));
