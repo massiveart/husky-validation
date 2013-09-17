@@ -6,10 +6,4 @@ require.config({
 
 define(['js/validation'], function(Validation) {
     var validation = new Validation($('#content'));
-
-    setTimeout(function() {
-        validation.deleteConstraint('#firstName', 'required');
-        validation.addConstraint('#lastName', 'minlength', {minlength:6});
-    }, 200);
-
 });

@@ -1,0 +1,7 @@
+.husky-validate-success {
+    background-color: green;
+}
+
+.husky-validate-error {
+    background-color: red;
+}
