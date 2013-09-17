@@ -22,7 +22,7 @@ main_js: "index.js"
 
     <form id="contact-form" class="grid">
         <div class="grid-row">
-            <div class="grid-col-3">
+            <div class="grid-col-4">
                 <label>FirstName [required]:</label>
                 <input type="text"
                        class="form-element"
@@ -32,7 +32,7 @@ main_js: "index.js"
                        data-required="true"
                        data-prop="firstName"/>
             </div>
-            <div class="grid-col-3">
+            <div class="grid-col-4">
                 <label>LastName [minlength=6]:</label>
                 <input type="text"
                        class="form-element"
@@ -44,7 +44,7 @@ main_js: "index.js"
             </div>
         </div>
         <div class="grid-row">
-            <div class="grid-col-3">
+            <div class="grid-col-4">
                 <label>BirthDay [type=date, trigger=keyup]:</label>
                 <input type="text"
                        class="form-element"
@@ -55,7 +55,7 @@ main_js: "index.js"
                        data-trigger="keyup"
                        data-prop="birthDay"/>
             </div>
-            <div class="grid-col-3">
+            <div class="grid-col-4">
                 <label>Wage [type=decimal, min=1000, max=1500]:</label>
                 <input type="text"
                        class="form-element"
@@ -69,15 +69,15 @@ main_js: "index.js"
             </div>
         </div>
         <div class="grid-row">
-            <div class="grid-col-3">
-                <label>Phone [minlength=6, maxlength=12]:</label>
+            <div class="grid-col-4">
+                <label>Phone [minlength=6, maxlength=30]:</label>
                 <input type="text"
                        class="form-element"
                        id="phone"
                        name="phone"
                        data-validate="true"
                        data-minlength="6"
-                       data-maxlength="12"
+                       data-maxlength="30"
                        data-prop="phone"/>
             </div>
         </div>
