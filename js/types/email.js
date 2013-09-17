@@ -9,7 +9,7 @@
  */
 
 define([
-    'js/types/default'
+    'type/default'
 ], function(Default) {
 
     return function($el, options) {

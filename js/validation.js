@@ -11,7 +11,7 @@
 require.config({
     paths: {
         'validation': 'js/validation',
-        'element': 'js/element',
+        'validation-element': 'js/element',
 
         'type/default': 'js/types/default',
         'type/date': 'js/types/date',
@@ -29,7 +29,7 @@ require.config({
 });
 
 define([
-    'element'
+    'validation-element'
 ], function(Element) {
 
     return function($el, options) {

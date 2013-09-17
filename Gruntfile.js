@@ -7,15 +7,16 @@ module.exports = function(grunt) {
 
     var requireJS = {
         baseUrl: '.',
+        preserveLicenseComments: false,
         paths: {
             'validation': 'js/validation',
-            'validation-element': 'js/validation',
+            'validation-element': 'js/element',
 
             'type/default': 'js/types/default',
             'type/date': 'js/types/date',
             'type/decimal': 'js/types/decimal',
             'type/email': 'js/types/email',
-            'type/url ': 'js/types/url',
+            'type/url': 'js/types/url',
 
             'validator/default': 'js/validators/default',
             'validator/min': 'js/validators/min',
@@ -26,7 +27,6 @@ module.exports = function(grunt) {
         },
         include: [
             'validation',
-            'element',
 
             'type/default',
             'type/date',
@@ -35,10 +35,10 @@ module.exports = function(grunt) {
             'type/url',
 
             'validator/default',
-            'validator/max',
-            'validator/maxlength',
             'validator/min',
+            'validator/max',
             'validator/minlength',
+            'validator/maxlength',
             'validator/required'
         ],
         out: 'dist/validation.js'

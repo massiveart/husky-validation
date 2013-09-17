@@ -9,7 +9,7 @@
  */
 
 define([
-    'js/validators/default'
+    'validator/default'
 ], function(Default) {
 
     return function($el, options) {
