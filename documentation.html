@@ -11,6 +11,7 @@ main_js: "documentation.js"
 
     <ol>
         <li><a href="#install">Installation</a></li>
+        <li><a href="#options">Validation Options</a></li>
     </ol>
 
     <h2 id="install">Installation</h2>
@@ -42,4 +43,44 @@ define(['js/validation'], function(Validation) {
 {% endhighlight %}
     </div>
 
+    <h2 id="options">Validation Options</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>submitEvent</td>
+                <td>true</td>
+                <td>avoid submit if not valid</td>
+            </tr>
+            <tr>
+                <td>element.trigger</td>
+                <td>focusout</td>
+                <td>default validate trigger for each element</td>
+            </tr>
+            <tr>
+                <td>element.addclasses</td>
+                <td>true</td>
+                <td>add error and success classes for each element</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="doc-code">
+        {% highlight javascript %}
+define(['js/validation'], function(Validation) {
+    var validation = new Validation($('#contact-form'), {
+        submitEvent: false,
+        element: {
+            trigger: 'keyup',
+            addclasses: false
+        }
+    });
+});
+        {% endhighlight %}
+    </div>
 </div>
