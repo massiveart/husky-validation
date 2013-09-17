@@ -11,7 +11,8 @@ main_js: "documentation.js"
 
     <ol>
         <li><a href="#install">Installation</a></li>
-        <li><a href="#options">Validation Options</a></li>
+        <li><a href="#form">Form Options</a></li>
+        <li><a href="#field">Field Options</a></li>
     </ol>
 
     <h2 id="install">Installation</h2>
@@ -43,7 +44,7 @@ define(['js/validation'], function(Validation) {
 {% endhighlight %}
     </div>
 
-    <h2 id="options">Validation Options</h2>
+    <h2 id="form">Form Options</h2>
     <table class="table">
         <thead>
             <tr>
@@ -81,6 +82,46 @@ define(['js/validation'], function(Validation) {
         }
     });
 });
+        {% endhighlight %}
+    </div>
+
+    <h2 id="field">Field Options</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Option</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>trigger</td>
+                <td>data-trigger</td>
+                <td>focusout</td>
+                <td>Validate trigger</td>
+            </tr>
+            <tr>
+                <td>addclasses</td>
+                <td>data-addclasses</td>
+                <td>true</td>
+                <td>add error and success classes</td>
+            </tr>
+            <tr>
+                <td>validate</td>
+                <td>data-validate</td>
+                <td>true</td>
+                <td>If set the field will be validated, if not the field will be ignored</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="doc-code">
+        {% highlight html %}
+<input type="text"
+       data-validate="true"
+       data-trigger="keyup"
+       data-prop="birthDay"/>
         {% endhighlight %}
     </div>
 </div>
