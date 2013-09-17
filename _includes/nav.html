@@ -4,9 +4,14 @@
             <li id="column-0" class="navigation-column">
                 <ul class="navigation-items">
                     <li title="CSS" class="navigation-column-item{% if page.slug == "home" %} selected{% endif %}">
-                        <a href="{{ page.base_url }}">
-                            <span class="icon-cogwheel"></span>Home
-                        </a>
+                    <a href="{{ page.base_url }}">
+                        <span class="icon-book"></span>Home
+                    </a>
+                    </li>
+                    <li title="CSS" class="navigation-column-item{% if page.slug == "contribute" %} selected{% endif %}">
+                    <a href="{{ page.base_url }}contribute">
+                        <span class="icon-cogwheel"></span>Contribute
+                    </a>
                     </li>
                     <li title="JavaScript Components" class="navigation-column-item{% if page.slug == "demonstration" %} selected{% endif %}">
                     <a href="{{ page.base_url }}demonstration">
