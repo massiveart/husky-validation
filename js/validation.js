@@ -37,6 +37,9 @@ define([
                     elements.push(new Element(this, elementDefaults));
                 });
 
+                // set element
+                this.$el.data('validation', this);
+
                 // debug
                 console.log('validation: elements', elements);
 
