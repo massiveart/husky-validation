@@ -1,0 +1,104 @@
+---
+layout: default
+title: Demonstration
+slug: demonstration
+base_url: "../"
+main_js: "demonstration.js"
+---
+
+<div id="content">
+    <h1>Demonstration</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Demo</th>
+                <th>Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="vertical-align: top">
+                    <form id="demo-form">
+                        <label for="fName">Full name *</label>
+                        <input type="text"
+                               class="form-element"
+                               id="fName"
+                               data-validate="true"
+                               data-required="true"/>
+                        <label for="e">Email *</label>
+                        <input type="text"
+                               id="e"
+                               class="form-element"
+                               data-validate="true"
+                               data-required="true"
+                               data-type="email"/>
+                        <label for="w">Website *</label>
+                        <input type="text"
+                               id="w"
+                               class="form-element"
+                               data-validate="true"
+                               data-type="url"/>
+                        <label for="m">Message (min 20, maxy 200)</label>
+                        <textarea name="message"
+                                  class="form-element"
+                                  id="m"
+                                  cols="17"
+                                  rows="8"
+                                  data-validate="true"
+                                  data-minlength="20"
+                                  data-maxlength="200"></textarea>
+
+                        <div class="sumbit btn pointer align-center">
+                            <span class="icon-circle-ok"></span>
+                        </div>
+
+                        <div class="messages"></div>
+                    </form>
+                </td>
+                <td>
+                    <div class="doc-code">
+                        {% highlight html %}
+<form id="demonstration-form">
+    <label for="fullName">Full name *</label>
+    <input type="text"
+           class="form-element"
+           id="fullName"
+           data-validate="true"
+           data-required="true"/>
+    <label for="email">Email *</label>
+    <input type="text"
+           id="email"
+           class="form-element"
+           data-validate="true"
+           data-required="true"
+           data-type="email"/>
+    <label for="website">Website *</label>
+    <input type="text"
+           id="website"
+           class="form-element"
+           data-validate="true"
+           data-type="url"/>
+    <label for="message">Message (min 20, maxy 200)</label>
+    <textarea name="message"
+              class="form-element"
+              id="message"
+              cols="17"
+              rows="8"
+              data-validate="true"
+              data-minlength="20"
+              data-maxlength="200"></textarea>
+</form>
+
+<script type="text/javascript">
+    define(['js/validation'], function(Validation) {
+        var validation = new Validation($('#demo-form'));
+    });
+</script>
+                        {% endhighlight %}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
