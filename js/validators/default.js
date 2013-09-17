@@ -18,12 +18,20 @@ define([], function() {
             initialize: function() {
                 this.$el = $el;
                 this.data = $.extend(defaults, this.$el.data(), options);
+                this.updateData();
 
                 if (!!this.initializeSub) this.initializeSub();
             },
 
             updateConstraint: function(options) {
                 this.data = $.extend({}, this.data, options);
+                this.updateData();
+            },
+
+            updateData: function() {
+                $.each(this.data, function(key, value) {
+                    this.$el.data(key, value);
+                }.bind(this));
             }
         };
 

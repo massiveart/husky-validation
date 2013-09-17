@@ -69,15 +69,34 @@ define([
             },
 
             updateConstraint: function(selector, name, options) {
-                $(selector).data('element').updateConstraint(name, options);
+                var $element = $(selector);
+                if (!!$element.data('element')) {
+                    $(selector).data('element').updateConstraint(name, options);
+                } else {
+                    throw 'No validation element';
+                }
             },
 
             deleteConstraint: function(selector, name) {
-                $(selector).data('element').deleteConstraint(name);
+                var $element = $(selector);
+                if (!!$element.data('element')) {
+                    $element.data('element').deleteConstraint(name);
+                } else {
+                    throw 'No validation element';
+                }
             },
 
             addConstraint: function(selector, name, options) {
-                $(selector).data('element').addConstraint(name, options);
+                var $element = $(selector);
+                if (!!$element.data('element')) {
+                    $element.data('element').addConstraint(name, options);
+                } else {
+                    // create a new one
+                    var element = new Element($element,  this.options['element']);
+                    // add constraint
+                    element.addConstraint(name, options);
+                    elements.push(element);
+                }
             }
         };
 
