@@ -14,7 +14,8 @@ main_js: "documentation.js"
         <li><a href="#form">Form Options</a></li>
         <li><a href="#field">Field Options</a></li>
         <li><a href="#validators">Built-In Validators</a></li>
-        <li><a href="#types">Build-In Types</a></li>
+        <li><a href="#types">Built-In Types</a></li>
+        <li><a href="#jsapi">JavaScript API</a></li>
     </ol>
 
     <h2 id="install">Installation</h2>
@@ -165,7 +166,7 @@ define(['js/validation'], function(Validation) {
         </tbody>
     </table>
 
-    <h2 id="types">Build-In Types</h2>
+    <h2 id="types">Built-In Types</h2>
     <table class="table">
         <thead>
             <tr>
@@ -199,6 +200,133 @@ define(['js/validation'], function(Validation) {
                 <td>
                     Strict=false: Validates that a value is a valid url.<br>
                     Strict=true: Validates that a value is a valid strict URL, ie: with one of http, https, ftp, git allowed protocols.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="jsapi">JavaScript API</h2>
+
+    <h3>Validation Object</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Return</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Create</td>
+                <td>Object</td>
+                <td>Bind Validation to a form</td>
+                <td>var validation = new Validation($('#contact-form'));</td>
+            </tr>
+            <tr>
+                <td>Validate</td>
+                <td>Boolean</td>
+                <td>Revalidate Form</td>
+                <td>validation.validate()</td>
+            </tr>
+            <tr>
+                <td>isValid</td>
+                <td>Boolean</td>
+                <td>Get last Validation result</td>
+                <td>validation.isValid()</td>
+            </tr>
+            <tr>
+                <td>Add Constraint</td>
+                <td></td>
+                <td>Add a Constraint to a field</td>
+                <td>validation.addConstraint('#field', 'minlength', {minlength: 6})</td>
+            </tr>
+            <tr>
+                <td>Update Constraint</td>
+                <td></td>
+                <td>Update a Constraint from a field</td>
+                <td>validation.updateConstraint('#field', 'minlength', {minlength: 6})</td>
+            </tr>
+            <tr>
+                <td>Delete Constraint</td>
+                <td></td>
+                <td>Delete a Constraint from a field</td>
+                <td>validation.updateConstraint('#field', 'minlength')</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Element Object</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Return</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Get</td>
+                <td>Object</td>
+                <td>Get the element for field</td>
+                <td>var element = $('#field').data('element')</td>
+            </tr>
+            <tr>
+                <td>Validate</td>
+                <td>Boolean</td>
+                <td>Revalidate Field</td>
+                <td>element.validate()</td>
+            </tr>
+            <tr>
+                <td>Add Constraint</td>
+                <td></td>
+                <td>Add a Constraint to a field</td>
+                <td>element.addConstraint('minlength', {minlength: 6})</td>
+            </tr>
+            <tr>
+                <td>Update Constraint</td>
+                <td></td>
+                <td>Update a Constraint from a field</td>
+                <td>element.updateConstraint('minlength', {minlength: 6})</td>
+            </tr>
+            <tr>
+                <td>Delete Constraint</td>
+                <td></td>
+                <td>Delete a Constraint from a field</td>
+                <td>element.updateConstraint('minlength')</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="css">CSS Classes</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Class name</th>
+                <th>Description</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Error</td>
+                <td>husky-validate-error</td>
+                <td>The field validation is failed</td>
+                <td>
+                    <input type="text" class="husky-validate-error"/>
+                </td>
+            </tr>
+            <tr>
+                <td>Success</td>
+                <td>husky-validate-success</td>
+                <td>The field validation where successfully</td>
+                <td>
+                    <input type="text" class="husky-validate-success"/>
                 </td>
             </tr>
         </tbody>
