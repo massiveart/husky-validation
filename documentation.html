@@ -9,5 +9,37 @@ main_js: "documentation.js"
 <div id="content">
     <h1>Documentation</h1>
 
+    <ol>
+        <li><a href="#install">Installation</a></li>
+    </ol>
+
+    <h2 id="install">Installation</h2>
+
+    <p>Requirements:</p>
+    <ul>
+        <li>JQuery</li>
+        <li>RequireJS</li>
+    </ul>
+
+    <h3>index.html</h3>
+    <div class="doc-code">
+        {% highlight html %}
+<form id="contact-form">
+    [...]
+</form>
+
+<script type="text/javascript" src="jquery.js"></script>
+<script data-main="app.js" type="text/javascript" src="require.js"></script>
+        {% endhighlight %}
+    </div>
+
+    <h3>app.js</h3>
+    <div class="doc-code">
+{% highlight javascript %}
+define(['js/validation'], function(Validation) {
+    var validation = new Validation($('#contact-form'));
+});
+{% endhighlight %}
+    </div>
 
 </div>
