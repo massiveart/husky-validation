@@ -1,0 +1,166 @@
+---
+layout: default
+title: Documentation
+slug: documentation
+base_url: "../"
+main_js: "documentation.js"
+---
+
+<div id="content">
+    <h1>Documentation</h1>
+
+    <ol>
+        <li><a href="#install">Installation</a></li>
+        <li><a href="#form">Form Options</a></li>
+        <li><a href="#field">Field Options</a></li>
+        <li><a href="#validators">Built-In Validators</a></li>
+    </ol>
+
+    <h2 id="install">Installation</h2>
+
+    <p>Requirements:</p>
+    <ul>
+        <li>JQuery</li>
+        <li>RequireJS</li>
+    </ul>
+
+    <h3>index.html</h3>
+    <div class="doc-code">
+        {% highlight html %}
+<form id="contact-form">
+    [...]
+</form>
+
+<script type="text/javascript" src="jquery.js"></script>
+<script data-main="app.js" type="text/javascript" src="require.js"></script>
+        {% endhighlight %}
+    </div>
+
+    <h3>app.js</h3>
+    <div class="doc-code">
+{% highlight javascript %}
+define(['js/validation'], function(Validation) {
+    var validation = new Validation($('#contact-form'));
+});
+{% endhighlight %}
+    </div>
+
+    <h2 id="form">Form Options</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>submitEvent</td>
+                <td>true</td>
+                <td>avoid submit if not valid</td>
+            </tr>
+            <tr>
+                <td>element.trigger</td>
+                <td>focusout</td>
+                <td>default validate trigger for each element</td>
+            </tr>
+            <tr>
+                <td>element.addclasses</td>
+                <td>true</td>
+                <td>add error and success classes for each element</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="doc-code">
+        {% highlight javascript %}
+define(['js/validation'], function(Validation) {
+    var validation = new Validation($('#contact-form'), {
+        submitEvent: false,
+        element: {
+            trigger: 'keyup',
+            addclasses: false
+        }
+    });
+});
+        {% endhighlight %}
+    </div>
+
+    <h2 id="field">Field Options</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Option</th>
+                <th>Default</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>trigger</td>
+                <td>data-trigger</td>
+                <td>focusout</td>
+                <td>Validate trigger</td>
+            </tr>
+            <tr>
+                <td>addclasses</td>
+                <td>data-addclasses</td>
+                <td>true</td>
+                <td>add error and success classes</td>
+            </tr>
+            <tr>
+                <td>validate</td>
+                <td>data-validate</td>
+                <td>true</td>
+                <td>If set the field will be validated, if not the field will be ignored</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="doc-code">
+        {% highlight html %}
+<input type="text"
+       data-validate="true"
+       data-trigger="keyup"
+       data-prop="birthDay"/>
+        {% endhighlight %}
+    </div>
+
+    <h2 id="validators">Built-In Validators</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>API</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Required</td>
+                <td>data-required</td>
+                <td>Validate that a required field has been filled.</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
