@@ -25,6 +25,7 @@ define([
 
         var result = {
             initialize: function() {
+                // TODO override options with data attribute
                 this.options = $.extend({}, defaults, options);
                 this.$el = $el;
 
