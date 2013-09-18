@@ -66,8 +66,8 @@ define([
             // initialize field objects
             initFields: function() {
                 $.each(that.getFields.call(this), function(key, value) {
-                    var options = Util.parseOptions($(value), 'form', {});
-                    elements.push(new Element(value), options);
+                    var options = Util.parseData(value, 'form', {});
+                    elements.push(new Element(value, options));
                 }.bind(this));
             }
         };

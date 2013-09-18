@@ -11,33 +11,37 @@
 define([], function() {
 
     var ignoredKeys = [
-
+        'form'
     ];
 
     return {
         debugEnabled: false,
 
         /**
-         * Parses the component's options from its element's data attributes.
+         * Parses the data of a element
          * Inspired by aurajs <http://aurajs.com>
-         *
-         * @private
-         * @param  {String} el           the element
-         * @param  {String} namespace     current Component's detected namespace
-         * @param  {String} defaults      an Object containing the base Component's options to extend.
-         * @return {Object}               An object that contains the Component's options
          */
-        parseOptions: function(el, namespace, defaults) {
+        parseData: function(el, namespace, defaults) {
             var name,
-                $el = $(el),
-                options = $.extend({}, defaults, {});
+                $el = $(el);
 
-            $.each($el.data(), function(key, value) {
+            return this.buildOptions($el.data(), namespace, defaults);
+        },
+
+        /**
+         * Build options for given data
+         * Inspired by aurajs <http://aurajs.com>
+         */
+        buildOptions: function(data, namespace, defaults) {
+            var options = $.extend({}, defaults, {});
+
+            $.each(data, function(key, value) {
                 var regExp = new RegExp("^" + namespace);
                 if (regExp.test(key)) {
-                    key = key.replace(new RegExp("^" + namespace), "");
-                    key = key.charAt(0).toLowerCase() + key.slice(1);
-
+                    if (key !== namespace) {
+                        key = key.replace(new RegExp("^" + namespace), "");
+                        key = key.charAt(0).toLowerCase() + key.slice(1);
+                    }
                     if ($.inArray(key, ignoredKeys) == -1) {
                         options[key] = value;
                     }
