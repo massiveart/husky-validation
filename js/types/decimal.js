@@ -17,7 +17,7 @@ define([
             regExp: /^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/
         };
 
-        var result = $.extend({}, new Default($el, defaults, options, 'decimal'), {
+        var typeInterface = {
             initializeSub:function(){
                 // TODO internationalization
             },
@@ -25,9 +25,8 @@ define([
             validate: function() {
                 return this.data.regExp.test(this.$el.val());
             }
-        });
+        };
 
-        result.initialize();
-        return result;
+        return new Default($el, defaults, options, 'decimal', typeInterface);
     };
 });

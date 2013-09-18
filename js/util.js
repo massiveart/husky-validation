@@ -12,8 +12,7 @@ define([], function() {
 
     var ignoredKeys = [
         'form',
-        'validation',
-        'type'
+        'validation'
     ];
 
     return {
@@ -52,8 +51,10 @@ define([], function() {
                         } else {
                             key = key.replace(new RegExp("^" + namespace), "");
                         }
-                        key = this.lcFirst(key);
-                        options[key] = value;
+                        if (key !== '') {
+                            key = this.lcFirst(key);
+                            options[key] = value;
+                        }
                     }
                 }
             }.bind(this));

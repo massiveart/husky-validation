@@ -10,31 +10,51 @@
 
 define([], function() {
 
-    return function($el, defaults, options, name) {
+    return function($el, defaults, options, name, typeInterface) {
 
-        return {
-            name: name,
+        var that = {
+                initialize: function() {
+                    this.$el = $el;
+                    this.options = $.extend({}, defaults, options);
 
-            initialize: function() {
-                this.$el = $el;
-                this.data = $.extend(defaults, this.$el.data(), options);
-                this.updateData();
-
-                if (!!this.initializeSub) this.initializeSub();
+                    if (!!this.initializeSub) this.initializeSub();
+                }
             },
+            defaultInterface = {
+                name: name,
 
-            updateConstraint: function(options) {
-                this.data = $.extend({}, this.data, options);
-                this.updateData();
+                needsValidation: function() {
+                    return true;
+                },
+
+                updateConstraint: function(options) {
+                    this.options = $.extend({}, this.options, options);
+                },
+
+                // mapper functionality set value into input
+                setValue: function(data) {
+                    this.$el.val(this.getViewData.call(this, data[this.options.property]));
+                },
+
+                // mapper functionality get value from input
+                getValue: function(data) {
+                    data[this.options.property] = this.getModelData.call(this, this.$el.val());
+                },
+
+                // internationalization of view data: default none
+                getViewData: function(value) {
+                    return value;
+                },
+
+                // internationalization of model data: default none
+                getModelData: function(value) {
+                    return value;
+                }
             },
+            result = $.extend({}, defaultInterface, typeInterface);
 
-            updateData: function() {
-                $.each(this.data, function(key, value) {
-                    this.$el.data(key, value);
-                }.bind(this));
-            }
-        };
-
+        that.initialize.call(result);
+        return result;
     };
 
 });

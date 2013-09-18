@@ -16,18 +16,20 @@ define([
         var defaults = {
         };
 
-        var result = $.extend({}, new Default($el, defaults, options, 'string'), {
-            initializeSub:function(){
+        var typeInterface = {
+            initializeSub: function() {
                 // TODO internationalization
             },
 
+            needsValidation: function() {
+                return false;
+            },
+
             validate: function() {
-                return true
+                return true;
             }
-        });
+        };
 
-
-        result.initialize();
-        return result;
+        return new Default($el, defaults, options, 'string', typeInterface);
     };
 });
