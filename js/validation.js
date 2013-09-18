@@ -8,26 +8,6 @@
  *
  */
 
-require.config({
-    paths: {
-        'validation': 'js/validation',
-        'validation-element': 'js/element',
-
-        'type/default': 'js/types/default',
-        'type/date': 'js/types/date',
-        'type/decimal': 'js/types/decimal',
-        'type/email': 'js/types/email',
-        'type/url': 'js/types/url',
-
-        'validator/default': 'js/validators/default',
-        'validator/min': 'js/validators/min',
-        'validator/max': 'js/validators/max',
-        'validator/minlength': 'js/validators/minlength',
-        'validator/maxlength': 'js/validators/maxlength',
-        'validator/required': 'js/validators/required'
-    }
-});
-
 define([
     'validation-element'
 ], function(Element) {
