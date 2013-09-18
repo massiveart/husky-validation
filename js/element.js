@@ -169,6 +169,7 @@ define(['form/util'], function(Util) {
                     throw "No constraint with name: " + name;
                 }
             },
+
             deleteConstraint: function(name) {
                 if ($.inArray(name, Object.keys(validators)) > -1) {
                     delete validators[name];

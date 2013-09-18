@@ -34,18 +34,19 @@ require.config({
 
 define([
     'form/element',
+    'form/validation',
     'form/util'
-], function(Element, Util) {
+], function(Element, Validation, Util) {
 
     return function(el, options) {
         var defaults = {
                 debug: false,                   // debug on/off
-                validation: true,               // validation initialization on/off
+                validation: true,               // validation on/off
                 validationTrigger: 'focusout',  // default validate trigger
                 validationAddClasses: true,     // add error and success classes
-                validationSubmitEvent: true     // avoid submit if not valid
+                validationSubmitEvent: true,    // avoid submit if not valid
+                mapper: true                    // mapper on/off
             },
-            elements = [],
             valid;
 
         // private functions
@@ -65,20 +66,19 @@ define([
                 that.initFields.call(this);
 
                 if (!!this.options.validation) {
-                    that.bindValidationDomEvents.call(this);
-                    this.validation = validationInterface;
+                    this.validation = new Validation(this);
                 }
 
                 this.$el.data('form-object', this);
                 Util.debug('Form', this);
-                Util.debug('Elements', elements);
+                Util.debug('Elements', this.elements);
             },
 
             // initialize field objects
             initFields: function() {
                 $.each(that.getFields.call(this), function(key, value) {
                     var options = Util.parseData(value, '', this.options);
-                    elements.push(new Element(value, options));
+                    this.elements.push(new Element(value, options));
                     Util.debug('Element created', options);
                 }.bind(this));
             },
@@ -93,58 +93,11 @@ define([
             }
         };
 
-        // define validation interface
-        var validationInterface = {
-            validate: function(force) {
-                var result = true;
-                // validate each element
-                $.each(elements, function(key, element) {
-                    if (!element.validate(force)) {
-                        result = false;
-                    }
-                });
-
-                valid = result;
-                return result;
-            },
-
-            isValid: function() {
-                return valid;
-            },
-
-            updateConstraint: function(selector, name, options) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $(selector).data('element').updateConstraint(name, options);
-                } else {
-                    throw 'No validation element';
-                }
-            },
-
-            deleteConstraint: function(selector, name) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $element.data('element').deleteConstraint(name);
-                } else {
-                    throw 'No validation element';
-                }
-            },
-
-            addConstraint: function(selector, name, options) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $element.data('element').addConstraint(name, options);
-                } else {
-                    // create a new one
-                    var element = new Element($element, this.options['element']);
-                    // add constraint
-                    element.addConstraint(name, options);
-                    elements.push(element);
-                }
-            }
-        };
-
         var result = {
+            elements: [],
+            options: {},
+            validation: false,
+            mapper: false
         };
 
         that.initialize.call(result);
