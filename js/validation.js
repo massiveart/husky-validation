@@ -12,40 +12,13 @@ define([
     'validation-element'
 ], function(Element) {
 
-    return function($el, options) {
+    return function() {
         var defaults = {
-                submitEvent: true,          // avoid submit if not valid
-                element: {                  // defaults for element
-                    trigger: 'focusout',    // default validate trigger
-                    addclasses: true        // add error and success classes
-                }
             },
             elements = [],
             valid;
 
         var result = {
-            initialize: function() {
-                // TODO override options with data attribute
-                this.options = $.extend({}, defaults, options);
-                this.$el = $el;
-
-                // override defaults for element
-                var elementDefaults = this.options['element'];
-
-                // find to validate fields
-                this.$el.find('*[data-validate="true"]').each(function() {
-                    elements.push(new Element(this, elementDefaults));
-                });
-
-                // set element
-                this.$el.data('validation', this);
-
-                // debug
-                console.log('validation: elements', elements);
-
-                this.bindDomEvents();
-            },
-
             bindDomEvents: function() {
                 if (!!this.options.submitEvent) {
                     // avoid submit if not valid
@@ -96,7 +69,7 @@ define([
                     $element.data('element').addConstraint(name, options);
                 } else {
                     // create a new one
-                    var element = new Element($element,  this.options['element']);
+                    var element = new Element($element, this.options['element']);
                     // add constraint
                     element.addConstraint(name, options);
                     elements.push(element);

@@ -17,6 +17,7 @@ require.config({
         'form/util': 'js/util',
 
         'type/default': 'js/types/default',
+        'type/string': 'js/types/string',
         'type/date': 'js/types/date',
         'type/decimal': 'js/types/decimal',
         'type/email': 'js/types/email',
@@ -38,7 +39,11 @@ define([
 
     return function(el, options) {
         var defaults = {
-                debug: false
+                debug: false,                   // debug on/off
+                validation: true,               // validation initialization on/off
+                validationTrigger: 'focusout',  // default validate trigger
+                validationAddClasses: true,     // add error and success classes
+                validationSubmitEvent: true     // avoid submit if not valid
             },
             elements = [];
 
@@ -51,7 +56,7 @@ define([
 
             initialize: function() {
                 this.$el = $(el);
-                this.options = $.extend({}, defaults, options);
+                this.options = $.extend(defaults, this.$el.data(), options);
 
                 // enable / disable debug
                 Util.debugEnabled = this.options.debug;
@@ -66,10 +71,17 @@ define([
             // initialize field objects
             initFields: function() {
                 $.each(that.getFields.call(this), function(key, value) {
-                    var options = Util.parseData(value, 'form', {});
+                    var options = Util.parseData(value, '', this.options);
+
                     elements.push(new Element(value, options));
+                    Util.debug('Element created', options);
                 }.bind(this));
             }
+        };
+
+        // define validation interface
+        var validation = {
+
         };
 
         var result = {

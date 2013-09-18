@@ -12,12 +12,12 @@ define([
     'validator/default'
 ], function(Default) {
 
-    return function($el) {
+    return function($el, options) {
         var defaults = {
             min: 0
         };
 
-        var result = $.extend({}, new Default($el, defaults, 'min'), {
+        var result = $.extend({}, new Default($el, defaults, options, 'min'), {
             validate: function() {
                 var val = this.$el.val();
                 return Number(val) >= this.data.min;

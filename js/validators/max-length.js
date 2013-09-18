@@ -14,13 +14,13 @@ define([
 
     return function($el, options) {
         var defaults = {
-            maxlength: 999
+            maxLength: 999
         };
 
-        var result = $.extend({}, new Default($el, defaults, options, 'maxlength'), {
+        var result = $.extend({}, new Default($el, defaults, options, 'max-length'), {
             validate: function() {
                 var val = this.$el.val();
-                return val.length <= this.data.maxlength;
+                return val.length <= this.data.maxLength;
             }
         });
 

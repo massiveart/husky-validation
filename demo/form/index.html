@@ -6,7 +6,7 @@
     </head>
     <body>
 
-        <form id="contact-form" class="grid">
+        <form id="contact-form" class="grid" data-debug="true">
             <div class="grid-row">
                 <div class="grid-col-4">
                     <label>FirstName [required]:</label>
@@ -14,8 +14,8 @@
                            class="form-element"
                            id="firstName"
                            name="firstName"
-                           data-form-required="true"
-                           data-form-property="firstName"/>
+                           data-type-property="firstName"
+                           data-validation-required="true"/>
                 </div>
                 <div class="grid-col-4">
                     <label>LastName [minlength=6]:</label>
@@ -23,8 +23,8 @@
                            class="form-element"
                            id="lastName"
                            name="lastName"
-                           data-form-min-length="6"
-                           data-form-property="lastName"/>
+                           data-type-property="lastName"
+                           data-validation-min-length="6"/>
                 </div>
             </div>
             <div class="grid-row">
@@ -34,9 +34,10 @@
                            class="form-element"
                            id="birthday"
                            name="birthday"
-                           data-form-type="date"
-                           data-form-trigger="keyup"
-                           data-form-property="birthDay"/>
+                           data-type="date"
+                           data-type-format="yyyy-mm-dd"
+                           data-type-property="birthDay"
+                           data-validation-trigger="keyup"/>
                 </div>
                 <div class="grid-col-4">
                     <label>Wage [type=decimal, min=1000, max=1500]:</label>
@@ -44,10 +45,10 @@
                            class="form-element"
                            id="wage"
                            name="wage"
-                           data-form-type="decimal"
-                           data-form-min="1000"
-                           data-form-max="1500"
-                           data-form-property="wage"/>
+                           data-type="decimal"
+                           data-type-property="wage"
+                           data-validation-min="1000"
+                           data-validation-max="1500"/>
                 </div>
             </div>
             <div class="grid-row">
@@ -57,9 +58,9 @@
                            class="form-element"
                            id="phone"
                            name="phone"
-                           data-form-min-length="6"
-                           data-form-max-length="30"
-                           data-form-property="phone"/>
+                           data-type-property="phone"
+                           data-validation-min-length="6"
+                           data-validation-max-length="12"/>
                 </div>
             </div>
             <div class="grid-row">

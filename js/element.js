@@ -12,12 +12,21 @@ define(['form/util'], function(Util) {
 
     return function(el, options) {
         var defaults = {
-                trigger: 'focusout',                    // default validate trigger
-                addClasses: true,                       // add error and success classes
-                successClass: 'husky-validate-success', // success class
-                errorClass: 'husky-validate-error'      // error class
+                type: 'string',
+                validationTrigger: 'focusout',                     // default validate trigger
+                validationAddClasses: true,                        // add error and success classes
+                validationSuccessClass: 'husky-validate-success',  // success class
+                validationErrorClass: 'husky-validate-error',      // error class
+                validation: true                                   // validation on/off
             },
-            ignoredOptions = ['type', 'property', 'trigger', 'addClasses', 'successClass', 'errorClass'],
+            ignoredOptions = [
+                'validation',
+                'validationTrigger',
+                'validationAddClasses',
+                'validationSuccessClass',
+                'validationErrorClass',
+                'validationSubmitEvent'
+            ],
             valid,
             validators = {},
             type,
@@ -31,17 +40,25 @@ define(['form/util'], function(Util) {
                 this.$el.data('element', this);
 
                 this.options = $.extend({}, defaults, options);
-                that.bindDomEvents.call(this);
+
+                // init validation if necessary
+                if (!!this.options.validation) {
+                    that.initValidation.call(this);
+                }
+            },
+
+            initValidation: function() {
+                that.bindValidationDomEvents.call(this);
 
                 that.initValidators.call(this);
                 that.initType.call(this);
             },
 
-            bindDomEvents: function() {
+            bindValidationDomEvents: function() {
                 // build trigger
-                var triggers = ( !this.options.trigger ? '' : this.options.trigger );
+                var triggers = ( !this.options.validationTrigger ? '' : this.options.validationTrigger );
                 // break if no trigger is set
-                if (triggers === '' || triggers === 'none')return;
+                if (triggers === '' || triggers === 'none') return;
 
                 // always bind change event, for better UX when a select is invalid
                 if (this.$el.is('select')) {
@@ -58,12 +75,16 @@ define(['form/util'], function(Util) {
             initValidators: function() {
                 // create validators for each of the constraints
                 $.each(this.options, function(key, val) {
-                    // if a validator exists
-                    if ($.inArray(key, ignoredOptions) == -1 && !!val) {
-                        require(['validator/' + key], function(Validator) {
-                            var options = Util.buildOptions(this.options, key);
-                            validators[key] = new Validator(this.$el, options);
-                            Util.debug('Element Validator', key);
+                    // val not false
+                    // key is not ignored
+                    // and key starts with validation
+                    if (!!val && $.inArray(key, ignoredOptions) == -1 && Util.startsWith(key, 'validation')) {
+                        // filter validation prefix
+                        var name = Util.lcFirst(key.replace('validation', ''));
+                        require(['validator/' + name], function(Validator) {
+                            var options = Util.buildOptions(this.options, 'validation', name);
+                            validators[name] = new Validator(this.$el, options);
+                            Util.debug('Element Validator', key, options);
                         }.bind(this));
                     }
                 }.bind(this));
@@ -73,9 +94,9 @@ define(['form/util'], function(Util) {
                 // if type exists
                 if (!!this.options.type) {
                     require(['type/' + this.options.type], function(Type) {
-                        var options = Util.buildOptions(this.options, type);
+                        var options = Util.buildOptions(this.options, 'type');
                         type = new Type(this.$el, options);
-                        Util.debug('Element Type', type);
+                        Util.debug('Element Type', type, options);
                     }.bind(this));
                 }
             },
@@ -89,19 +110,19 @@ define(['form/util'], function(Util) {
             },
 
             reset: function() {
-                this.$el.removeClass(this.options.successClass);
-                this.$el.removeClass(this.options.errorClass);
+                this.$el.removeClass(this.options.validationSuccessClass);
+                this.$el.removeClass(this.options.validationErrorClass);
             },
 
             setValid: function(state) {
                 valid = state;
-                if (!!this.options.addClasses) {
+                if (!!this.options.validationAddClasses) {
                     that.reset.call(this);
 
                     if (!!state) {
-                        this.$el.addClass(this.options.successClass);
+                        this.$el.addClass(this.options.validationSuccessClass);
                     } else {
-                        this.$el.addClass(this.options.errorClass);
+                        this.$el.addClass(this.options.validationErrorClass);
                     }
                 }
             }

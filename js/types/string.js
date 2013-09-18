@@ -9,23 +9,25 @@
  */
 
 define([
-    'validator/default'
+    'type/default'
 ], function(Default) {
 
     return function($el, options) {
         var defaults = {
-            minLength: 0
         };
 
-        var result = $.extend({}, new Default($el, defaults, options, 'min-length'), {
+        var result = $.extend({}, new Default($el, defaults, options, 'string'), {
+            initializeSub:function(){
+                // TODO internationalization
+            },
+
             validate: function() {
-                var val = this.$el.val();
-                return val.length >= this.data.minLength;
+                return true
             }
         });
+
 
         result.initialize();
         return result;
     };
-
 });
