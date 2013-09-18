@@ -12,36 +12,28 @@ define([], function() {
 
     return function(el, options) {
         var defaults = {
-                trigger: 'focusout',    // default validate trigger
-                addclasses: true        // add error and success classes
+                trigger: 'focusout',                    // default validate trigger
+                addClasses: true,                       // add error and success classes
+                successClass: 'husky-validate-success', // success class
+                errorClass: 'husky-validate-error'      // error class
             },
-            ignoredData = ['validate', 'type', 'prop', 'trigger'],
-            valid;
+            ignoredOptions = ['type', 'property', 'trigger', 'addClasses'],
+            valid,
+            validators = {},
+            type;
 
-        var result = {
+        var that = {
             initialize: function() {
-                this.options = $.extend({}, defaults, options);
-
                 this.$el = $(el);
-                this.data = this.$el.data();
 
-                // if data override options
-                if (this.data.hasOwnProperty('trigger')) {
-                    this.options.trigger = this.data.trigger;
-                }
-
-                this.initValidators();
-                this.initType();
-
-                this.bindDomEvents();
-
-                // set element
+                // set data element
                 this.$el.data('element', this);
 
-                // debug
-                var prop = this.$el.data('prop');
-                console.log(prop + ': validators', this.validators);
-                console.log(prop + ': type', this.type);
+                this.options = $.extend({}, defaults, options);
+                that.bindDomEvents.call(this);
+
+                that.initValidators.call(this);
+                that.initType.call(this);
             },
 
             bindDomEvents: function() {
@@ -63,29 +55,50 @@ define([], function() {
             },
 
             initValidators: function() {
-                this.validators = {};
-
                 // create validators for each of the constraints
-                $.each(this.data, function(key, val) {
+                $.each(this.options, function(key, val) {
                     // if a validator exists
-                    if ($.inArray(key, ignoredData) == -1 && !!val) {
+                    if ($.inArray(key, ignoredOptions) == -1 && !!val) {
                         require(['validator/' + key], function(Validator) {
-                            this.validators[key] = new Validator(this.$el);
+                            validators[key] = new Validator(this.$el);
                         }.bind(this));
                     }
                 }.bind(this));
             },
 
             initType: function() {
-                this.type = null;
                 // if type exists
-                if (this.data.hasOwnProperty('type')) {
-                    require(['type/' + this.data['type']], function(Type) {
-                        this.type = new Type(this.$el);
+                if (!!this.options.type) {
+                    require(['type/' + this.options.type], function(Type) {
+                        type = new Type(this.$el);
                     }.bind(this));
                 }
             },
 
+            hasConstraints: function() {
+                return Object.keys(validators).length > 0 || this.type != null;
+            },
+
+            reset: function() {
+                this.$el.removeClass(this.options.successClass);
+                this.$el.removeClass(this.options.errorClass);
+            },
+
+            setValid: function(state) {
+                valid = state;
+                if (!!this.options.addclasses) {
+                    this.reset.call(this);
+
+                    if (!!state) {
+                        this.$el.addClass(this.options.successClass);
+                    } else {
+                        this.$el.addClass(this.options.errorClass);
+                    }
+                }
+            }
+        };
+
+        var result = {
             validate: function(force) {
                 // TODO cache only if value changed or force is set
                 if (!this.hasConstraints()) {
@@ -110,28 +123,6 @@ define([], function() {
 
                 this.setValid(result);
                 return this.isValid();
-            },
-
-            hasConstraints: function() {
-                return Object.keys(this.validators).length > 0 || this.type != null;
-            },
-
-            reset: function() {
-                this.$el.removeClass('husky-validate-success');
-                this.$el.removeClass('husky-validate-error');
-            },
-
-            setValid: function(state) {
-                valid = state;
-                if (!!this.options.addclasses) {
-                    this.reset();
-
-                    if (!!state) {
-                        this.$el.addClass('husky-validate-success');
-                    } else {
-                        this.$el.addClass('husky-validate-error');
-                    }
-                }
             },
 
             isValid: function() {
@@ -168,7 +159,7 @@ define([], function() {
             }
         };
 
-        result.initialize();
+        that.initialize.call(result);
         return result;
     };
 
