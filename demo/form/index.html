@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link href="../../css/validation.css" rel="stylesheet">
+    </head>
+    <body>
+
+        <form id="contact-form" class="grid">
+            <div class="grid-row">
+                <div class="grid-col-4">
+                    <label>FirstName [required]:</label>
+                    <input type="text"
+                           class="form-element"
+                           id="firstName"
+                           name="firstName"
+                           data-form-required="true"
+                           data-form-property="firstName"/>
+                </div>
+                <div class="grid-col-4">
+                    <label>LastName [minlength=6]:</label>
+                    <input type="text"
+                           class="form-element"
+                           id="lastName"
+                           name="lastName"
+                           data-form-min-length="6"
+                           data-form-property="lastName"/>
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-col-4">
+                    <label>BirthDay [type=date, trigger=keyup]:</label>
+                    <input type="text"
+                           class="form-element"
+                           id="birthday"
+                           name="birthday"
+                           data-form-type="date"
+                           data-form-trigger="keyup"
+                           data-form-prop="birthDay"/>
+                </div>
+                <div class="grid-col-4">
+                    <label>Wage [type=decimal, min=1000, max=1500]:</label>
+                    <input type="text"
+                           class="form-element"
+                           id="wage"
+                           name="wage"
+                           data-form-type="decimal"
+                           data-form-min="1000"
+                           data-form-max="1500"
+                           data-form-property="wage"/>
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-col-4">
+                    <label>Phone [minlength=6, maxlength=30]:</label>
+                    <input type="text"
+                           class="form-element"
+                           id="phone"
+                           name="phone"
+                           data-form-min-length="6"
+                           data-form-max-length="30"
+                           data-form-property="phone"/>
+                </div>
+            </div>
+            <div class="grid-row">
+                <input type="submit" value="Send" class="btn"/>
+            </div>
+        </form>
+
+        <script src="../../assets/js/jquery.js"></script>
+        <script data-main="app.js" type="text/javascript" src="../../assets/js/require.js"></script>
+    </body>
+</html>
