@@ -3,6 +3,9 @@ requirejs.config({
 });
 
 define(['js/form'], function(Form) {
-    var validation = new Form($('#contact-form'), {
+    var form = new Form($('#contact-form'));
+
+    $('#contact-form').on('submit', function() {
+        return false;
     });
 });

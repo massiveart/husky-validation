@@ -19,7 +19,7 @@ define([
 
         var typeInterface = {
             validate: function() {
-                return this.data.regExp.test(this.$el.val());
+                return this.options.regExp.test(this.$el.val());
             }
         };
 

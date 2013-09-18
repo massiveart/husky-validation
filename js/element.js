@@ -30,7 +30,7 @@ define(['form/util'], function(Util) {
             valid,
             validators = {},
             type,
-            lastValue = "";
+            lastValue = null;
 
         var that = {
             initialize: function() {
@@ -102,7 +102,7 @@ define(['form/util'], function(Util) {
             },
 
             hasConstraints: function() {
-                return Object.keys(validators).length > 0 || type != null;
+                return Object.keys(validators).length > 0 || (type != null && type.needsValidation());
             },
 
             needsValidation: function() {
@@ -164,7 +164,7 @@ define(['form/util'], function(Util) {
             updateConstraint: function(name, options) {
                 if ($.inArray(name, Object.keys(validators)) > -1) {
                     validators[name].updateConstraint(options);
-                    this.validate(true);
+                    this.validate();
                 } else {
                     throw "No constraint with name: " + name;
                 }
@@ -182,7 +182,7 @@ define(['form/util'], function(Util) {
                 if ($.inArray(name, Object.keys(validators)) == -1) {
                     require(['validator/' + name], function(Validator) {
                         validators[name] = new Validator(this.$el, options);
-                        this.validate(true);
+                        this.validate();
                     }.bind(this));
                 } else {
                     throw "Constraint with name: " + name + " already exists";

@@ -23,7 +23,7 @@ define([
                 if (this.data['url-strict'] !== 'true') {
                     val = new RegExp('(https?|s?ftp|git)', 'i').test(val) ? val : 'http://' + val;
                 }
-                return this.data.regExp.test(val);
+                return this.options.regExp.test(val);
             }
         };
 
