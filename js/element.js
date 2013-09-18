@@ -63,6 +63,7 @@ define(['form/util'], function(Util) {
                         require(['validator/' + key], function(Validator) {
                             var options = Util.buildOptions(this.options, key);
                             validators[key] = new Validator(this.$el, options);
+                            Util.debug('Element Validator', key);
                         }.bind(this));
                     }
                 }.bind(this));
@@ -72,7 +73,9 @@ define(['form/util'], function(Util) {
                 // if type exists
                 if (!!this.options.type) {
                     require(['type/' + this.options.type], function(Type) {
-                        type = new Type(this.$el);
+                        var options = Util.buildOptions(this.options, type);
+                        type = new Type(this.$el, options);
+                        Util.debug('Element Type', type);
                     }.bind(this));
                 }
             },
