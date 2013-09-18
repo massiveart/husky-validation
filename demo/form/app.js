@@ -15,7 +15,7 @@ define(['js/form'], function(Form) {
         form.mapper.setData({
             firstName: 'Johannes',
             lastName: 'Wachter',
-            birthDay: '2013-05-05',
+            birthDay: '2013-09-18T08:05:00+0200',
             wage: 1500,
             phones: [
                 {
@@ -34,5 +34,5 @@ define(['js/form'], function(Form) {
                 }
             ]
         })
-    }, 1000);
+    }, 3000);
 });

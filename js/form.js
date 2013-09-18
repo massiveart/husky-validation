@@ -29,7 +29,10 @@ require.config({
         'validator/max': 'js/validators/max',
         'validator/minLength': 'js/validators/min-length',
         'validator/maxLength': 'js/validators/max-length',
-        'validator/required': 'js/validators/required'
+        'validator/required': 'js/validators/required',
+
+        'globalize': 'bower_components/globalize/lib/globalize',
+        'cultures': 'bower_components/globalize/lib/cultures'
     }
 });
 
@@ -37,11 +40,13 @@ define([
     'form/element',
     'form/validation',
     'form/mapper',
-    'form/util'
+    'form/util',
+    'globalize'
 ], function(Element, Validation, Mapper, Util) {
 
     return function(el, options) {
         var defaults = {
+                language: 'de',                 // language
                 debug: false,                   // debug on/off
                 validation: true,               // validation on/off
                 validationTrigger: 'focusout',  // default validate trigger
@@ -56,6 +61,11 @@ define([
             initialize: function() {
                 this.$el = $(el);
                 this.options = $.extend(defaults, this.$el.data(), options);
+
+                // set culture
+                require(['cultures/globalize.culture.' + this.options.language], function() {
+                    Globalize.culture(this.options.language);
+                }.bind(this));
 
                 // enable / disable debug
                 Util.debugEnabled = this.options.debug;
