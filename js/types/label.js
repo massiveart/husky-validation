@@ -24,13 +24,20 @@ define([
             },
 
             setValue: function(value) {
-                if (!!value[this.options.label]){
-                    this.$el.html(value[this.options.label])
+                if (!!value[this.options.label]) {
+                    this.$el.text(value[this.options.label])
                 }
 
-                if (!!value[this.options.id]){
+                if (!!value[this.options.id]) {
                     this.$el.data(this.options.id, value[this.options.id])
                 }
+            },
+
+            getValue: function() {
+                var result = {};
+                result[this.options.id] = this.$el.data(this.options.id);
+                result[this.options.name] = this.$el.text();
+                return result
             },
 
             needsValidation: function() {

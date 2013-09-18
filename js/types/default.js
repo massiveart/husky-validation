@@ -37,10 +37,8 @@ define([], function() {
                 },
 
                 // mapper functionality get value from input
-                getValue: function(data) {
-                    if (!!this.options.property) {
-                        data[this.options.property] = this.getModelData.call(this, this.$el.val());
-                    }
+                getValue: function() {
+                    return this.getModelData.call(this, this.$el.val());
                 },
 
                 // internationalization of view data: default none

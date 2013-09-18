@@ -19,6 +19,24 @@ define([
         var that = {
             initialize: function() {
                 Util.debug('INIT Mapper');
+            },
+
+            processData: function(el) {
+                // get attributes
+                var $el = $(el),
+                    type = $el.data('type'),
+                    element = $el.data('element');
+
+                // if type == array process children, else get value
+                if (type !== 'array') {
+                    return element.getValue();
+                } else {
+                    var result = [];
+                    $.each($el.children(), function(key1, value1) {
+                        result.push(form.mapper.getData($(value1)));
+                    });
+                    return result;
+                }
             }
         };
 
@@ -64,11 +82,28 @@ define([
                 }.bind(this));
             },
 
-            getData: function() {
+            getData: function($el) {
+                if (!$el)$el = form.$el;
                 var data = {};
-                $.each(form.elements, function(key, value) {
-                    value.getData(data);
-                }.bind(this));
+
+                // search field with mapper property
+                var selector = '*[data-mapper-property]',
+                    $elements = $el.find(selector);
+
+                // do it while elements exists
+                while ($elements.length > 0) {
+                    // get first
+                    var $el = $($elements.get(0)),
+                        property = $el.data('mapper-property');
+
+                    // process it
+                    data[property] = that.processData.call(this, $el);
+
+                    // remove element itselve
+                    $elements = $elements.not($el);
+                    // remove child elements
+                    $elements = $elements.not($el.find(selector))
+                }
                 return data;
             }
         };

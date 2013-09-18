@@ -31,20 +31,6 @@ define(['js/form'], function(Form) {
                         name: "Mobil"
                     },
                     phone: "+43 664 4119649"
-                },
-                {
-                    type: {
-                        id: 5,
-                        name: "Geschäftlich"
-                    },
-                    phone: "1"
-                },
-                {
-                    type: {
-                        id: 5,
-                        name: "Diskret"
-                    },
-                    phone: "2"
                 }
             ]
         })

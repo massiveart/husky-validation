@@ -190,12 +190,12 @@ define(['form/util'], function(Util) {
                 }
             },
 
-            setValue:function(value) {
+            setValue: function(value) {
                 type.setValue(value);
             },
 
-            getData:function(data){
-                type.getValue(data);
+            getValue: function(data) {
+                return type.getValue(data);
             }
         };
 
