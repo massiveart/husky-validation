@@ -18,6 +18,11 @@ define([], function() {
     return {
         debugEnabled: false,
 
+        // get form fields
+        getFields: function(element) {
+            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"]');
+        },
+
         /**
          * Parses the data of a element
          * Inspired by aurajs <http://aurajs.com>
@@ -93,6 +98,7 @@ define([], function() {
         lcFirst: function(str) {
             return str.charAt(0).toLowerCase() + str.slice(1);
         },
+
         startsWith: function(str, starts) {
             return str.indexOf(starts) == 0;
         }

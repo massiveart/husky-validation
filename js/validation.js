@@ -13,6 +13,8 @@ define([
 ], function(Util) {
 
     return function(form) {
+        var valid;
+
         // private functions
         var that = {
             initialize: function() {
@@ -28,6 +30,10 @@ define([
                         return form.validation.validate();
                     }.bind(this));
                 }
+            },
+
+            setValid: function(state) {
+                valid = state;
             }
         };
 
@@ -42,7 +48,8 @@ define([
                     }
                 });
 
-                valid = result;
+                that.setValid.call(this, result);
+                Util.debug('Validation', !!result ? 'success' : 'error');
                 return result;
             },
 
@@ -83,7 +90,7 @@ define([
             }
         };
 
-        that.initialize.call(this);
+        that.initialize.call(result);
         return result;
     }
 

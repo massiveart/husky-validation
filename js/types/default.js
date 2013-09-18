@@ -32,13 +32,15 @@ define([], function() {
                 },
 
                 // mapper functionality set value into input
-                setValue: function(data) {
-                    this.$el.val(this.getViewData.call(this, data[this.options.property]));
+                setValue: function(value) {
+                    this.$el.val(this.getViewData.call(this, value));
                 },
 
                 // mapper functionality get value from input
                 getValue: function(data) {
-                    data[this.options.property] = this.getModelData.call(this, this.$el.val());
+                    if (!!this.options.property) {
+                        data[this.options.property] = this.getModelData.call(this, this.$el.val());
+                    }
                 },
 
                 // internationalization of view data: default none

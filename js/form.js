@@ -22,6 +22,7 @@ require.config({
         'type/decimal': 'js/types/decimal',
         'type/email': 'js/types/email',
         'type/url': 'js/types/url',
+        'type/label': 'js/types/label',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',
@@ -35,8 +36,9 @@ require.config({
 define([
     'form/element',
     'form/validation',
+    'form/mapper',
     'form/util'
-], function(Element, Validation, Util) {
+], function(Element, Validation, Mapper, Util) {
 
     return function(el, options) {
         var defaults = {
@@ -51,11 +53,6 @@ define([
 
         // private functions
         var that = {
-            // get form fields
-            getFields: function() {
-                return this.$el.find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"]');
-            },
-
             initialize: function() {
                 this.$el = $(el);
                 this.options = $.extend(defaults, this.$el.data(), options);
@@ -69,6 +66,10 @@ define([
                     this.validation = new Validation(this);
                 }
 
+                if (!!this.options.mapper) {
+                    this.mapper = new Mapper(this);
+                }
+
                 this.$el.data('form-object', this);
                 Util.debug('Form', this);
                 Util.debug('Elements', this.elements);
@@ -76,10 +77,8 @@ define([
 
             // initialize field objects
             initFields: function() {
-                $.each(that.getFields.call(this), function(key, value) {
-                    var options = Util.parseData(value, '', this.options);
-                    this.elements.push(new Element(value, options));
-                    Util.debug('Element created', options);
+                $.each(Util.getFields(this.$el), function(key, value) {
+                    this.addField.call(this, value);
                 }.bind(this));
             },
 
@@ -97,7 +96,24 @@ define([
             elements: [],
             options: {},
             validation: false,
-            mapper: false
+            mapper: false,
+
+            addField: function(selector) {
+                var $element = $(selector),
+                    options = Util.parseData($element, '', this.options),
+                    element = new Element($element, options);
+
+                this.elements.push(element);
+                Util.debug('Element created', options);
+                return element;
+            },
+
+            removeField: function(selector) {
+                var $element = $(selector),
+                    element = $element.data('element');
+
+                this.elements.splice(this.elements.indexOf(element));
+            }
         };
 
         that.initialize.call(result);

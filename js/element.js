@@ -188,6 +188,14 @@ define(['form/util'], function(Util) {
                 } else {
                     throw "Constraint with name: " + name + " already exists";
                 }
+            },
+
+            setValue:function(value) {
+                type.setValue(value);
+            },
+
+            getData:function(data){
+                type.getValue(data);
             }
         };
 

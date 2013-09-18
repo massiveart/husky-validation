@@ -3,70 +3,87 @@
     <head>
         <title></title>
         <link href="../../css/validation.css" rel="stylesheet">
+        <link href="../../assets/css/husky.min.css" rel="stylesheet">
+
+        <style type="text/css">
+            #content {
+                margin-left: auto;
+                margin-right: auto;
+                width:800px;
+                margin-top: 100px;
+            }
+        </style>
     </head>
     <body>
 
-        <form id="contact-form" class="grid" data-debug="true">
-            <div class="grid-row">
-                <div class="grid-col-4">
-                    <label>FirstName [required]:</label>
-                    <input type="text"
-                           class="form-element"
-                           id="firstName"
-                           name="firstName"
-                           data-type-property="firstName"
-                           data-validation-required="true"/>
+        <div id="content">
+            <form id="contact-form" class="grid" data-debug="true">
+                <div class="grid-row">
+                    <div class="grid-col-6">
+                        <label>FirstName [required]:</label>
+                        <input type="text"
+                               class="form-element"
+                               id="firstName"
+                               name="firstName"
+                               data-mapper-property="firstName"
+                               data-validation-required="true"/>
+                    </div>
+                    <div class="grid-col-6">
+                        <label>LastName [minlength=6]:</label>
+                        <input type="text"
+                               class="form-element"
+                               id="lastName"
+                               name="lastName"
+                               data-mapper-property="lastName"
+                               data-validation-min-length="6"/>
+                    </div>
                 </div>
-                <div class="grid-col-4">
-                    <label>LastName [minlength=6]:</label>
-                    <input type="text"
-                           class="form-element"
-                           id="lastName"
-                           name="lastName"
-                           data-type-property="lastName"
-                           data-validation-min-length="6"/>
+                <div class="grid-row">
+                    <div class="grid-col-6">
+                        <label>BirthDay [type=date, trigger=keyup]:</label>
+                        <input type="text"
+                               class="form-element"
+                               id="birthday"
+                               name="birthday"
+                               data-type="date"
+                               data-type-format="yyyy-mm-dd"
+                               data-mapper-property="birthDay"
+                               data-validation-trigger="keyup"/>
+                    </div>
+                    <div class="grid-col-6">
+                        <label>Wage [type=decimal, min=1000, max=1500]:</label>
+                        <input type="text"
+                               class="form-element"
+                               id="wage"
+                               name="wage"
+                               data-type="decimal"
+                               data-mapper-property="wage"
+                               data-validation-min="1000"
+                               data-validation-max="1500"/>
+                    </div>
                 </div>
-            </div>
-            <div class="grid-row">
-                <div class="grid-col-4">
-                    <label>BirthDay [type=date, trigger=keyup]:</label>
-                    <input type="text"
-                           class="form-element"
-                           id="birthday"
-                           name="birthday"
-                           data-type="date"
-                           data-type-format="yyyy-mm-dd"
-                           data-type-property="birthDay"
-                           data-validation-trigger="keyup"/>
+                <div class="grid-row" id="phones" data-mapper-property="phones">
+                    <div class="grid-col-4 floating">
+                        <label data-mapper-property="type"
+                               data-type="label"
+                               data-type-label="name"
+                               data-type-id="id">
+                            Phone [minlength=6, maxlength=30]:
+                        </label>
+                        <input type="text"
+                               class="form-element"
+                               id="phone"
+                               name="phone"
+                               data-mapper-property="phone"
+                               data-validation-min-length="6"
+                               data-validation-max-length="30"/>
+                    </div>
                 </div>
-                <div class="grid-col-4">
-                    <label>Wage [type=decimal, min=1000, max=1500]:</label>
-                    <input type="text"
-                           class="form-element"
-                           id="wage"
-                           name="wage"
-                           data-type="decimal"
-                           data-type-property="wage"
-                           data-validation-min="1000"
-                           data-validation-max="1500"/>
+                <div class="grid-row">
+                    <input type="submit" value="Send" class="btn"/>
                 </div>
-            </div>
-            <div class="grid-row">
-                <div class="grid-col-4">
-                    <label>Phone [minlength=6, maxlength=30]:</label>
-                    <input type="text"
-                           class="form-element"
-                           id="phone"
-                           name="phone"
-                           data-type-property="phone"
-                           data-validation-min-length="6"
-                           data-validation-max-length="12"/>
-                </div>
-            </div>
-            <div class="grid-row">
-                <input type="submit" value="Send" class="btn"/>
-            </div>
-        </form>
+            </form>
+        </div>
 
         <script src="../../assets/js/jquery.js"></script>
         <script data-main="app.js" type="text/javascript" src="../../assets/js/require.js"></script>
