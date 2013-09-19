@@ -17,10 +17,6 @@ define([
         };
 
         var typeInterface = {
-            initializeSub: function() {
-                // TODO internationalization
-            },
-
             needsValidation: function() {
                 return false;
             },

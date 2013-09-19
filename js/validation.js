@@ -80,9 +80,8 @@ define([
                 if (!!$element.data('element')) {
                     $element.data('element').addConstraint(name, options);
                 } else {
-                    // TODO check
                     // create a new one
-                    var element = new Element($element, this.options['element']);
+                    var element = form.addField(selector);
                     // add constraint
                     element.addConstraint(name, options);
                     form.elements.push(element);

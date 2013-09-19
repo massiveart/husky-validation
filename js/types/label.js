@@ -19,10 +19,6 @@ define([
         };
 
         var typeInterface = {
-            initializeSub: function() {
-                // TODO internationalization
-            },
-
             setValue: function(value) {
                 if (!!value[this.options.label]) {
                     this.$el.text(value[this.options.label])

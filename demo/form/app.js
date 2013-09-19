@@ -34,5 +34,5 @@ define(['js/form'], function(Form) {
                 }
             ]
         })
-    }, 3000);
+    }, 2000);
 });

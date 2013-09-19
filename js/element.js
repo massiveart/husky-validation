@@ -183,7 +183,6 @@ define(['form/util'], function(Util) {
                 if ($.inArray(name, Object.keys(validators)) == -1) {
                     require(['validator/' + name], function(Validator) {
                         validators[name] = new Validator(this.$el, options);
-                        this.validate();
                     }.bind(this));
                 } else {
                     throw "Constraint with name: " + name + " already exists";

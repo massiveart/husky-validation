@@ -14,35 +14,31 @@ define([
 
     return function($el, options) {
         var defaults = {
-            language: 'de',
-            languages: {
-                de: /^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$/
-            }
+            format: "d"     // possibilities f, F, t, T, d, D
         };
 
+        var getDate = function(value) {
+                return new Date(value);
+            },
+            toMysqlFormat = function(date) {
+                    return date.toISOString();
+            };
+
         var subType = {
-            initializeSub: function() {
-                // TODO internationalization
-            },
-
             validate: function() {
-                // TODO return
-                return this.options.languages[this.options.language].test(this.$el.val());
+                var date = Globalize.parseDate(this.$el.val(), this.options.format);
+                return date != null;
             },
 
-            // internationalization of view data: default none
+            // internationalization of view data: Globalize library
             getViewData: function(value) {
-                // TODO option format
-                return Globalize.format(this.getDate(value), "D");
+                return Globalize.format(getDate(value), this.options.format);
             },
 
-            getDate: function(value) {
-                // FIXME better solution?
-                var temp = value.split('T'),
-                    dateParts = temp[0].split("-"),
-                    timeParts = temp[1].split(':');
-
-                return new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2].split('+')[0]);
+            // internationalization of model data: Globalize library
+            getModelData: function(value) {
+                var date = Globalize.parseDate(this.$el.val(), this.options.format);
+                return toMysqlFormat(date);
             }
         };
 
