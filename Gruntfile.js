@@ -49,7 +49,8 @@ module.exports = function(grunt) {
             'validator/maxLength',
             'validator/required'
         ],
-        out: 'dist/validation.js'
+        out: 'dist/validation.js',
+        optimize: grunt.option('dev') ? "none" : "uglify"
     };
 
     // project configuration
