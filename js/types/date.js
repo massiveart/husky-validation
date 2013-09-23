@@ -21,12 +21,15 @@ define([
                 return new Date(value);
             },
             toMysqlFormat = function(date) {
-                    return date.toISOString();
+                return date.toISOString();
             };
 
         var subType = {
             validate: function() {
-                var date = Globalize.parseDate(this.$el.val(), this.options.format);
+                var val = this.$el.val();
+                if (val == "")return true;
+
+                var date = Globalize.parseDate(val, this.options.format);
                 return date != null;
             },
 

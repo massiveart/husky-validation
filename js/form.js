@@ -118,7 +118,7 @@ define([
                 var $element = $(selector),
                     element = $element.data('element');
 
-                this.elements.splice(this.elements.indexOf(element));
+                this.elements.splice(this.elements.indexOf(element), 1);
             }
         };
 

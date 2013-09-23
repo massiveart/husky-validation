@@ -32,7 +32,7 @@ define([
             getValue: function() {
                 var result = {};
                 result[this.options.id] = this.$el.data(this.options.id);
-                result[this.options.name] = this.$el.text();
+                result[this.options.label] = this.$el.text();
                 return result
             },
 

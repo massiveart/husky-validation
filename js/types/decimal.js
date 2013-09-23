@@ -23,6 +23,9 @@ define([
             },
 
             validate: function() {
+                var val = this.$el.val();
+                if (val == "")return true;
+
                 return this.options.regExp.test(this.$el.val());
             }
         };

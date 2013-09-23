@@ -462,33 +462,44 @@ define('form/mapper',[
                         $element = $el.find(selector),
                         element = $element.data('element');
 
-                    // if field is an array
-                    if ($.isArray(value)) {
-                        // remember first child remove the rest
-                        var $child = $element.children().first();
+                    if ($element.length > 0) {
+                        // if field is an array
+                        if ($.isArray(value)) {
+                            // remember first child remove the rest
+                            var $child = $element.children().first();
 
-                        // remove fields
-                        $.each(Util.getFields($element), function(key, value) {
-                            form.removeField(value);
-                        }.bind(this));
-                        $element.children().remove();
+                            // remove fields
+                            $.each(Util.getFields($element), function(key, value) {
+                                form.removeField(value);
+                            }.bind(this));
+                            $element.children().remove();
 
-                        // foreach array elements: create a new dom element, call setData recursively
-                        $.each(value, function(key1, value1) {
-                            var $newElement = $child.clone();
-                            $element.append($newElement);
-                            form.mapper.setData(value1, $newElement);
-                        });
-                    } else {
-                        // if element is not in form add it
-                        if (!element) {
-                            element = form.addField($element);
-                            // FIXME wait for type (async load)
-                            setTimeout(function() {
-                                element.setValue(value)
-                            }, 100);
+                            // foreach array elements: create a new dom element, call setData recursively
+                            $.each(value, function(key1, value1) {
+                                var $newElement = $child.clone();
+                                $element.append($newElement);
+                                var $newFields = Util.getFields($newElement);
+
+                                $.each($newFields, function(key, value) {
+                                    form.addField($(value));
+                                }.bind(this));
+
+                                // FIXME wait for type (async load)
+                                setTimeout(function() {
+                                    form.mapper.setData(value1, $newElement);
+                                }, 100);
+                            });
                         } else {
-                            element.setValue(value);
+                            // if element is not in form add it
+                            if (!element) {
+                                element = form.addField($element);
+                                // FIXME wait for type (async load)
+                                setTimeout(function() {
+                                    element.setValue(value);
+                                }, 100);
+                            } else {
+                                element.setValue(value);
+                            }
                         }
                     }
                 }.bind(this));
@@ -508,8 +519,14 @@ define('form/mapper',[
                     var $el = $($elements.get(0)),
                         property = $el.data('mapper-property');
 
-                    // process it
-                    data[property] = that.processData.call(this, $el);
+                    if (property.match(/.*\..*/)) {
+                        var parts = property.split('.');
+                        data[parts[0]] = {};
+                        data[parts[0]][parts[1]] = that.processData.call(this, $el);
+                    } else {
+                        // process it
+                        data[property] = that.processData.call(this, $el);
+                    }
 
                     // remove element itselve
                     $elements = $elements.not($el);
@@ -646,7 +663,7 @@ define('form',[
                 var $element = $(selector),
                     element = $element.data('element');
 
-                this.elements.splice(this.elements.indexOf(element));
+                this.elements.splice(this.elements.indexOf(element), 1);
             }
         };
 
@@ -772,12 +789,15 @@ define('type/date',[
                 return new Date(value);
             },
             toMysqlFormat = function(date) {
-                    return date.toISOString();
+                return date.toISOString();
             };
 
         var subType = {
             validate: function() {
-                var date = Globalize.parseDate(this.$el.val(), this.options.format);
+                var val = this.$el.val();
+                if (val == "")return true;
+
+                var date = Globalize.parseDate(val, this.options.format);
                 return date != null;
             },
 
@@ -822,6 +842,9 @@ define('type/decimal',[
             },
 
             validate: function() {
+                var val = this.$el.val();
+                if (val == "")return true;
+
                 return this.options.regExp.test(this.$el.val());
             }
         };
@@ -851,6 +874,9 @@ define('type/email',[
 
         var typeInterface = {
             validate: function() {
+                var val = this.$el.val();
+                if (val == "")return true;
+
                 return this.options.regExp.test(this.$el.val());
             }
         };
@@ -881,6 +907,8 @@ define('type/url',[
         var typeInterface = {
             validate: function() {
                 var val = this.$el.val();
+                if (val == "")return true;
+
                 if (this.data['url-strict'] !== 'true') {
                     val = new RegExp('(https?|s?ftp|git)', 'i').test(val) ? val : 'http://' + val;
                 }
@@ -926,7 +954,7 @@ define('type/label',[
             getValue: function() {
                 var result = {};
                 result[this.options.id] = this.$el.data(this.options.id);
-                result[this.options.name] = this.$el.text();
+                result[this.options.label] = this.$el.text();
                 return result
             },
 

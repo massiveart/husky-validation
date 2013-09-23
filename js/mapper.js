@@ -50,33 +50,44 @@ define([
                         $element = $el.find(selector),
                         element = $element.data('element');
 
-                    // if field is an array
-                    if ($.isArray(value)) {
-                        // remember first child remove the rest
-                        var $child = $element.children().first();
+                    if ($element.length > 0) {
+                        // if field is an array
+                        if ($.isArray(value)) {
+                            // remember first child remove the rest
+                            var $child = $element.children().first();
 
-                        // remove fields
-                        $.each(Util.getFields($element), function(key, value) {
-                            form.removeField(value);
-                        }.bind(this));
-                        $element.children().remove();
+                            // remove fields
+                            $.each(Util.getFields($element), function(key, value) {
+                                form.removeField(value);
+                            }.bind(this));
+                            $element.children().remove();
 
-                        // foreach array elements: create a new dom element, call setData recursively
-                        $.each(value, function(key1, value1) {
-                            var $newElement = $child.clone();
-                            $element.append($newElement);
-                            form.mapper.setData(value1, $newElement);
-                        });
-                    } else {
-                        // if element is not in form add it
-                        if (!element) {
-                            element = form.addField($element);
-                            // FIXME wait for type (async load)
-                            setTimeout(function() {
-                                element.setValue(value)
-                            }, 100);
+                            // foreach array elements: create a new dom element, call setData recursively
+                            $.each(value, function(key1, value1) {
+                                var $newElement = $child.clone();
+                                $element.append($newElement);
+                                var $newFields = Util.getFields($newElement);
+
+                                $.each($newFields, function(key, value) {
+                                    form.addField($(value));
+                                }.bind(this));
+
+                                // FIXME wait for type (async load)
+                                setTimeout(function() {
+                                    form.mapper.setData(value1, $newElement);
+                                }, 100);
+                            });
                         } else {
-                            element.setValue(value);
+                            // if element is not in form add it
+                            if (!element) {
+                                element = form.addField($element);
+                                // FIXME wait for type (async load)
+                                setTimeout(function() {
+                                    element.setValue(value);
+                                }, 100);
+                            } else {
+                                element.setValue(value);
+                            }
                         }
                     }
                 }.bind(this));
@@ -96,8 +107,14 @@ define([
                     var $el = $($elements.get(0)),
                         property = $el.data('mapper-property');
 
-                    // process it
-                    data[property] = that.processData.call(this, $el);
+                    if (property.match(/.*\..*/)) {
+                        var parts = property.split('.');
+                        data[parts[0]] = {};
+                        data[parts[0]][parts[1]] = that.processData.call(this, $el);
+                    } else {
+                        // process it
+                        data[property] = that.processData.call(this, $el);
+                    }
 
                     // remove element itselve
                     $elements = $elements.not($el);
