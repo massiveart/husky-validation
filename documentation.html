@@ -3,7 +3,7 @@ layout: default
 title: Documentation
 slug: documentation
 base_url: "../"
-main_js: "documentation.js"
+main_js: "assets/js/documentation.js"
 ---
 
 <div id="content">
@@ -24,6 +24,7 @@ main_js: "documentation.js"
     <ul>
         <li>JQuery</li>
         <li>RequireJS</li>
+        <li>Globalize for Dates and Numbers</li>
     </ul>
 
     <h3>index.html</h3>
@@ -41,8 +42,15 @@ main_js: "documentation.js"
     <h3>app.js</h3>
     <div class="doc-code">
 {% highlight javascript %}
-define(['js/validation'], function(Validation) {
-    var validation = new Validation($('#contact-form'));
+requirejs.config({
+    paths: {
+        'globalize': 'bower_components/globalize/lib/globalize',
+        'cultures': 'bower_components/globalize/lib/cultures'
+    }
+});
+define(['js/form', 'globalize', 'cultures/globalize.culture.en-GB'], function(Form) {
+    Globalize.culture('en-GB');
+    var form = new Form($('#contact-form'));
 });
 {% endhighlight %}
     </div>
@@ -52,41 +60,79 @@ define(['js/validation'], function(Validation) {
         <thead>
             <tr>
                 <th>Name</th>
+                <th>data</th>
                 <th>Default</th>
                 <th>Description</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>submitEvent</td>
+                <td>debug</td>
+                <td>data-debug="true"</td>
+                <td>false</td>
+                <td>print debug messages</td>
+            </tr>
+            <tr>
+                <td>validation</td>
+                <td>data-validation="false"</td>
+                <td>true</td>
+                <td>load validation api</td>
+            </tr>
+            <tr>
+                <td>validationTrigger</td>
+                <td>data-validation-trigger="keyup forcusout"</td>
+                <td>'focusout'</td>
+                <td>default validate trigger</td>
+            </tr>
+            <tr>
+                <td>validationAddClasses</td>
+                <td>data-validation-add-classes="false"</td>
+                <td>true</td>
+                <td>add classes after validation (error / success)</td>
+            </tr>
+            <tr>
+                <td>validationSubmitEvent</td>
+                <td>data-validation-submit-event="false"</td>
                 <td>true</td>
                 <td>avoid submit if not valid</td>
             </tr>
             <tr>
-                <td>element.trigger</td>
-                <td>focusout</td>
-                <td>default validate trigger for each element</td>
+                <td>mapper</td>
+                <td>data-mapper="false"</td>
+                <td>true</td>
+                <td>load mapper api</td>
             </tr>
             <tr>
-                <td>element.addclasses</td>
-                <td>true</td>
-                <td>add error and success classes for each element</td>
+                <td>type</td>
+                <td>data-type="date"</td>
+                <td>'string'</td>
+                <td>default type include all fields</td>
+            </tr>
+            <tr>
+                <td>validation*</td>
+                <td>data-validation-*="..."</td>
+                <td></td>
+                <td>default validation include all fields (Example: data-validation-required="true")</td>
             </tr>
         </tbody>
     </table>
     <div class="doc-code">
         {% highlight javascript %}
-define(['js/validation'], function(Validation) {
-    var validation = new Validation($('#contact-form'), {
-        submitEvent: false,
-        element: {
-            trigger: 'keyup',
-            addclasses: false
-        }
+define(['js/form'], function(Form) {
+    var form = new Form($('#contact-form'), {
+        validation:false,
+        mapper:false
     });
 });
         {% endhighlight %}
     </div>
+    <div class="doc-code">
+        {% highlight html %}
+<form data-validation="false" data-mapper="false"></form>
+        {% endhighlight %}
+    </div>
+
+    <!-- TODO Documentation from here -->
 
     <h2 id="field">Field Options</h2>
     <table class="table">
