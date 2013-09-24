@@ -91,7 +91,7 @@ define(['form/util'], function(Util) {
                         var name = Util.lcFirst(key.replace('validation', ''));
                         require(['validator/' + name], function(Validator) {
                             var options = Util.buildOptions(this.options, 'validation', name);
-                            validators[name] = new Validator(this.$el, options);
+                            validators[name] = new Validator(this.$el, form, options);
                             Util.debug('Element Validator', key, options);
                         }.bind(this));
                     }
