@@ -101,7 +101,44 @@ define([], function() {
 
         startsWith: function(str, starts) {
             return str.indexOf(starts) == 0;
+        },
+
+        /**
+         * Prints object
+         */
+        print: function(object, stage) {
+            if (!stage) stage = 1;
+            var str = '',
+                oneIndent = '&nbsp;&nbsp;&nbsp;&nbsp;',
+                indent = '',
+                i = 0;
+
+            while (i < stage) {
+                indent += oneIndent;
+                i++;
+            }
+
+            for (var property in object) {
+                var value = object[property];
+                if (typeof value === 'string') {
+                    if (this.isNumeric(value)) {
+                        str += indent + property + ': ' + value + '; </br>';
+                    } else {
+                        if (value.length > 7) value = value.substring(0, 6) + " ...";
+                        str += indent + property + ': \'' + value + '\'; </br>';
+                    }
+                } else {
+                    str += indent + p + ': { </br>' + indent + oneIndent + print(value, stage++) + '}';
+                }
+            }
+
+            return str;
+        },
+
+        isNumeric: function(str) {
+            return str.match(/-?\d+(.\d+)?/);
         }
+
     };
 
 });

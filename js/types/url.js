@@ -22,7 +22,7 @@ define([
                 var val = this.$el.val();
                 if (val == "")return true;
 
-                if (this.data['url-strict'] !== 'true') {
+                if (this.options['url-strict'] !== 'true') {
                     val = new RegExp('(https?|s?ftp|git)', 'i').test(val) ? val : 'http://' + val;
                 }
                 return this.options.regExp.test(val);
