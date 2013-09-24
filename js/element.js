@@ -15,6 +15,7 @@ define(['form/util'], function(Util) {
                 type: 'string',
                 validationTrigger: 'focusout',                     // default validate trigger
                 validationAddClasses: true,                        // add error and success classes
+                validationAddClassesParent: true,                  // add classes to parent element
                 validationSuccessClass: 'husky-validate-success',  // success class
                 validationErrorClass: 'husky-validate-error',      // error class
                 validationClass: 'husky-validate',                 // default class
@@ -116,8 +117,12 @@ define(['form/util'], function(Util) {
             },
 
             reset: function() {
-                this.$el.removeClass(this.options.validationSuccessClass);
-                this.$el.removeClass(this.options.validationErrorClass);
+                var $element = this.$el;
+                if (!!this.options.validationAddClassesParent) {
+                    $element = $element.parent();
+                }
+                $element.removeClass(this.options.validationSuccessClass);
+                $element.removeClass(this.options.validationErrorClass);
             },
 
             setValid: function(state) {
@@ -125,10 +130,14 @@ define(['form/util'], function(Util) {
                 if (!!this.options.validationAddClasses) {
                     that.reset.call(this);
 
+                    var $element = this.$el;
+                    if (!!this.options.validationAddClassesParent) {
+                        $element = $element.parent();
+                    }
                     if (!!state) {
-                        this.$el.addClass(this.options.validationSuccessClass);
+                        this.$el.parent().addClass(this.options.validationSuccessClass);
                     } else {
-                        this.$el.addClass(this.options.validationErrorClass);
+                        this.$el.parent().addClass(this.options.validationErrorClass);
                     }
                 }
             }

@@ -42,13 +42,14 @@ define([
 
     return function(el, options) {
         var defaults = {
-                //language: 'de',               // language
-                debug: false,                   // debug on/off
-                validation: true,               // validation on/off
-                validationTrigger: 'focusout',  // default validate trigger
-                validationAddClasses: true,     // add error and success classes
-                validationSubmitEvent: true,    // avoid submit if not valid
-                mapper: true                    // mapper on/off
+                //language: 'de',                // language
+                debug: false,                     // debug on/off
+                validation: true,                 // validation on/off
+                validationTrigger: 'focusout',    // default validate trigger
+                validationAddClassesParent: true, // add classes to parent element
+                validationAddClasses: true,       // add error and success classes
+                validationSubmitEvent: true,      // avoid submit if not valid
+                mapper: true                      // mapper on/off
             },
             valid;
 
