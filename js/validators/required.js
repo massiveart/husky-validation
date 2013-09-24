@@ -12,10 +12,10 @@ define([
     'validator/default'
 ], function(Default) {
 
-    return function($el, options) {
+    return function($el, form, options) {
         var defaults = {};
 
-        var result = $.extend({}, new Default($el, defaults, options, 'required'), {
+        var result = $.extend({}, new Default($el, form, defaults, options, 'required'), {
             validate: function() {
                 if (!!this.data.required) {
                     var val = this.$el.val();

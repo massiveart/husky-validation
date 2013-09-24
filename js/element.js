@@ -10,7 +10,7 @@
 
 define(['form/util'], function(Util) {
 
-    return function(el, options) {
+    return function(el, form, options) {
         var defaults = {
                 type: 'string',
                 validationTrigger: 'focusout',                     // default validate trigger
@@ -198,7 +198,7 @@ define(['form/util'], function(Util) {
             addConstraint: function(name, options) {
                 if ($.inArray(name, Object.keys(validators)) == -1) {
                     require(['validator/' + name], function(Validator) {
-                        validators[name] = new Validator(this.$el, options);
+                        validators[name] = new Validator(this.$el, form, options);
                     }.bind(this));
                 } else {
                     throw "Constraint with name: " + name + " already exists";

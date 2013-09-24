@@ -12,12 +12,12 @@ define([
     'validator/default'
 ], function(Default) {
 
-    return function($el, options) {
+    return function($el, form, options) {
         var defaults = {
             maxLength: 999
         };
 
-        var result = $.extend({}, new Default($el, defaults, options, 'max-length'), {
+        var result = $.extend({}, new Default($el, form, defaults, options, 'max-length'), {
             validate: function() {
                 var val = this.$el.val();
                 return val.length <= this.data.maxLength;

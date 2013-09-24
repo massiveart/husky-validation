@@ -12,12 +12,12 @@ define([
     'validator/default'
 ], function(Default) {
 
-    return function($el, options) {
+    return function($el, form, options) {
         var defaults = {
             max: 999
         };
 
-        var result = $.extend({}, new Default($el, defaults, options, 'max'), {
+        var result = $.extend({}, new Default($el, form, defaults, options, 'max'), {
             validate: function() {
                 var val = this.$el.val();
                 return Number(val) <= this.data.max;

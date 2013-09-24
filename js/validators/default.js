@@ -10,7 +10,7 @@
 
 define([], function() {
 
-    return function($el, defaults, options, name) {
+    return function($el, form, defaults, options, name) {
 
         return {
             name: name,

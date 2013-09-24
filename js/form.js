@@ -108,7 +108,7 @@ define([
             addField: function(selector) {
                 var $element = $(selector),
                     options = Util.parseData($element, '', this.options),
-                    element = new Element($element, options);
+                    element = new Element($element, this, options);
 
                 this.elements.push(element);
                 Util.debug('Element created', options);
