@@ -808,8 +808,13 @@ define('type/date',[
 
             // internationalization of model data: Globalize library
             getModelData: function(value) {
-                var date = Globalize.parseDate(this.$el.val(), this.options.format);
-                return toMysqlFormat(date);
+                var val = this.$el.val();
+                if (val !== '') {
+                    var date = Globalize.parseDate(val, this.options.format);
+                    return toMysqlFormat(date);
+                } else {
+                    return val;
+                }
             }
         };
 
