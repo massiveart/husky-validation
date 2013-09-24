@@ -39,7 +39,9 @@ define(['form/util'], function(Util) {
 
                 // set data element
                 this.$el.data('element', this);
-                this.$el.addClass(this.options.validationClass);
+                if (!!this.options.validationAddClasses) {
+                    this.$el.addClass(this.options.validationClass);
+                }
 
                 this.options = $.extend({}, defaults, options);
 
