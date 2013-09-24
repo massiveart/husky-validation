@@ -25,6 +25,7 @@ define(['form/util'], function(Util) {
                 'validation',
                 'validationTrigger',
                 'validationAddClasses',
+                'validationAddClassesParent',
                 'validationClass',
                 'validationSuccessClass',
                 'validationErrorClass',
