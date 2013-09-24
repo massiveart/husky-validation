@@ -17,6 +17,7 @@ define(['form/util'], function(Util) {
                 validationAddClasses: true,                        // add error and success classes
                 validationSuccessClass: 'husky-validate-success',  // success class
                 validationErrorClass: 'husky-validate-error',      // error class
+                validationClass: 'husky-validate',                 // default class
                 validation: true                                   // validation on/off
             },
             ignoredOptions = [
@@ -38,6 +39,7 @@ define(['form/util'], function(Util) {
 
                 // set data element
                 this.$el.data('element', this);
+                this.$el.addClass(this.options.validationClass);
 
                 this.options = $.extend({}, defaults, options);
 
