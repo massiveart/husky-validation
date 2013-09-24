@@ -29,7 +29,8 @@ require.config({
         'validator/max': 'js/validators/max',
         'validator/minLength': 'js/validators/min-length',
         'validator/maxLength': 'js/validators/max-length',
-        'validator/required': 'js/validators/required'
+        'validator/required': 'js/validators/required',
+        'validator/unique': 'js/validators/unique'
     }
 });
 
