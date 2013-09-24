@@ -24,6 +24,7 @@ define(['form/util'], function(Util) {
                 'validation',
                 'validationTrigger',
                 'validationAddClasses',
+                'validationClass',
                 'validationSuccessClass',
                 'validationErrorClass',
                 'validationSubmitEvent'
@@ -39,11 +40,12 @@ define(['form/util'], function(Util) {
 
                 // set data element
                 this.$el.data('element', this);
+
+                this.options = $.extend({}, defaults, options);
+
                 if (!!this.options.validationAddClasses) {
                     this.$el.addClass(this.options.validationClass);
                 }
-
-                this.options = $.extend({}, defaults, options);
 
                 // init validation if necessary
                 if (!!this.options.validation) {
