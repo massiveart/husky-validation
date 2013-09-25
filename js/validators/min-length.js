@@ -12,17 +12,19 @@ define([
     'validator/default'
 ], function(Default) {
 
+    'use strict';
+
     return function($el, form, options) {
         var defaults = {
-            minLength: 0
-        };
+                minLength: 0
+            },
 
-        var result = $.extend({}, new Default($el, form, defaults, options, 'min-length'), {
-            validate: function() {
-                var val = this.$el.val();
-                return val.length >= this.data.minLength;
-            }
-        });
+            result = $.extend(new Default($el, form, defaults, options, 'min-length'), {
+                validate: function() {
+                    var val = this.$el.val();
+                    return val.length >= this.data.minLength;
+                }
+            });
 
         result.initialize();
         return result;

@@ -8,7 +8,9 @@
  *
  */
 
-define([], function() {
+define(function() {
+
+    'use strict';
 
     return function($el, form, defaults, options, name) {
 
@@ -20,11 +22,13 @@ define([], function() {
                 this.data = $.extend(defaults, this.$el.data(), options);
                 this.updateData();
 
-                if (!!this.initializeSub) this.initializeSub();
+                if (!!this.initializeSub) {
+                    this.initializeSub();
+                }
             },
 
             updateConstraint: function(options) {
-                this.data = $.extend({}, this.data, options);
+                $.extend(this.data, options);
                 this.updateData();
             },
 

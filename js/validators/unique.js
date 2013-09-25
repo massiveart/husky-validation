@@ -9,44 +9,40 @@
  */
 
 define([
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
+
+    'use strict';
 
     return function($el, form, options) {
 
         var defaults = {
-        };
+                validationUnique: null
+            },
 
-        var result = $.extend({}, new Default($el, form, defaults, options, 'unique'), {
-            validate: function() {
+            result = $.extend({}, new Default($el, form, defaults, options, 'unique'), {
+                validate: function() {
 
-                var uniqueValue = $($el).val();
-                    uniqueGroup = $el.data('validation-unique'),
-                    counter = 0;
+                    var uniqueValue = $($el).val(),
+                        uniqueGroup = $el.data('validation-unique'),
+                        counter = 0;
 
-                $.each(form.elements, function(index, element){
-                    var group = element.options.validationUnique,
-                        value = element.getValue();
+                    $.each(form.elements, function(index, element) {
+                        var group = element.options.validationUnique,
+                            value = element.getValue();
 
-                    if(uniqueGroup === group){
-                        if(uniqueValue === value) {
-                            counter++;
+                        if (uniqueGroup === group) {
+                            if (uniqueValue === value) {
+                                counter++;
+                            }
                         }
-                    }
-                    
+
+                        return counter <= 1;
+                    });
+
                     return counter <= 1;
-
-                });
-
-                if(counter > 1) {
-                    return false;    
                 }
-
-                return true;
-                
-            }
-        });
+            });
 
         result.initialize();
         return result;

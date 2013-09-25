@@ -12,23 +12,28 @@ define([
     'type/default'
 ], function(Default) {
 
+    'use strict';
+
     return function($el, options) {
         var defaults = {
-            regExp: /^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/
-        };
-
-        var typeInterface = {
-            initializeSub:function(){
-                // TODO internationalization
+                regExp: /^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/
             },
 
-            validate: function() {
-                var val = this.$el.val();
-                if (val == "")return true;
+            typeInterface = {
+                initializeSub: function() {
+                    // TODO internationalization
+                },
 
-                return this.options.regExp.test(this.$el.val());
-            }
-        };
+                validate: function() {
+                    var val = this.$el.val();
+
+                    if (val === '') {
+                        return true;
+                    }
+
+                    return this.options.regExp.test(this.$el.val());
+                }
+            };
 
         return new Default($el, defaults, options, 'decimal', typeInterface);
     };

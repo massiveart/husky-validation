@@ -12,43 +12,44 @@ define([
     'type/default'
 ], function(Default) {
 
+    'use strict';
+
     return function($el, options) {
         var defaults = {
-            format: "d"     // possibilities f, F, t, T, d, D
-        };
+                format: 'd'     // possibilities f, F, t, T, d, D
+            },
 
-        var getDate = function(value) {
+            getDate = function(value) {
+                console.log(value, new Date(value));
                 return new Date(value);
             },
-            toMysqlFormat = function(date) {
-                return date.toISOString();
-            };
 
-        var subType = {
-            validate: function() {
-                var val = this.$el.val();
-                if (val == "")return true;
+            subType = {
+                validate: function() {
+                    var val = this.$el.val(), date;
+                    if (val === '') {
+                        return true;
+                    }
 
-                var date = Globalize.parseDate(val, this.options.format);
-                return date != null;
-            },
+                    date = Globalize.parseDate(val, this.options.format);
+                    return date !== null;
+                },
 
-            // internationalization of view data: Globalize library
-            getViewData: function(value) {
-                return Globalize.format(getDate(value), this.options.format);
-            },
+                // internationalization of view data: Globalize library
+                getViewData: function(value) {
+                    return Globalize.format(getDate(value), this.options.format);
+                },
 
-            // internationalization of model data: Globalize library
-            getModelData: function(value) {
-                var val = this.$el.val();
-                if (val !== '') {
-                    var date = Globalize.parseDate(val, this.options.format);
-                    return toMysqlFormat(date);
-                } else {
-                    return val;
+                // internationalization of model data: Globalize library
+                getModelData: function(value) {
+                    if (value !== '') {
+                        var date = Globalize.parseDate(value, this.options.format);
+                        return date.toISOString();
+                    } else {
+                        return value;
+                    }
                 }
-            }
-        };
+            };
 
         return new Default($el, defaults, options, 'date', subType);
     };

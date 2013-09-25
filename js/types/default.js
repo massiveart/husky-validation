@@ -8,7 +8,9 @@
  *
  */
 
-define([], function() {
+define(function() {
+
+    'use strict';
 
     return function($el, defaults, options, name, typeInterface) {
 
@@ -17,7 +19,9 @@ define([], function() {
                     this.$el = $el;
                     this.options = $.extend({}, defaults, options);
 
-                    if (!!this.initializeSub) this.initializeSub();
+                    if (!!this.initializeSub) {
+                        this.initializeSub();
+                    }
                 }
             },
             defaultInterface = {
@@ -28,7 +32,7 @@ define([], function() {
                 },
 
                 updateConstraint: function(options) {
-                    this.options = $.extend({}, this.options, options);
+                    $.extend(this.options, options);
                 },
 
                 // mapper functionality set value into input
@@ -54,6 +58,7 @@ define([], function() {
             result = $.extend({}, defaultInterface, typeInterface);
 
         that.initialize.call(result);
+
         return result;
     };
 

@@ -41,6 +41,8 @@ define([
     'form/util'
 ], function(Element, Validation, Mapper, Util) {
 
+    'use strict';
+
     return function(el, options) {
         var defaults = {
                 //language: 'de',                // language
@@ -52,80 +54,79 @@ define([
                 validationSubmitEvent: true,      // avoid submit if not valid
                 mapper: true                      // mapper on/off
             },
-            valid;
 
         // private functions
-        var that = {
-            initialize: function() {
-                this.$el = $(el);
-                this.options = $.extend(defaults, this.$el.data(), options);
+            that = {
+                initialize: function() {
+                    this.$el = $(el);
+                    this.options = $.extend(defaults, this.$el.data(), options);
 
-                // set culture
-                //require(['cultures/globalize.culture.' + this.options.language], function() {
-                //    Globalize.culture(this.options.language);
-                //}.bind(this));
+                    // set culture
+                    //require(['cultures/globalize.culture.' + this.options.language], function() {
+                    //    Globalize.culture(this.options.language);
+                    //}.bind(this));
 
-                // enable / disable debug
-                Util.debugEnabled = this.options.debug;
+                    // enable / disable debug
+                    Util.debugEnabled = this.options.debug;
 
-                that.initFields.call(this);
+                    that.initFields.call(this);
 
-                if (!!this.options.validation) {
-                    this.validation = new Validation(this);
-                }
+                    if (!!this.options.validation) {
+                        this.validation = new Validation(this);
+                    }
 
-                if (!!this.options.mapper) {
-                    this.mapper = new Mapper(this);
-                }
+                    if (!!this.options.mapper) {
+                        this.mapper = new Mapper(this);
+                    }
 
-                this.$el.data('form-object', this);
-                Util.debug('Form', this);
-                Util.debug('Elements', this.elements);
-            },
+                    this.$el.data('form-object', this);
+                    Util.debug('Form', this);
+                    Util.debug('Elements', this.elements);
+                },
 
-            // initialize field objects
-            initFields: function() {
-                $.each(Util.getFields(this.$el), function(key, value) {
-                    this.addField.call(this, value);
-                }.bind(this));
-            },
-
-            bindValidationDomEvents: function() {
-                if (!!this.options.validationSubmitEvent) {
-                    // avoid submit if not valid
-                    this.$el.on('submit', function() {
-                        return this.validation.validate();
+                // initialize field objects
+                initFields: function() {
+                    $.each(Util.getFields(this.$el), function(key, value) {
+                        this.addField.call(this, value);
                     }.bind(this));
+                },
+
+                bindValidationDomEvents: function() {
+                    if (!!this.options.validationSubmitEvent) {
+                        // avoid submit if not valid
+                        this.$el.on('submit', function() {
+                            return this.validation.validate();
+                        }.bind(this));
+                    }
                 }
-            }
-        };
-
-        var result = {
-            elements: [],
-            options: {},
-            validation: false,
-            mapper: false,
-
-            addField: function(selector) {
-                var $element = $(selector),
-                    options = Util.parseData($element, '', this.options),
-                    element = new Element($element, this, options);
-
-                this.elements.push(element);
-                Util.debug('Element created', options);
-                return element;
             },
 
-            removeField: function(selector) {
-                var $element = $(selector),
-                    element = $element.data('element');
+            result = {
+                elements: [],
+                options: {},
+                validation: false,
+                mapper: false,
 
-                this.elements.splice(this.elements.indexOf(element), 1);
-            }
-        };
+                addField: function(selector) {
+                    var $element = $(selector),
+                        options = Util.parseData($element, '', this.options),
+                        element = new Element($element, this, options);
+
+                    this.elements.push(element);
+                    Util.debug('Element created', options);
+                    return element;
+                },
+
+                removeField: function(selector) {
+                    var $element = $(selector),
+                        element = $element.data('element');
+
+                    this.elements.splice(this.elements.indexOf(element), 1);
+                }
+            };
 
         that.initialize.call(result);
         return result;
-    }
+    };
 
 });

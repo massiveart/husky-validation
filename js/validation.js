@@ -12,85 +12,87 @@ define([
     'form/util'
 ], function(Util) {
 
+    'use strict';
+
     return function(form) {
-        var valid;
+        var valid,
 
         // private functions
-        var that = {
-            initialize: function() {
-                that.bindValidationDomEvents.call(this);
+            that = {
+                initialize: function() {
+                    that.bindValidationDomEvents.call(this);
 
-                Util.debug('INIT Validation');
-            },
+                    Util.debug('INIT Validation');
+                },
 
-            bindValidationDomEvents: function() {
-                if (!!form.options.validationSubmitEvent) {
-                    // avoid submit if not valid
-                    form.$el.on('submit', function() {
-                        return form.validation.validate();
-                    }.bind(this));
+                bindValidationDomEvents: function() {
+                    if (!!form.options.validationSubmitEvent) {
+                        // avoid submit if not valid
+                        form.$el.on('submit', function() {
+                            return form.validation.validate();
+                        }.bind(this));
+                    }
+                },
+
+                setValid: function(state) {
+                    valid = state;
                 }
             },
-
-            setValid: function(state) {
-                valid = state;
-            }
-        };
 
         // define validation interface
-        var result = {
-            validate: function(force) {
-                var result = true;
-                // validate each element
-                $.each(form.elements, function(key, element) {
-                    if (!element.validate(force)) {
-                        result = false;
+            result = {
+                validate: function(force) {
+                    var result = true;
+                    // validate each element
+                    $.each(form.elements, function(key, element) {
+                        if (!element.validate(force)) {
+                            result = false;
+                        }
+                    });
+
+                    that.setValid.call(this, result);
+                    Util.debug('Validation', !!result ? 'success' : 'error');
+                    return result;
+                },
+
+                isValid: function() {
+                    return valid;
+                },
+
+                updateConstraint: function(selector, name, options) {
+                    var $element = $(selector);
+                    if (!!$element.data('element')) {
+                        $(selector).data('element').updateConstraint(name, options);
+                    } else {
+                        throw 'No validation element';
                     }
-                });
+                },
 
-                that.setValid.call(this, result);
-                Util.debug('Validation', !!result ? 'success' : 'error');
-                return result;
-            },
+                deleteConstraint: function(selector, name) {
+                    var $element = $(selector);
+                    if (!!$element.data('element')) {
+                        $element.data('element').deleteConstraint(name);
+                    } else {
+                        throw 'No validation element';
+                    }
+                },
 
-            isValid: function() {
-                return valid;
-            },
-
-            updateConstraint: function(selector, name, options) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $(selector).data('element').updateConstraint(name, options);
-                } else {
-                    throw 'No validation element';
+                addConstraint: function(selector, name, options) {
+                    var $element = $(selector), element;
+                    if (!!$element.data('element')) {
+                        $element.data('element').addConstraint(name, options);
+                    } else {
+                        // create a new one
+                        element = form.addField(selector);
+                        // add constraint
+                        element.addConstraint(name, options);
+                        form.elements.push(element);
+                    }
                 }
-            },
-
-            deleteConstraint: function(selector, name) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $element.data('element').deleteConstraint(name);
-                } else {
-                    throw 'No validation element';
-                }
-            },
-
-            addConstraint: function(selector, name, options) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $element.data('element').addConstraint(name, options);
-                } else {
-                    // create a new one
-                    var element = form.addField(selector);
-                    // add constraint
-                    element.addConstraint(name, options);
-                    form.elements.push(element);
-                }
-            }
-        };
+            };
 
         that.initialize.call(result);
         return result;
-    }
+    };
 
 });

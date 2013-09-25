@@ -12,19 +12,20 @@ define([
     'type/default'
 ], function(Default) {
 
+    'use strict';
+
     return function($el, options) {
-        var defaults = {
-        };
+        var defaults = { },
 
-        var typeInterface = {
-            needsValidation: function() {
-                return false;
-            },
+            typeInterface = {
+                needsValidation: function() {
+                    return false;
+                },
 
-            validate: function() {
-                return true;
-            }
-        };
+                validate: function() {
+                    return true;
+                }
+            };
 
         return new Default($el, defaults, options, 'string', typeInterface);
     };

@@ -25,7 +25,7 @@ define(['js/form', 'globalize'], function(Form) {
         form.mapper.setData({
             firstName: 'Johannes',
             lastName: 'Wachter',
-            birthDay: '2013-09-18T08:05:00+0200',
+            birthDay: '2013-09-18T08:05:00',
             wage: 1500,
             phones: [
                 {

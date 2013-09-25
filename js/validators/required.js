@@ -12,28 +12,32 @@ define([
     'validator/default'
 ], function(Default) {
 
-    return function($el, form, options) {
-        var defaults = {};
+    'use strict';
 
-        var result = $.extend({}, new Default($el, form, defaults, options, 'required'), {
-            validate: function() {
-                if (!!this.data.required) {
-                    var val = this.$el.val();
-                    // for checkboxes and select multiples. Check there is at least one required value
-                    if ('object' === typeof val) {
-                        for (var i in val) {
-                            if (this.validate(val[i])) {
-                                return true;
+    return function($el, form, options) {
+        var defaults = { },
+
+            result = $.extend(new Default($el, form, defaults, options, 'required'), {
+                validate: function(value) {
+                    if (!!this.data.required) {
+                        var val = value || this.$el.val(), i;
+                        // for checkboxes and select multiples.
+                        // check there is at least one required value
+                        if ('object' === typeof val) {
+                            for (i in val) {
+                                if (this.validate(val[i])) {
+                                    return true;
+                                }
                             }
+                            return false;
                         }
-                        return false;
+
+                        // notNull && notBlank
+                        return val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
                     }
-                    // parsleyJS notNull && notBlank
-                    return val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
 
         result.initialize();
         return result;

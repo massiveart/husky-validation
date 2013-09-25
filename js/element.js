@@ -10,7 +10,10 @@
 
 define(['form/util'], function(Util) {
 
+    'use strict';
+
     return function(el, form, options) {
+
         var defaults = {
                 type: 'string',
                 validationTrigger: 'focusout',                     // default validate trigger
@@ -34,185 +37,204 @@ define(['form/util'], function(Util) {
             valid,
             validators = {},
             type,
-            lastValue = null;
+            lastValue = null,
+            dfd = null,
 
-        var that = {
-            initialize: function() {
-                this.$el = $(el);
+            that = {
+                initialize: function() {
+                    dfd = $.Deferred();
+                    this.requireCounter = 0;
+                    this.initialized = dfd.promise();
 
-                // set data element
-                this.$el.data('element', this);
+                    this.$el = $(el);
 
-                this.options = $.extend({}, defaults, options);
+                    // set data element
+                    this.$el.data('element', this);
 
-                if (!!this.options.validationAddClasses) {
-                    this.$el.addClass(this.options.validationClass);
-                }
+                    this.options = $.extend({}, defaults, options);
 
-                // init validation if necessary
-                if (!!this.options.validation) {
-                    that.initValidation.call(this);
-                }
-            },
+                    if (!!this.options.validationAddClasses) {
+                        this.$el.addClass(this.options.validationClass);
+                    }
 
-            initValidation: function() {
-                that.bindValidationDomEvents.call(this);
+                    // init validation if necessary
+                    if (!!this.options.validation) {
+                        that.initValidation.call(this);
+                    }
+                },
 
-                that.initValidators.call(this);
-                that.initType.call(this);
-            },
+                resolveInitialization: function() {
+                    this.requireCounter--;
+                    if (this.requireCounter === 0) {
+                        dfd.resolve();
+                    }
+                },
 
-            bindValidationDomEvents: function() {
-                // build trigger
-                var triggers = ( !this.options.validationTrigger ? '' : this.options.validationTrigger );
-                // break if no trigger is set
-                if (triggers === '' || triggers === 'none') return;
+                initValidation: function() {
+                    that.bindValidationDomEvents.call(this);
 
-                // always bind change event, for better UX when a select is invalid
-                if (this.$el.is('select')) {
-                    triggers += new RegExp('change', 'i').test(triggers) ? '' : ' change';
-                }
+                    that.initValidators.call(this);
+                    that.initType.call(this);
+                },
 
-                // trim triggers to bind them correctly with .on()
-                triggers = triggers.replace(/^\s+/g, '').replace(/\s+$/g, '');
+                bindValidationDomEvents: function() {
+                    // build trigger
+                    var triggers = ( !this.options.validationTrigger ? '' : this.options.validationTrigger );
 
-                // bind event
-                this.$el.bind(triggers, this.validate.bind(this));
-            },
+                    // break if no trigger is set
+                    if (triggers === '' || triggers === 'none') {
+                        return;
+                    }
 
-            initValidators: function() {
-                // create validators for each of the constraints
-                $.each(this.options, function(key, val) {
-                    // val not false
-                    // key is not ignored
-                    // and key starts with validation
-                    if (!!val && $.inArray(key, ignoredOptions) == -1 && Util.startsWith(key, 'validation')) {
-                        // filter validation prefix
-                        var name = Util.lcFirst(key.replace('validation', ''));
-                        require(['validator/' + name], function(Validator) {
-                            var options = Util.buildOptions(this.options, 'validation', name);
-                            validators[name] = new Validator(this.$el, form, options);
-                            Util.debug('Element Validator', key, options);
+                    // always bind change event, for better UX when a select is invalid
+                    if (this.$el.is('select')) {
+                        triggers += new RegExp('change', 'i').test(triggers) ? '' : ' change';
+                    }
+
+                    // trim triggers to bind them correctly with .on()
+                    triggers = triggers.replace(/^\s+/g, '').replace(/\s+$/g, '');
+
+                    // bind event
+                    this.$el.bind(triggers, this.validate.bind(this));
+                },
+
+                initValidators: function() {
+                    // create validators for each of the constraints
+                    $.each(this.options, function(key, val) {
+                        // val not false
+                        // key is not ignored
+                        // and key starts with validation
+                        if (!!val && $.inArray(key, ignoredOptions) === -1 && Util.startsWith(key, 'validation')) {
+                            // filter validation prefix
+                            var name = Util.lcFirst(key.replace('validation', ''));
+                            this.requireCounter++;
+                            require(['validator/' + name], function(Validator) {
+                                var options = Util.buildOptions(this.options, 'validation', name);
+                                validators[name] = new Validator(this.$el, form, options);
+                                Util.debug('Element Validator', key, options);
+                                that.resolveInitialization.call(this);
+                            }.bind(this));
+                        }
+                    }.bind(this));
+                },
+
+                initType: function() {
+                    // if type exists
+                    if (!!this.options.type) {
+                        this.requireCounter++;
+                        require(['type/' + this.options.type], function(Type) {
+                            var options = Util.buildOptions(this.options, 'type');
+                            type = new Type(this.$el, options);
+                            Util.debug('Element Type', type, options);
+                            that.resolveInitialization.call(this);
                         }.bind(this));
                     }
-                }.bind(this));
-            },
+                },
 
-            initType: function() {
-                // if type exists
-                if (!!this.options.type) {
-                    require(['type/' + this.options.type], function(Type) {
-                        var options = Util.buildOptions(this.options, 'type');
-                        type = new Type(this.$el, options);
-                        Util.debug('Element Type', type, options);
-                    }.bind(this));
-                }
-            },
+                hasConstraints: function() {
+                    return Object.keys(validators).length > 0 || (type !== null && type.needsValidation());
+                },
 
-            hasConstraints: function() {
-                return Object.keys(validators).length > 0 || (type != null && type.needsValidation());
-            },
+                needsValidation: function() {
+                    return lastValue !== this.$el.val();
+                },
 
-            needsValidation: function() {
-                return lastValue !== this.$el.val();
-            },
-
-            reset: function() {
-                var $element = this.$el;
-                if (!!this.options.validationAddClassesParent) {
-                    $element = $element.parent();
-                }
-                $element.removeClass(this.options.validationSuccessClass);
-                $element.removeClass(this.options.validationErrorClass);
-            },
-
-            setValid: function(state) {
-                valid = state;
-                if (!!this.options.validationAddClasses) {
-                    that.reset.call(this);
-
+                reset: function() {
                     var $element = this.$el;
                     if (!!this.options.validationAddClassesParent) {
                         $element = $element.parent();
                     }
-                    if (!!state) {
-                        this.$el.parent().addClass(this.options.validationSuccessClass);
-                    } else {
-                        this.$el.parent().addClass(this.options.validationErrorClass);
-                    }
-                }
-            }
-        };
+                    $element.removeClass(this.options.validationSuccessClass);
+                    $element.removeClass(this.options.validationErrorClass);
+                },
 
-        var result = {
-            validate: function(force) {
-                // only if value changed or force is set
-                if (force || that.needsValidation.call(this)) {
-                    if (!that.hasConstraints.call(this)) {
-                        // delete state
+                setValid: function(state) {
+                    valid = state;
+                    if (!!this.options.validationAddClasses) {
                         that.reset.call(this);
-                        return true;
-                    }
 
-                    var result = true;
-                    // check each validator
-                    $.each(validators, function(key, validator) {
-                        if (!validator.validate()) {
-                            result = false;
-                            // TODO Messages
+                        var $element = this.$el;
+                        if (!!this.options.validationAddClassesParent) {
+                            $element = $element.parent();
                         }
-                    });
-
-                    // check type
-                    if (type != null && !type.validate()) {
-                        result = false;
+                        if (!!state) {
+                            $element.addClass(this.options.validationSuccessClass);
+                        } else {
+                            $element.addClass(this.options.validationErrorClass);
+                        }
                     }
-
-                    that.setValid.call(this, result);
-                }
-                return this.isValid();
-            },
-
-            isValid: function() {
-                return valid;
-            },
-
-            updateConstraint: function(name, options) {
-                if ($.inArray(name, Object.keys(validators)) > -1) {
-                    validators[name].updateConstraint(options);
-                    this.validate();
-                } else {
-                    throw "No constraint with name: " + name;
                 }
             },
 
-            deleteConstraint: function(name) {
-                if ($.inArray(name, Object.keys(validators)) > -1) {
-                    delete validators[name];
-                    this.validate(true);
-                } else {
-                    throw "No constraint with name: " + name;
+            result = {
+                validate: function(force) {
+                    // only if value changed or force is set
+                    if (force || that.needsValidation.call(this)) {
+                        if (!that.hasConstraints.call(this)) {
+                            // delete state
+                            that.reset.call(this);
+                            return true;
+                        }
+
+                        var result = true;
+                        // check each validator
+                        $.each(validators, function(key, validator) {
+                            if (!validator.validate()) {
+                                result = false;
+                                // TODO Messages
+                            }
+                        });
+
+                        // check type
+                        if (type !== null && !type.validate()) {
+                            result = false;
+                        }
+
+                        that.setValid.call(this, result);
+                    }
+                    return this.isValid();
+                },
+
+                isValid: function() {
+                    return valid;
+                },
+
+                updateConstraint: function(name, options) {
+                    if ($.inArray(name, Object.keys(validators)) > -1) {
+                        validators[name].updateConstraint(options);
+                        this.validate();
+                    } else {
+                        throw 'No constraint with name: ' + name;
+                    }
+                },
+
+                deleteConstraint: function(name) {
+                    if ($.inArray(name, Object.keys(validators)) > -1) {
+                        delete validators[name];
+                        this.validate(true);
+                    } else {
+                        throw 'No constraint with name: ' + name;
+                    }
+                },
+
+                addConstraint: function(name, options) {
+                    if ($.inArray(name, Object.keys(validators)) === -1) {
+                        require(['validator/' + name], function(Validator) {
+                            validators[name] = new Validator(this.$el, form, options);
+                        }.bind(this));
+                    } else {
+                        throw 'Constraint with name: ' + name + ' already exists';
+                    }
+                },
+
+                setValue: function(value) {
+                    type.setValue(value);
+                },
+
+                getValue: function(data) {
+                    return type.getValue(data);
                 }
-            },
-
-            addConstraint: function(name, options) {
-                if ($.inArray(name, Object.keys(validators)) == -1) {
-                    require(['validator/' + name], function(Validator) {
-                        validators[name] = new Validator(this.$el, form, options);
-                    }.bind(this));
-                } else {
-                    throw "Constraint with name: " + name + " already exists";
-                }
-            },
-
-            setValue: function(value) {
-                type.setValue(value);
-            },
-
-            getValue: function(data) {
-                return type.getValue(data);
-            }
-        };
+            };
 
         that.initialize.call(result);
         return result;

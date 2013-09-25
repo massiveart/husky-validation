@@ -12,38 +12,39 @@ define([
     'type/default'
 ], function(Default) {
 
+    'use strict';
+
     return function($el, options) {
         var defaults = {
-            id: 'id',
-            label: 'name'
-        };
+                id: 'id',
+                label: 'name'
+            },
+            typeInterface = {
+                setValue: function(value) {
+                    if (!!value[this.options.label]) {
+                        this.$el.text(value[this.options.label]);
+                    }
 
-        var typeInterface = {
-            setValue: function(value) {
-                if (!!value[this.options.label]) {
-                    this.$el.text(value[this.options.label])
+                    if (!!value[this.options.id]) {
+                        this.$el.data(this.options.id, value[this.options.id]);
+                    }
+                },
+
+                getValue: function() {
+                    var result = {};
+                    result[this.options.id] = this.$el.data(this.options.id);
+                    result[this.options.label] = this.$el.text();
+                    return result;
+                },
+
+                needsValidation: function() {
+                    return false;
+                },
+
+                validate: function() {
+                    return true;
                 }
-
-                if (!!value[this.options.id]) {
-                    this.$el.data(this.options.id, value[this.options.id])
-                }
-            },
-
-            getValue: function() {
-                var result = {};
-                result[this.options.id] = this.$el.data(this.options.id);
-                result[this.options.label] = this.$el.text();
-                return result
-            },
-
-            needsValidation: function() {
-                return false;
-            },
-
-            validate: function() {
-                return true;
-            }
-        };
+            };
 
         return new Default($el, defaults, options, 'label', typeInterface);
     };

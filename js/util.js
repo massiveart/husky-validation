@@ -10,6 +10,8 @@
 
 define([], function() {
 
+    'use strict';
+
     var ignoredKeys = [
         'form',
         'validation'
@@ -28,9 +30,7 @@ define([], function() {
          * Inspired by aurajs <http://aurajs.com>
          */
         parseData: function(el, namespace, defaults) {
-            var name,
-                $el = $(el);
-
+            var $el = $(el);
             return this.buildOptions($el.data(), namespace, '', defaults);
         },
 
@@ -41,20 +41,25 @@ define([], function() {
          * TODO Example
          */
         buildOptions: function(data, namespace, subNamespace, defaults) {
-            if (!subNamespace)subNamespace = '';
-            if (!defaults)defaults = {};
+            if (!subNamespace) {
+                subNamespace = '';
+            }
+
+            if (!defaults) {
+                defaults = {};
+            }
 
             var options = $.extend({}, defaults, {}),
                 fullNamespace = namespace + this.ucFirst(subNamespace);
 
             $.each(data, function(key, value) {
-                var regExp = new RegExp("^" + fullNamespace);
+                var regExp = new RegExp('^' + fullNamespace);
                 if (regExp.test(key)) {
-                    if ($.inArray(key, ignoredKeys) == -1) {
+                    if ($.inArray(key, ignoredKeys) === -1) {
                         if (key !== fullNamespace) {
-                            key = key.replace(regExp, "");
+                            key = key.replace(regExp, '');
                         } else {
-                            key = key.replace(new RegExp("^" + namespace), "");
+                            key = key.replace(new RegExp('^' + namespace), '');
                         }
                         if (key !== '') {
                             key = this.lcFirst(key);
@@ -72,15 +77,15 @@ define([], function() {
                 if (!!p1) {
                     if (!!p2) {
                         if (!!p3) {
-                            console.log("Husky Validation:", p1, p2, p3)
+                            console.log('Husky Validation:', p1, p2, p3);
                         } else {
-                            console.log("Husky Validation:", p1, p2)
+                            console.log('Husky Validation:', p1, p2);
                         }
                     } else {
-                        console.log("Husky Validation:", p1)
+                        console.log('Husky Validation:', p1);
                     }
                 } else {
-                    console.log("Husky Validation")
+                    console.log('Husky Validation');
                 }
             }
         },
@@ -100,16 +105,20 @@ define([], function() {
         },
 
         startsWith: function(str, starts) {
-            return str.indexOf(starts) == 0;
+            return str.indexOf(starts) === 0;
         },
 
         /**
          * Prints object
          */
         print: function(object, stage) {
-            if (!stage) stage = 1;
+            if (!stage) {
+                stage = 1;
+            }
+
             var str = '',
                 oneIndent = '&nbsp;&nbsp;&nbsp;&nbsp;',
+                property, value,
                 indent = '',
                 i = 0;
 
@@ -118,17 +127,21 @@ define([], function() {
                 i++;
             }
 
-            for (var property in object) {
-                var value = object[property];
-                if (typeof value === 'string') {
-                    if (this.isNumeric(value)) {
-                        str += indent + property + ': ' + value + '; </br>';
+            for (property in object) {
+                if (object.hasOwnProperty(property)) {
+                    value = object[property];
+                    if (typeof value === 'string') {
+                        if (this.isNumeric(value)) {
+                            str += indent + property + ': ' + value + '; </br>';
+                        } else {
+                            if (value.length > 7) {
+                                value = value.substring(0, 6) + ' ...';
+                            }
+                            str += indent + property + ': \'' + value + '\'; </br>';
+                        }
                     } else {
-                        if (value.length > 7) value = value.substring(0, 6) + " ...";
-                        str += indent + property + ': \'' + value + '\'; </br>';
+                        str += indent + property + ': { </br>' + indent + oneIndent + print(value, stage++) + '}';
                     }
-                } else {
-                    str += indent + p + ': { </br>' + indent + oneIndent + print(value, stage++) + '}';
                 }
             }
 
