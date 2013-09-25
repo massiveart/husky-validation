@@ -12,17 +12,19 @@ define([
     'validator/default'
 ], function(Default) {
 
-    return function($el, options) {
-        var defaults = {
-            max: 999
-        };
+    'use strict';
 
-        var result = $.extend({}, new Default($el, defaults, options, 'max'), {
-            validate: function() {
-                var val = this.$el.val();
-                return Number(val) <= this.data.max;
-            }
-        });
+    return function($el, form, options) {
+        var defaults = {
+                max: 999
+            },
+
+            result = $.extend(new Default($el, form, defaults, options, 'max'), {
+                validate: function() {
+                    var val = this.$el.val();
+                    return Number(val) <= this.data.max;
+                }
+            });
 
         result.initialize();
         return result;

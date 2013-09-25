@@ -16,13 +16,13 @@ define([
 
     return function($el, form, options) {
         var defaults = {
-                min: 0
+                maxLength: 999
             },
 
-            result = $.extend(new Default($el, form, defaults, options, 'min'), {
+            result = $.extend(new Default($el, form, defaults, options, 'max-length'), {
                 validate: function() {
                     var val = this.$el.val();
-                    return Number(val) >= this.data.min;
+                    return val.length <= this.data.maxLength;
                 }
             });
 

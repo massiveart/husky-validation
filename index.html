@@ -3,7 +3,7 @@ layout: default
 title: Husky Validation
 slug: home
 base_url: "./"
-main_js: "index.js"
+main_js: "assets/js/index.js"
 ---
 
 <div id="content">
@@ -20,69 +20,84 @@ main_js: "index.js"
 
     <h2>Example</h2>
 
-    <form id="contact-form" class="grid">
+    <p>Change language (date will be validated in the language format!)</p>
+
+    <p>
+        <select id="language">
+            <option value="de">Deutsch (dd.mm.yyy)</option>
+            <option value="en-GB">English (dd/mm/yyyy)</option>
+        </select>
+    </p>
+
+    <div class="grid">
         <div class="grid-row">
-            <div class="grid-col-4">
-                <label>FirstName [required]:</label>
-                <input type="text"
-                       class="form-element"
-                       id="firstName"
-                       name="firstName"
-                       data-validate="true"
-                       data-required="true"
-                       data-prop="firstName"/>
+            <div class="grid-col-6">
+                <form id="contact-form" class="grid">
+                    <div class="grid-row">
+                        <div class="grid-col-6">
+                            <label>FirstName [required]:</label>
+                            <input type="text"
+                                   class="form-element"
+                                   id="firstName"
+                                   name="firstName"
+                                   data-validation-required="true"
+                                   data-mapper-property="firstName"/>
+                        </div>
+                        <div class="grid-col-6">
+                            <label>LastName [minlength=6]:</label>
+                            <input type="text"
+                                   class="form-element"
+                                   id="lastName"
+                                   name="lastName"
+                                   data-validation-min-length="6"
+                                   data-mapper-property="lastName"/>
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-col-6">
+                            <label>BirthDay [type=date, trigger=keyup]:</label>
+                            <input type="text"
+                                   class="form-element"
+                                   id="birthday"
+                                   name="birthday"
+                                   data-type="date"
+                                   data-validation-trigger="keyup"
+                                   data-mapper-property="birthDay"/>
+                        </div>
+                        <div class="grid-col-6">
+                            <label>Wage<br/>[min=1000, max=1500]:</label>
+                            <input type="text"
+                                   class="form-element"
+                                   id="wage"
+                                   name="wage"
+                                   data-type="decimal"
+                                   data-validation-min="1000"
+                                   data-validation-max="1500"
+                                   data-mapper-property="wage"/>
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-col-6">
+                            <label>Phone [minlength=6, maxlength=30]:</label>
+                            <input type="text"
+                                   class="form-element"
+                                   id="phone"
+                                   name="phone"
+                                   data-validation-min-length="6"
+                                   data-validation-max-length="30"
+                                   data-mapper-property="phone"/>
+                        </div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-col-3 btn pointer align-center" id="send">Send</div>
+                    </div>
+                </form>
             </div>
-            <div class="grid-col-4">
-                <label>LastName [minlength=6]:</label>
-                <input type="text"
-                       class="form-element"
-                       id="lastName"
-                       name="lastName"
-                       data-validate="true"
-                       data-minlength="6"
-                       data-prop="lastName"/>
+            <div class="grid-col-6">
+                <p>Your Data:</p>
+
+                <div id="result">No Data</div>
             </div>
         </div>
-        <div class="grid-row">
-            <div class="grid-col-4">
-                <label>BirthDay [type=date, trigger=keyup]:</label>
-                <input type="text"
-                       class="form-element"
-                       id="birthday"
-                       name="birthday"
-                       data-validate="true"
-                       data-type="date"
-                       data-trigger="keyup"
-                       data-prop="birthDay"/>
-            </div>
-            <div class="grid-col-4">
-                <label>Wage [type=decimal, min=1000, max=1500]:</label>
-                <input type="text"
-                       class="form-element"
-                       id="wage"
-                       name="wage"
-                       data-validate="true"
-                       data-type="decimal"
-                       data-min="1000"
-                       data-max="1500"
-                       data-prop="wage"/>
-            </div>
-        </div>
-        <div class="grid-row">
-            <div class="grid-col-4">
-                <label>Phone [minlength=6, maxlength=30]:</label>
-                <input type="text"
-                       class="form-element"
-                       id="phone"
-                       name="phone"
-                       data-validate="true"
-                       data-minlength="6"
-                       data-maxlength="30"
-                       data-prop="phone"/>
-            </div>
-        </div>
-        <div class="grid-row">
-            <input type="submit" value="Send" class="btn"/>
-        </div>
-    </form>
+    </div>
 </div>
