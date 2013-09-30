@@ -53,7 +53,7 @@ module.exports = function(grunt) {
                 'validator/unique'
             ],
             out: 'dist/validation.js',
-            optimize: "uglify"
+            optimize: grunt.option('dev') ? "none" : "uglify"
         },
         getOptions = function(dev) {
             var _s = clone(requireJS);

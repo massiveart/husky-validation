@@ -8,123 +8,91 @@
  *
  */
 
-require.config({
-    paths: {
-        'validation': 'js/validation',
-        'validation-element': 'js/element',
-
-        'type/default': 'js/types/default',
-        'type/date': 'js/types/date',
-        'type/decimal': 'js/types/decimal',
-        'type/email': 'js/types/email',
-        'type/url': 'js/types/url',
-
-        'validator/default': 'js/validators/default',
-        'validator/min': 'js/validators/min',
-        'validator/max': 'js/validators/max',
-        'validator/minlength': 'js/validators/minlength',
-        'validator/maxlength': 'js/validators/maxlength',
-        'validator/required': 'js/validators/required'
-    }
-});
-
 define([
-    'validation-element'
-], function(Element) {
+    'form/util'
+], function(Util) {
 
-    return function($el, options) {
-        var defaults = {
-                submitEvent: true,          // avoid submit if not valid
-                element: {                  // defaults for element
-                    trigger: 'focusout',    // default validate trigger
-                    addclasses: true        // add error and success classes
-                }
-            },
-            elements = [],
-            valid;
+    'use strict';
 
-        var result = {
-            initialize: function() {
-                // TODO override options with data attribute
-                this.options = $.extend({}, defaults, options);
-                this.$el = $el;
+    return function(form) {
+        var valid,
 
-                // override defaults for element
-                var elementDefaults = this.options['element'];
+        // private functions
+            that = {
+                initialize: function() {
+                    that.bindValidationDomEvents.call(this);
 
-                // find to validate fields
-                this.$el.find('*[data-validate="true"]').each(function() {
-                    elements.push(new Element(this, elementDefaults));
-                });
+                    Util.debug('INIT Validation');
+                },
 
-                // set element
-                this.$el.data('validation', this);
-
-                // debug
-                console.log('validation: elements', elements);
-
-                this.bindDomEvents();
-            },
-
-            bindDomEvents: function() {
-                if (!!this.options.submitEvent) {
-                    // avoid submit if not valid
-                    this.$el.on('submit', function() {
-                        return this.validate();
-                    }.bind(this));
-                }
-            },
-
-            validate: function() {
-                var result = true;
-                // validate each element
-                $.each(elements, function(key, element) {
-                    if (!element.validate()) {
-                        result = false;
+                bindValidationDomEvents: function() {
+                    if (!!form.options.validationSubmitEvent) {
+                        // avoid submit if not valid
+                        form.$el.on('submit', function() {
+                            return form.validation.validate();
+                        }.bind(this));
                     }
-                });
+                },
 
-                valid = result;
-                return result;
-            },
-
-            isValid: function() {
-                return valid;
-            },
-
-            updateConstraint: function(selector, name, options) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $(selector).data('element').updateConstraint(name, options);
-                } else {
-                    throw 'No validation element';
+                setValid: function(state) {
+                    valid = state;
                 }
             },
 
-            deleteConstraint: function(selector, name) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $element.data('element').deleteConstraint(name);
-                } else {
-                    throw 'No validation element';
-                }
-            },
+        // define validation interface
+            result = {
+                validate: function(force) {
+                    var result = true;
+                    // validate each element
+                    $.each(form.elements, function(key, element) {
+                        if (!element.validate(force)) {
+                            result = false;
+                        }
+                    });
 
-            addConstraint: function(selector, name, options) {
-                var $element = $(selector);
-                if (!!$element.data('element')) {
-                    $element.data('element').addConstraint(name, options);
-                } else {
-                    // create a new one
-                    var element = new Element($element,  this.options['element']);
-                    // add constraint
-                    element.addConstraint(name, options);
-                    elements.push(element);
-                }
-            }
-        };
+                    that.setValid.call(this, result);
+                    Util.debug('Validation', !!result ? 'success' : 'error');
+                    return result;
+                },
 
-        result.initialize();
+                isValid: function() {
+                    return valid;
+                },
+
+                updateConstraint: function(selector, name, options) {
+                    var $element = $(selector);
+                    if (!!$element.data('element')) {
+                        $(selector).data('element').updateConstraint(name, options);
+                    } else {
+                        throw 'No validation element';
+                    }
+                },
+
+                deleteConstraint: function(selector, name) {
+                    var $element = $(selector);
+                    if (!!$element.data('element')) {
+                        $element.data('element').deleteConstraint(name);
+                    } else {
+                        throw 'No validation element';
+                    }
+                },
+
+                addConstraint: function(selector, name, options) {
+                    var $element = $(selector), element;
+                    if (!!$element.data('element')) {
+                        $element.data('element').addConstraint(name, options);
+                    } else {
+                        // create a new one
+                        element = form.addField(selector);
+                        // add constraint
+                        element.addConstraint(name, options);
+                        form.elements.push(element);
+                    }
+                }
+            };
+
+        that.initialize.call(result);
         return result;
     };
+
 });

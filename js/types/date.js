@@ -12,23 +12,45 @@ define([
     'type/default'
 ], function(Default) {
 
+    'use strict';
+
     return function($el, options) {
         var defaults = {
-            regExp: /^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$/
-        };
-
-        var result = $.extend({}, new Default($el, defaults, options, 'date'), {
-            initializeSub:function(){
-                // TODO internationalization
+                format: 'd'     // possibilities f, F, t, T, d, D
             },
 
-            validate: function() {
-                return this.data.regExp.test(this.$el.val());
-            }
-        });
+            getDate = function(value) {
+                console.log(value, new Date(value));
+                return new Date(value);
+            },
 
+            subType = {
+                validate: function() {
+                    var val = this.$el.val(), date;
+                    if (val === '') {
+                        return true;
+                    }
 
-        result.initialize();
-        return result;
+                    date = Globalize.parseDate(val, this.options.format);
+                    return date !== null;
+                },
+
+                // internationalization of view data: Globalize library
+                getViewData: function(value) {
+                    return Globalize.format(getDate(value), this.options.format);
+                },
+
+                // internationalization of model data: Globalize library
+                getModelData: function(value) {
+                    if (value !== '') {
+                        var date = Globalize.parseDate(value, this.options.format);
+                        return date.toISOString();
+                    } else {
+                        return value;
+                    }
+                }
+            };
+
+        return new Default($el, defaults, options, 'date', subType);
     };
 });
