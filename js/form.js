@@ -23,6 +23,7 @@ require.config({
         'type/email': 'js/types/email',
         'type/url': 'js/types/url',
         'type/label': 'js/types/label',
+        'type/select': 'js/types/select',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',
