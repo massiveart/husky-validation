@@ -533,7 +533,11 @@ define('form/mapper',[
 
                     // if type == array process children, else get value
                     if (type !== 'array') {
-                        return element.getValue();
+                        if (!!element) {
+                            return element.getValue();
+                        } else {
+                            return null;
+                        }
                     } else {
                         result = [];
                         $.each($el.children(), function(key1, value1) {
