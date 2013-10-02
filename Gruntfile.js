@@ -32,6 +32,7 @@ module.exports = function(grunt) {
                 'validator/maxLength': 'js/validators/max-length',
                 'validator/required': 'js/validators/required',
                 'validator/unique': 'js/validators/unique',
+                'validator/equal': 'js/validators/equal',
 
                 'globalize': 'bower_components/globalize/lib/globalize',
                 'cultures': 'bower_components/globalize/lib/cultures'
@@ -52,7 +53,8 @@ module.exports = function(grunt) {
                 'validator/minLength',
                 'validator/maxLength',
                 'validator/required',
-                'validator/unique'
+                'validator/unique',
+                'validator/equal'
             ],
             out: 'dist/validation.js',
             optimize: grunt.option('dev') ? "none" : "uglify"
