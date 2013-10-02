@@ -16,8 +16,10 @@ define([
 
     return function(form) {
 
+        var filters = {},
+
         // private functions
-        var that = {
+            that = {
                 initialize: function() {
                     Util.debug('INIT Mapper');
                 },
@@ -26,8 +28,9 @@ define([
                     // get attributes
                     var $el = $(el),
                         type = $el.data('type'),
+                        property = $el.data('mapper-property'),
                         element = $el.data('element'),
-                        result;
+                        result, item;
 
                     // if type == array process children, else get value
                     if (type !== 'array') {
@@ -38,8 +41,11 @@ define([
                         }
                     } else {
                         result = [];
-                        $.each($el.children(), function(key1, value1) {
-                            result.push(form.mapper.getData($(value1)));
+                        $.each($el.children(), function(key, value) {
+                            item = form.mapper.getData($(value));
+                            if (!filters[property] || (!!filters[property] && filters[property](item))) {
+                                result.push(item);
+                            }
                         });
                         return result;
                     }
@@ -151,7 +157,16 @@ define([
                     }
 
                     return data;
+                },
+
+                addArrayFilter: function(name, callback) {
+                    filters[name] = callback;
+                },
+
+                removeArrayFilter: function(name) {
+                    delete filters[name];
                 }
+
             };
 
         that.initialize.call(result);

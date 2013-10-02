@@ -33,6 +33,7 @@ define(function() {
 
             update: function() {
                 // do nothing
+                return this.validate();
             },
 
             updateConstraint: function(options) {

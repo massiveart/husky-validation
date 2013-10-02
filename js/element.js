@@ -132,7 +132,10 @@ define(['form/util'], function(Util) {
                 },
 
                 hasConstraints: function() {
-                    return Object.keys(validators).length > 0 || (type !== null && type.needsValidation());
+                    var typeConstraint = (type !== null && type.needsValidation()),
+                        validatorsConstraint = Object.keys(validators).length > 0;
+
+                    return validatorsConstraint || typeConstraint;
                 },
 
                 needsValidation: function() {
@@ -166,16 +169,53 @@ define(['form/util'], function(Util) {
                 },
 
                 validateCallback: function(validatorCallback) {
+
+                }
+            },
+
+            result = {
+                validate: function(force) {
+                    // only if value changed or force is set
+                    if (force || that.needsValidation.call(this)) {
+                        if (!that.hasConstraints.call(this)) {
+                            // delete state
+                            //that.reset.call(this);
+                            return true;
+                        }
+
+                        var result = true;
+                        // check each validator
+                        $.each(validators, function(key, validator) {
+                            if (!validator.validate(force)) {
+                                result = false;
+                                // TODO Messages
+                            }
+                        });
+
+                        // check type
+                        if (type !== null && !type.validate()) {
+                            result = false;
+                        }
+
+                        if (!result) {
+                            Util.debug('Field validate', !!result ? 'true' : 'false', this.$el);
+                        }
+                        that.setValid.call(this, result);
+                    }
+                    return this.isValid();
+                },
+
+                update: function() {
                     if (!that.hasConstraints.call(this)) {
                         // delete state
-                        that.reset.call(this);
-                        return;
+                        //that.reset.call(this);
+                        return true;
                     }
 
                     var result = true;
                     // check each validator
                     $.each(validators, function(key, validator) {
-                        if (!validatorCallback(validator)) {
+                        if (!validator.update()) {
                             result = false;
                             // TODO Messages
                         }
@@ -186,25 +226,12 @@ define(['form/util'], function(Util) {
                         result = false;
                     }
 
-                    that.setValid.call(this, result);
-                }
-            },
-
-            result = {
-                validate: function(force) {
-                    // only if value changed or force is set
-                    if (force || that.needsValidation.call(this)) {
-                        that.validateCallback.call(this, function(validator){
-                            return validator.validate();
-                        }.bind(this));
+                    if (!result) {
+                        Util.debug('Field validate', !!result ? 'true' : 'false', this.$el);
                     }
-                    return this.isValid();
-                },
+                    that.setValid.call(this, result);
 
-                update: function() {
-                    that.validateCallback.call(this, function(validator){
-                        return validator.update();
-                    }.bind(this));
+                    return result;
                 },
 
                 isValid: function() {

@@ -9,8 +9,9 @@
  */
 
 define([
-    'validator/default'
-], function(Default) {
+    'validator/default',
+    'form/util'
+], function(Default, Util) {
 
     'use strict';
 
@@ -25,8 +26,7 @@ define([
 
         // is the element related
             isElementRelated = function(element, group) {
-                var constraint = element.getConstraint('unique');
-                return relatedElements.indexOf(element) && !!constraint && constraint.data.unique === group;
+                return relatedElements.indexOf(element) && !!element.options.validationUnique && element.options.validationUnique === group;
             },
 
         // validate all related element
@@ -60,9 +60,7 @@ define([
                     // init related elements
                     element.initialized.then(function() {
                         $.each(form.elements, function(key, element) {
-                            if (element.$el != this.$el && isElementRelated(element, this.data.unique)) {
-                                relatedElements.push(element);
-                            }
+                            this.fieldAdded(element);
                         }.bind(this));
                     }.bind(this));
                 },
@@ -92,12 +90,14 @@ define([
 
                 fieldAdded: function(element) {
                     if (element.$el != this.$el && isElementRelated(element, this.data.unique)) {
+                        Util.debug('field added', this.$el);
                         relatedElements.push(element);
                     }
                 },
 
                 fieldRemoved: function(element) {
-                    relatedElements.splice(relatedElements.indexOf(element), 1);
+                    Util.debug('field removed', this.$el);
+                    relatedElements = relatedElements.splice(relatedElements.indexOf(element), 1);
                 }
             });
 
