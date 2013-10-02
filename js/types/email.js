@@ -30,7 +30,7 @@ define([
 
                 needsValidation: function() {
                     var val = this.$el.val();
-                    return val === '';
+                    return val !== '';
                 }
             };
 
