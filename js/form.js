@@ -108,6 +108,14 @@ define([
                         options = Util.parseData($element, '', this.options),
                         element = new Element($element, this, options);
 
+                    element.initialized.then(function() {
+                        // say everybody I have a new field
+                        // FIXME better solution?
+                        $.each(this.elements, function(key, element) {
+                            element.fieldAdded(element);
+                        });
+                    }.bind(this));
+
                     this.elements.push(element);
                     Util.debug('Element created', options);
                     return element;
@@ -116,6 +124,12 @@ define([
                 removeField: function(selector) {
                     var $element = $(selector),
                         element = $element.data('element');
+
+                    // say everybody I have a lost field
+                    // FIXME better solution?
+                    $.each(this.elements, function(key, element) {
+                        element.fieldRemoved(element);
+                    });
 
                     this.elements.splice(this.elements.indexOf(element), 1);
                 }

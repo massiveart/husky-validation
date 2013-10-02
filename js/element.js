@@ -163,6 +163,30 @@ define(['form/util'], function(Util) {
                             $element.addClass(this.options.validationErrorClass);
                         }
                     }
+                },
+
+                validateCallback: function(validatorCallback) {
+                    if (!that.hasConstraints.call(this)) {
+                        // delete state
+                        that.reset.call(this);
+                        return;
+                    }
+
+                    var result = true;
+                    // check each validator
+                    $.each(validators, function(key, validator) {
+                        if (!validatorCallback(validator)) {
+                            result = false;
+                            // TODO Messages
+                        }
+                    });
+
+                    // check type
+                    if (type !== null && !type.validate()) {
+                        result = false;
+                    }
+
+                    that.setValid.call(this, result);
                 }
             },
 
@@ -170,29 +194,17 @@ define(['form/util'], function(Util) {
                 validate: function(force) {
                     // only if value changed or force is set
                     if (force || that.needsValidation.call(this)) {
-                        if (!that.hasConstraints.call(this)) {
-                            // delete state
-                            that.reset.call(this);
-                            return true;
-                        }
-
-                        var result = true;
-                        // check each validator
-                        $.each(validators, function(key, validator) {
-                            if (!validator.validate()) {
-                                result = false;
-                                // TODO Messages
-                            }
-                        });
-
-                        // check type
-                        if (type !== null && !type.validate()) {
-                            result = false;
-                        }
-
-                        that.setValid.call(this, result);
+                        that.validateCallback.call(this, function(validator){
+                            return validator.validate();
+                        }.bind(this));
                     }
                     return this.isValid();
+                },
+
+                update: function() {
+                    that.validateCallback.call(this, function(validator){
+                        return validator.update();
+                    }.bind(this));
                 },
 
                 isValid: function() {
@@ -236,6 +248,20 @@ define(['form/util'], function(Util) {
                         return false;
                     }
                     return validators[name];
+                },
+
+                fieldAdded: function(element) {
+                    $.each(validators, function(key, validator) {
+                        // FIXME better solution? perhaps only to interested validators?
+                        validator.fieldAdded(element);
+                    });
+                },
+
+                fieldRemoved: function(element) {
+                    $.each(validators, function(key, validator) {
+                        // FIXME better solution? perhaps only to interested validators?
+                        validator.fieldRemoved(element);
+                    });
                 },
 
                 setValue: function(value) {

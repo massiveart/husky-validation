@@ -16,22 +16,23 @@ define([
 
     return function($el, form, element, options) {
         var defaults = {
-                group: null
+                equal: null
             },
 
-            // elements with same group name
+        // elements with same group name
             relatedElements = [],
 
-            // is the element related
-            isElementRelated = function(element) {
-                return element.getConstraint(this.name).options.group === this.options.group;
+        // is the element related
+            isElementRelated = function(element, group) {
+                var constraint = element.getConstraint('equal');
+                return !!constraint && constraint.data.equal === group;
             },
 
-            // validate all related element
+        // validate all related element
             validateElements = function(val) {
                 var result = true;
                 $.each(relatedElements, function(key, element) {
-                    if (validateElement(val, element)) {
+                    if (!validateElement(val, element)) {
                         result = false;
                         return false;
                     }
@@ -40,29 +41,62 @@ define([
                 return result;
             },
 
-            // validate one element
+        // validate one element
             validateElement = function(val, element) {
                 return val === element.getValue();
+            },
+
+        // update all related elements
+            updateRelatedElements = function() {
+                $.each(relatedElements, function(key, element) {
+                    element.update();
+                });
             },
 
             result = $.extend(new Default($el, form, defaults, options, 'equal'), {
 
                 initializeSub: function() {
                     // init related elements
-                    $.each(form.elements, function(key, element) {
-                        if (isElementRelated(element)) {
-                            relatedElements.push(element);
-                        }
-                    });
+                    element.initialized.then(function() {
+                        $.each(form.elements, function(key, element) {
+                            if (isElementRelated(element, this.data.equal)) {
+                                relatedElements.push(element);
+                            }
+                        }.bind(this));
+                    }.bind(this));
                 },
 
                 validate: function() {
-                    var val = this.$el.val();
-                    if (!!this.options.group) {
-                        return validateElements(val);
+                    var val = this.$el.val(),
+                        result;
+                    if (!!this.data.equal) {
+                        result = validateElements(val);
+                        updateRelatedElements();
+                        return result;
                     } else {
                         throw 'No option group set';
                     }
+                },
+
+                update: function() {
+                    var val = this.$el.val(),
+                        result;
+                    if (!!this.data.equal) {
+                        result = validateElements(val);
+                        return result;
+                    } else {
+                        throw 'No option group set';
+                    }
+                },
+
+                fieldAdded: function(element) {
+                    if (isElementRelated(element, this.data.equal)) {
+                        relatedElements.push(element);
+                    }
+                },
+
+                fieldRemoved: function(element) {
+                    relatedElements.splice(relatedElements.indexOf(element), 1);
                 }
             });
 
