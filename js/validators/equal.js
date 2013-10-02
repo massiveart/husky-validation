@@ -19,12 +19,15 @@ define([
                 group: null
             },
 
+            // elements with same group name
             relatedElements = [],
 
+            // is the element related
             isElementRelated = function(element) {
                 return element.getConstraint(this.name).options.group === this.options.group;
             },
 
+            // validate all related element
             validateElements = function(val) {
                 var result = true;
                 $.each(relatedElements, function(key, element) {
@@ -37,6 +40,7 @@ define([
                 return result;
             },
 
+            // validate one element
             validateElement = function(val, element) {
                 return val === element.getValue();
             },
@@ -44,6 +48,7 @@ define([
             result = $.extend(new Default($el, form, defaults, options, 'equal'), {
 
                 initializeSub: function() {
+                    // init related elements
                     $.each(form.elements, function(key, element) {
                         if (isElementRelated(element)) {
                             relatedElements.push(element);
