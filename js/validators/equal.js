@@ -25,7 +25,7 @@ define([
         // is the element related
             isElementRelated = function(element, group) {
                 var constraint = element.getConstraint('equal');
-                return !!constraint && constraint.data.equal === group;
+                return relatedElements.indexOf(element) && !!constraint && constraint.data.equal === group;
             },
 
         // validate all related element
@@ -59,7 +59,7 @@ define([
                     // init related elements
                     element.initialized.then(function() {
                         $.each(form.elements, function(key, element) {
-                            if (isElementRelated(element, this.data.equal)) {
+                            if (element.$el != this.$el && isElementRelated(element, this.data.equal)) {
                                 relatedElements.push(element);
                             }
                         }.bind(this));
@@ -90,7 +90,7 @@ define([
                 },
 
                 fieldAdded: function(element) {
-                    if (isElementRelated(element, this.data.equal)) {
+                    if (element.$el != this.$el && isElementRelated(element, this.data.equal)) {
                         relatedElements.push(element);
                     }
                 },

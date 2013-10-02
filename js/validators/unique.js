@@ -20,27 +20,84 @@ define([
                 validationUnique: null
             },
 
+        // elements with same group name
+            relatedElements = [],
+
+        // is the element related
+            isElementRelated = function(element, group) {
+                var constraint = element.getConstraint('unique');
+                return relatedElements.indexOf(element) && !!constraint && constraint.data.unique === group;
+            },
+
+        // validate all related element
+            validateElements = function(val) {
+                var result = true;
+                $.each(relatedElements, function(key, element) {
+                    if (!validateElement(val, element)) {
+                        result = false;
+                        return false;
+                    }
+                    return true;
+                });
+                return result;
+            },
+
+        // validate one element
+            validateElement = function(val, element) {
+                return val !== element.getValue();
+            },
+
+        // update all related elements
+            updateRelatedElements = function() {
+                $.each(relatedElements, function(key, element) {
+                    element.update();
+                });
+            },
+
             result = $.extend({}, new Default($el, form, defaults, options, 'unique'), {
-                validate: function() {
 
-                    var uniqueValue = $($el).val(),
-                        uniqueGroup = $el.data('validation-unique'),
-                        counter = 0;
-
-                    $.each(form.elements, function(index, element) {
-                        var group = element.options.validationUnique,
-                            value = element.getValue();
-
-                        if (uniqueGroup === group) {
-                            if (uniqueValue === value) {
-                                counter++;
+                initializeSub: function() {
+                    // init related elements
+                    element.initialized.then(function() {
+                        $.each(form.elements, function(key, element) {
+                            if (element.$el != this.$el && isElementRelated(element, this.data.unique)) {
+                                relatedElements.push(element);
                             }
-                        }
+                        }.bind(this));
+                    }.bind(this));
+                },
 
-                        return counter <= 1;
-                    });
+                validate: function() {
+                    var val = this.$el.val(),
+                        result;
+                    if (!!this.data.unique) {
+                        result = validateElements(val);
+                        updateRelatedElements();
+                        return result;
+                    } else {
+                        throw 'No option group set';
+                    }
+                },
 
-                    return counter <= 1;
+                update: function() {
+                    var val = this.$el.val(),
+                        result;
+                    if (!!this.data.unique) {
+                        result = validateElements(val);
+                        return result;
+                    } else {
+                        throw 'No option group set';
+                    }
+                },
+
+                fieldAdded: function(element) {
+                    if (element.$el != this.$el && isElementRelated(element, this.data.unique)) {
+                        relatedElements.push(element);
+                    }
+                },
+
+                fieldRemoved: function(element) {
+                    relatedElements.splice(relatedElements.indexOf(element), 1);
                 }
             });
 
