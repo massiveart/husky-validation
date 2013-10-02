@@ -14,7 +14,7 @@ define([
 
     'use strict';
 
-    return function($el, form, options) {
+    return function($el, form, element, options) {
         var defaults = { },
 
             result = $.extend(new Default($el, form, defaults, options, 'required'), {

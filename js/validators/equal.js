@@ -14,17 +14,47 @@ define([
 
     'use strict';
 
-    return function($el, form, options) {
+    return function($el, form, element, options) {
         var defaults = {
                 group: null
             },
 
+            relatedElements = [],
+
+            isElementRelated = function(element) {
+                return element.getConstraint(this.name).options.group === this.options.group;
+            },
+
+            validateElements = function(val) {
+                var result = true;
+                $.each(relatedElements, function(key, element) {
+                    if (validateElement(val, element)) {
+                        result = false;
+                        return false;
+                    }
+                    return true;
+                });
+                return result;
+            },
+
+            validateElement = function(val, element) {
+                return val === element.getValue();
+            },
+
             result = $.extend(new Default($el, form, defaults, options, 'equal'), {
+
+                initializeSub: function() {
+                    $.each(form.elements, function(key, element) {
+                        if (isElementRelated(element)) {
+                            relatedElements.push(element);
+                        }
+                    });
+                },
+
                 validate: function() {
                     var val = this.$el.val();
                     if (!!this.options.group) {
-                        // TODO validation
-                        return true;
+                        return validateElements(val);
                     } else {
                         throw 'No option group set';
                     }

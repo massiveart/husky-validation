@@ -110,7 +110,7 @@ define(['form/util'], function(Util) {
                             this.requireCounter++;
                             require(['validator/' + name], function(Validator) {
                                 var options = Util.buildOptions(this.options, 'validation', name);
-                                validators[name] = new Validator(this.$el, form, options);
+                                validators[name] = new Validator(this.$el, form, this, options);
                                 Util.debug('Element Validator', key, options);
                                 that.resolveInitialization.call(this);
                             }.bind(this));
@@ -220,11 +220,22 @@ define(['form/util'], function(Util) {
                 addConstraint: function(name, options) {
                     if ($.inArray(name, Object.keys(validators)) === -1) {
                         require(['validator/' + name], function(Validator) {
-                            validators[name] = new Validator(this.$el, form, options);
+                            validators[name] = new Validator(this.$el, form, this, options);
                         }.bind(this));
                     } else {
                         throw 'Constraint with name: ' + name + ' already exists';
                     }
+                },
+
+                hasConstraint: function(name) {
+                    return !!validators[name];
+                },
+
+                getConstraint: function(name) {
+                    if (!this.hasConstraint(name)) {
+                        return false;
+                    }
+                    return validators[name];
                 },
 
                 setValue: function(value) {

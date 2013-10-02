@@ -695,7 +695,8 @@ require.config({
         'validator/minLength': 'js/validators/min-length',
         'validator/maxLength': 'js/validators/max-length',
         'validator/required': 'js/validators/required',
-        'validator/unique': 'js/validators/unique'
+        'validator/unique': 'js/validators/unique',
+        'validator/equal': 'js/validators/equal'
     }
 });
 
@@ -710,7 +711,6 @@ define('form',[
 
     return function(el, options) {
         var defaults = {
-                //language: 'de',                // language
                 debug: false,                     // debug on/off
                 validation: true,                 // validation on/off
                 validationTrigger: 'focusout',    // default validate trigger
@@ -725,11 +725,6 @@ define('form',[
                 initialize: function() {
                     this.$el = $(el);
                     this.options = $.extend(defaults, this.$el.data(), options);
-
-                    // set culture
-                    //require(['cultures/globalize.culture.' + this.options.language], function() {
-                    //    Globalize.culture(this.options.language);
-                    //}.bind(this));
 
                     // enable / disable debug
                     Util.debugEnabled = this.options.debug;
@@ -1021,6 +1016,11 @@ define('type/email',[
                     }
 
                     return this.options.regExp.test(this.$el.val());
+                },
+
+                needsValidation: function() {
+                    var val = this.$el.val();
+                    return val === '';
                 }
             };
 
@@ -1435,6 +1435,45 @@ define('validator/unique',[
                     });
 
                     return counter <= 1;
+                }
+            });
+
+        result.initialize();
+        return result;
+    };
+
+});
+
+/*
+ * This file is part of the Husky Validation.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ *
+ */
+
+define('validator/equal',[
+    'validator/default'
+], function(Default) {
+
+    
+
+    return function($el, form, options) {
+        var defaults = {
+                group: null
+            },
+
+            result = $.extend(new Default($el, form, defaults, options, 'equal'), {
+                validate: function() {
+                    var val = this.$el.val();
+                    if (!!this.options.group) {
+                        // TODO validation
+                        return true;
+                    } else {
+                        throw 'No option group set';
+                    }
                 }
             });
 
