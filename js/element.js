@@ -99,6 +99,15 @@ define(['form/util'], function(Util) {
                 },
 
                 initValidators: function() {
+                    var addFunction = function(name, options) {
+                        this.requireCounter++;
+                        require(['validator/' + name], function(Validator) {
+                            validators[name] = new Validator(this.$el, form, this, options);
+                            Util.debug('Element Validator', name, options);
+                            that.resolveInitialization.call(this);
+                        }.bind(this));
+                    }.bind(this);
+
                     // create validators for each of the constraints
                     $.each(this.options, function(key, val) {
                         // val not false
@@ -106,16 +115,26 @@ define(['form/util'], function(Util) {
                         // and key starts with validation
                         if (!!val && $.inArray(key, ignoredOptions) === -1 && Util.startsWith(key, 'validation')) {
                             // filter validation prefix
-                            var name = Util.lcFirst(key.replace('validation', ''));
-                            this.requireCounter++;
-                            require(['validator/' + name], function(Validator) {
-                                var options = Util.buildOptions(this.options, 'validation', name);
-                                validators[name] = new Validator(this.$el, form, this, options);
-                                Util.debug('Element Validator', key, options);
-                                that.resolveInitialization.call(this);
-                            }.bind(this));
+                            var name = Util.lcFirst(key.replace('validation', '')),
+                                options = Util.buildOptions(this.options, 'validation', name);
+
+                            addFunction(name, options);
                         }
                     }.bind(this));
+
+                    // HTML 5 attributes
+                    // required
+                    if (this.$el.attr('required') === 'required' && !validators['required']) {
+                        addFunction('required', {required: true});
+                    }
+                    // min
+                    if (!!this.$el.attr('min') && !validators['min']) {
+                        addFunction('min', {min: parseInt(this.$el.attr('min'), 10)});
+                    }
+                    // max
+                    if (!!this.$el.attr('max') && !validators['max']) {
+                        addFunction('max', {max: parseInt(this.$el.attr('max'), 10)});
+                    }
                 },
 
                 initType: function() {
@@ -186,7 +205,7 @@ define(['form/util'], function(Util) {
                         var result = true;
                         // check each validator
                         $.each(validators, function(key, validator) {
-                            if (!validator.validate(force)) {
+                            if (!validator.validate()) {
                                 result = false;
                                 // TODO Messages
                             }
