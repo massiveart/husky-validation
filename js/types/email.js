@@ -26,6 +26,11 @@ define([
                     }
 
                     return this.options.regExp.test(this.$el.val());
+                },
+
+                needsValidation: function() {
+                    var val = this.$el.val();
+                    return val === '';
                 }
             };
 
