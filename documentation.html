@@ -145,7 +145,10 @@ define(['js/form'], function(Form) {
         <tbody>
             <tr>
                 <td>type</td>
-                <td>data-type="string"</td>
+                <td>
+                    data-type="date"<br/>
+                    HTML5-Type type="date"
+                </td>
                 <td>'string'</td>
                 <td>Type of the Element</td>
             </tr>
@@ -192,17 +195,26 @@ define(['js/form'], function(Form) {
         <tbody>
             <tr>
                 <td>Required</td>
-                <td>data-validation-required="true"</td>
+                <td>
+                    data-validation-required="true"<br/>
+                    HTML5-Attribute required="required"
+                </td>
                 <td>Validate that a required field has been filled.</td>
             </tr>
             <tr>
                 <td>Max</td>
-                <td>data-validation-max="100"</td>
+                <td>
+                    data-validation-max="100"<br/>
+                    HTML5-Attribute max="100"
+                </td>
                 <td>Validates that a given number is less than some maximum number.</td>
             </tr>
             <tr>
                 <td>Min</td>
-                <td>data-validation-min="20"</td>
+                <td>
+                    data-validation-min="20"<br/>
+                    HTML5-Attribute min="100"
+                </td>
                 <td>Validates that a given number is greater than some minimum number.</td>
             </tr>
             <tr>
@@ -218,7 +230,12 @@ define(['js/form'], function(Form) {
             <tr>
                 <td>Unique</td>
                 <td>data-unique="groupname"</td>
-                <td>Validates wether a value is unique in a specific group of values or not.</td>
+                <td>Validates whether a value is unique in a specific group of values or not.</td>
+            </tr>
+            <tr>
+                <td>Equal</td>
+                <td>data-equal="groupname"</td>
+                <td>Validates whether all values in the group are equal.</td>
             </tr>
         </tbody>
     </table>
@@ -369,6 +386,7 @@ define(['js/form'], function(Form) {
                 <td>Get data to form, the result will be filled with the data of the form</td>
                 <td>form.mapper.getData()</td>
             </tr>
+            <!-- TODO addArrayFilter, removeArrayFilter -->
         </tbody>
     </table>
 
