@@ -36,6 +36,11 @@ define([
                     return date !== null;
                 },
 
+                needsValidation: function() {
+                    var val = this.$el.val();
+                    return val !== '';
+                },
+
                 // internationalization of view data: Globalize library
                 getViewData: function(value) {
                     return Globalize.format(getDate(value), this.options.format);

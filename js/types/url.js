@@ -29,6 +29,11 @@ define([
                         val = new RegExp('(https?|s?ftp|git)', 'i').test(val) ? val : 'http://' + val;
                     }
                     return this.options.regExp.test(val);
+                },
+
+                needsValidation: function() {
+                    var val = this.$el.val();
+                    return val !== '';
                 }
             };
 
