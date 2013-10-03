@@ -227,15 +227,22 @@ define(['js/form'], function(Form) {
             </tr>
             <tr>
                 <td>Unique</td>
-                <td>data-unique="groupname"</td>
+                <td>data-validation-unique="groupname"</td>
                 <td>Validates whether a value is unique in a specific group of values or not.</td>
             </tr>
             <tr>
                 <td>Equal</td>
-                <td>data-equal="groupname"</td>
+                <td>data-validation-equal="groupname"</td>
                 <td>Validates whether all values in the group are equal.</td>
             </tr>
-            <!-- TODO regex -->
+            <tr>
+                <td>Regex</td>
+                <td>
+                    data-validation-regex="/^[0-9 +-]*$/gi"<br/>
+                    HTML5-Attribute pattern="/^[0-9 +-]*$/gi"
+                </td>
+                <td>Validates the value against pattern.</td>
+            </tr>
         </tbody>
     </table>
 
@@ -251,16 +258,27 @@ define(['js/form'], function(Form) {
         <tbody>
             <tr>
                 <td>Date</td>
-                <td>data-type="date"</td>
-                <td>Validates that a value is a valid ISO date.</td>
+                <td>
+                    data-type="date"<br/>
+                    HTML5-Type type="date"<br/>
+                    HTML5-Type type="time"<br/>
+                    HTML5-Type type="datetime"
+                </td>
+                <td>Validates that a value is a valid ISO date/time/datetime.</td>
             </tr>
             <tr>
-                <td>Decimal</td>
+                <td>
+                    Decimal<br/>
+                    HTML5-Type type="number"
+                </td>
                 <td>data-type="decimal"</td>
                 <td>Validates that a value is a valid number.</td>
             </tr>
             <tr>
-                <td>Email</td>
+                <td>
+                    Email<br/>
+                    HTML5-Type type="email"
+                </td>
                 <td>data-type="email"</td>
                 <td>Validates that a value is a valid email address.</td>
             </tr>
@@ -268,7 +286,8 @@ define(['js/form'], function(Form) {
                 <td>Url</td>
                 <td>
                     data-type="url"<br>
-                    data-url-strict="true"
+                    data-type-strict="true"<br/>
+                    HTML5-Type type="url"
                 </td>
                 <td>
                     Strict=false: Validates that a value is a valid url.<br>
@@ -327,7 +346,13 @@ define(['js/form'], function(Form) {
                 <td>Remove a field from Form</td>
                 <td>form.removeField('#date-field')</td>
             </tr>
-            </tbody>
+            <tr>
+                <td>Initialized</td>
+                <td>Deferred</td>
+                <td>Get Deferred Object <a href="http://api.jquery.com/category/deferred-object/">get Information here!</a></td>
+                <td>form.initialized.then(function(){})</td>
+            </tr>
+        </tbody>
         </table>
 
     <h3>Validation</h3>
@@ -349,7 +374,7 @@ define(['js/form'], function(Form) {
             </tr>
             <tr>
                 <td>Update Constraint</td>
-                <td></td>
+                <td>boolean</td>
                 <td>Update a Constraint from a field</td>
                 <td>form.validation.updateConstraint('#field', 'minlength', {minlength: 6})</td>
             </tr>
@@ -359,7 +384,6 @@ define(['js/form'], function(Form) {
                 <td>Delete a Constraint from a field</td>
                 <td>form.validation.updateConstraint('#field', 'minlength')</td>
             </tr>
-            <!-- TODO initialized -->
         </tbody>
     </table>
 
@@ -386,7 +410,18 @@ define(['js/form'], function(Form) {
                 <td>Get data to form, the result will be filled with the data of the form</td>
                 <td>form.mapper.getData()</td>
             </tr>
-            <!-- TODO addArrayFilter, removeArrayFilter -->
+            <tr>
+                <td>Add Filter for array</td>
+                <td></td>
+                <td>Filter an array when getData is called</td>
+                <td>form.mapper.addArrayFilter('phones', function(item){ return item.phone != ''; })</td>
+            </tr>
+            <tr>
+                <td>Remove Filter for array</td>
+                <td></td>
+                <td>Remove the filter</td>
+                <td>form.mapper.removeArrayFilter('phones')</td>
+            </tr>
         </tbody>
     </table>
 
@@ -411,28 +446,44 @@ define(['js/form'], function(Form) {
                 <td>Validate</td>
                 <td>Boolean</td>
                 <td>Revalidate Field</td>
-                <td>element.validate()</td>
+                <td>element.validate([force])</td>
             </tr>
-            <!-- TODO update -->
+            <tr>
+                <td>Update</td>
+                <td>Boolean</td>
+                <td>Update Field</td>
+                <td>element.update()</td>
+            </tr>
             <tr>
                 <td>Add Constraint</td>
                 <td></td>
                 <td>Add a Constraint to a field</td>
-                <td>element.addConstraint('minlength', {minlength: 6})</td>
+                <td>element.addConstraint('minLength', {minLength: 6})</td>
             </tr>
             <tr>
                 <td>Update Constraint</td>
                 <td></td>
                 <td>Update a Constraint from a field</td>
-                <td>element.updateConstraint('minlength', {minlength: 6})</td>
+                <td>element.updateConstraint('minLength', {minLength: 6})</td>
             </tr>
             <tr>
                 <td>Delete Constraint</td>
                 <td></td>
                 <td>Delete a Constraint from a field</td>
-                <td>element.updateConstraint('minlength')</td>
+                <td>element.updateConstraint('minLength')</td>
             </tr>
-            <!-- TODO hasConstraint, getConstraint -->
+            <tr>
+                <td>Has Constraint</td>
+                <td></td>
+                <td>Has the field a Constraint with given name</td>
+                <td>element.hasConstraint('minLength')</td>
+            </tr>
+            <tr>
+                <td>Get Constraint</td>
+                <td>Validator|false</td>
+                <td>Get the Constraint with given name</td>
+                <td>element.getConstraint('minLength')</td>
+            </tr>
             <tr>
                 <td>Set Value</td>
                 <td></td>
@@ -445,7 +496,12 @@ define(['js/form'], function(Form) {
                 <td>Get value</td>
                 <td>element.getValue()</td>
             </tr>
-            <!-- TODO initialized -->
+            <tr>
+                <td>Initialized</td>
+                <td>Deferred</td>
+                <td>Get Deferred Object <a href="http://api.jquery.com/category/deferred-object/">get Information here!</a></td>
+                <td>element.initialized.then(function(){})</td>
+            </tr>
         </tbody>
     </table>
 

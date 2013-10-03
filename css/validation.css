@@ -3,7 +3,7 @@
 }
 
 .husky-auto-complete-success .husky-validate:not(label), .husky-validate-success .husky-validate:not(label) {
-    order-color: #356635;
+    border-color: #356635;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #7aba7b;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #7aba7b;
 }
