@@ -16,13 +16,15 @@ define([
 
     return function($el, form, element, options) {
         var defaults = {
-                regex: "/\w*/gi"
+                regex: /\w*/
             },
 
             result = $.extend(new Default($el, form, defaults, options, 'regex'), {
                 validate: function() {
-                    var val = this.$el.val(),
-                        regex = new RegExp(this.data.regex);
+                    var flags = this.data.regex.replace(/.*\/([gimy]*)$/, '$1'),
+                        pattern = this.data.regex.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1'),
+                        regex = new RegExp(pattern, flags),
+                        val = this.$el.val();
 
                     if (val === '') {
                         return true;
