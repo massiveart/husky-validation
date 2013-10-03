@@ -135,6 +135,10 @@ define(['form/util'], function(Util) {
                     if (!!this.$el.attr('max') && !validators['max']) {
                         addFunction('max', {max: parseInt(this.$el.attr('max'), 10)});
                     }
+                    // regex
+                    if (!!this.$el.attr('pattern') && !validators['pattern']) {
+                        addFunction('regex', {regex: this.$el.attr('pattern')});
+                    }
                 },
 
                 initType: function() {
