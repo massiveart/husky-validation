@@ -9,7 +9,7 @@
             #content {
                 margin-left: auto;
                 margin-right: auto;
-                width:800px;
+                width: 800px;
                 margin-top: 100px;
             }
         </style>
@@ -20,25 +20,27 @@
             <form id="contact-form" class="grid" data-debug="true" data-language="fr">
                 <div class="grid-row">
 
-                    <div class="grid-col-6">
-                        <label>FirstName 1 [equal]:</label>
-                        <input type="text"
+                    <div class="grid-col-4">
+                        <label>Date:</label>
+                        <input type="date"
                                class="form-element"
-                               id="firstName"
-                               name="firstName"
-                               data-validation-equal="name"/>
+                               id="date"/>
                     </div>
 
-                    <div class="grid-col-6">
-                        <label>FirstName 2 [equal]:</label>
-                        <input type="text"
+                    <div class="grid-col-4">
+                        <label>Time:</label>
+                        <input type="time"
                                class="form-element"
-                               id="firstName2"
-                               name="firstName2"
-                               data-validation-equal="name"/>
+                               id="time"/>
+                    </div>
+
+                    <div class="grid-col-4">
+                        <label>DateTime:</label>
+                        <input type="datetime"
+                               class="form-element"
+                               id="datetime"/>
                     </div>
                 </div>
-
             </form>
         </div>
 

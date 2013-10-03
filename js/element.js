@@ -15,7 +15,7 @@ define(['form/util'], function(Util) {
     return function(el, form, options) {
 
         var defaults = {
-                type: 'string',
+                type: null,
                 validationTrigger: 'focusout',                     // default validate trigger
                 validationAddClasses: true,                        // add error and success classes
                 validationAddClassesParent: true,                  // add classes to parent element
@@ -138,20 +138,54 @@ define(['form/util'], function(Util) {
                 },
 
                 initType: function() {
+                    var addFunction = function(typeName, options) {
+                            this.requireCounter++;
+                            require(['type/' + typeName], function(Type) {
+                                type = new Type(this.$el, options);
+                                Util.debug('Element Type', typeName, options);
+                                that.resolveInitialization.call(this);
+                            }.bind(this));
+                        }.bind(this),
+                        options = Util.buildOptions(this.options, 'type'),
+                        typeName, tmpType;
+
+                    // FIXME date HTML5 type browser language format
+
                     // if type exists
                     if (!!this.options.type) {
-                        this.requireCounter++;
-                        require(['type/' + this.options.type], function(Type) {
-                            var options = Util.buildOptions(this.options, 'type');
-                            type = new Type(this.$el, options);
-                            Util.debug('Element Type', type, options);
-                            that.resolveInitialization.call(this);
-                        }.bind(this));
+                        typeName = this.options.type;
+                    } else if (!!this.$el.attr('type')) {
+                        // HTML5 type attribute
+                        tmpType = this.$el.attr('type');
+                        if (tmpType === 'email') {
+                            typeName = 'email';
+                        } else if (tmpType === 'url') {
+                            typeName = 'url';
+                        } else if (tmpType === 'number') {
+                            typeName = 'decimal';
+                        } else if (tmpType === 'date') {
+                            typeName = 'date';
+                            if (!!options.format) {
+                                options.format = 'd';
+                            }
+                        } else if (tmpType === 'time') {
+                            typeName = 'date';
+                            if (!!options.format) {
+                                options.format = 't';
+                            }
+                        } else if (tmpType === 'datetime') {
+                            typeName = 'date';
+                        } else {
+                            typeName = 'string';
+                        }
+                    } else {
+                        typeName = 'string';
                     }
+                    addFunction(typeName, options);
                 },
 
                 hasConstraints: function() {
-                    var typeConstraint = (type !== null && type.needsValidation()),
+                    var typeConstraint = (!!type && type.needsValidation()),
                         validatorsConstraint = Object.keys(validators).length > 0;
 
                     return validatorsConstraint || typeConstraint;
