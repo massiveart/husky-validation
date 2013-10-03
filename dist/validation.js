@@ -294,6 +294,10 @@ define('form/element',['form/util'], function(Util) {
                     if (!!this.$el.attr('max') && !validators['max']) {
                         addFunction('max', {max: parseInt(this.$el.attr('max'), 10)});
                     }
+                    // regex
+                    if (!!this.$el.attr('pattern') && !validators['pattern']) {
+                        addFunction('regex', {regex: this.$el.attr('pattern')});
+                    }
                 },
 
                 initType: function() {
@@ -832,7 +836,8 @@ require.config({
         'validator/maxLength': 'js/validators/max-length',
         'validator/required': 'js/validators/required',
         'validator/unique': 'js/validators/unique',
-        'validator/equal': 'js/validators/equal'
+        'validator/equal': 'js/validators/equal',
+        'validator/regex': 'js/validators/regex'
     }
 });
 
@@ -1084,6 +1089,11 @@ define('type/date',[
                     return date !== null;
                 },
 
+                needsValidation: function() {
+                    var val = this.$el.val();
+                    return val !== '';
+                },
+
                 // internationalization of view data: Globalize library
                 getViewData: function(value) {
                     return Globalize.format(getDate(value), this.options.format);
@@ -1216,6 +1226,11 @@ define('type/url',[
                         val = new RegExp('(https?|s?ftp|git)', 'i').test(val) ? val : 'http://' + val;
                     }
                     return this.options.regExp.test(val);
+                },
+
+                needsValidation: function() {
+                    var val = this.$el.val();
+                    return val !== '';
                 }
             };
 
@@ -1771,6 +1786,48 @@ define('validator/equal',[
 
                 fieldRemoved: function(element) {
                     relatedElements = relatedElements.splice(relatedElements.indexOf(element), 1);
+                }
+            });
+
+        result.initialize();
+        return result;
+    };
+
+});
+
+/*
+ * This file is part of the Husky Validation.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ *
+ */
+
+define('validator/regex',[
+    'validator/default'
+], function(Default) {
+
+    
+
+    return function($el, form, element, options) {
+        var defaults = {
+                regex: /\w*/
+            },
+
+            result = $.extend(new Default($el, form, defaults, options, 'regex'), {
+                validate: function() {
+                    var flags = this.data.regex.replace(/.*\/([gimy]*)$/, '$1'),
+                        pattern = this.data.regex.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1'),
+                        regex = new RegExp(pattern, flags),
+                        val = this.$el.val();
+
+                    if (val === '') {
+                        return true;
+                    }
+
+                    return regex.test(val);
                 }
             });
 
