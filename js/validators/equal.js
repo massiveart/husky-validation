@@ -87,7 +87,7 @@ define([
                 },
 
                 fieldAdded: function(element) {
-                    if (element.$el != this.$el && isElementRelated(element, this.data.equal)) {
+                    if (element.$el !== this.$el && isElementRelated(element, this.data.equal)) {
                         relatedElements.push(element);
                     }
                 },

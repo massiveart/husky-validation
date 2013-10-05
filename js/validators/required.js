@@ -25,8 +25,10 @@ define([
                         // check there is at least one required value
                         if ('object' === typeof val) {
                             for (i in val) {
-                                if (this.validate(val[i])) {
-                                    return true;
+                                if (val.hasOwnProperty(i)) {
+                                    if (this.validate(val[i])) {
+                                        return true;
+                                    }
                                 }
                             }
                             return false;

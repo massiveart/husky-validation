@@ -89,7 +89,7 @@ define([
                 },
 
                 fieldAdded: function(element) {
-                    if (element.$el != this.$el && isElementRelated(element, this.data.unique)) {
+                    if (element.$el !== this.$el && isElementRelated(element, this.data.unique)) {
                         Util.debug('field added', this.$el);
                         relatedElements.push(element);
                     }

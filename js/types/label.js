@@ -20,6 +20,7 @@ define([
                 label: 'name',
                 translate: true
             },
+
             typeInterface = {
                 setValue: function(value) {
                     if (!!value[this.options.label]) {

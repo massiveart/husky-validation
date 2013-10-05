@@ -47,11 +47,11 @@ define(function() {
                 }.bind(this));
             },
 
-            fieldRemoved: function(element) {
+            fieldRemoved: function() {
                 // do nothing
             },
 
-            fieldAdded: function(element) {
+            fieldAdded: function() {
                 // do nothing
             }
         };

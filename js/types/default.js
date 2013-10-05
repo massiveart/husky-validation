@@ -24,6 +24,7 @@ define(function() {
                     }
                 }
             },
+
             defaultInterface = {
                 name: name,
 
