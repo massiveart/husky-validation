@@ -42,10 +42,14 @@ define([
         // define validation interface
             result = {
                 validate: function(force) {
-                    var result = true;
+                    var result = true, focus = false;
                     // validate each element
                     $.each(form.elements, function(key, element) {
                         if (!element.validate(force)) {
+                            if (!focus) {
+                                element.$el.focus();
+                                focus = true;
+                            }
                             result = false;
                         }
                     });

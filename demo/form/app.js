@@ -14,6 +14,9 @@ define(['js/form', 'globalize'], function(Form) {
     }.bind(this));
 
     var form = new Form($('#contact-form'));
+    form.mapper.addArrayFilter('phones', function(item) {
+        return item.phone != '';
+    });
 
     $('#contact-form').on('submit', function() {
         console.log(form.mapper.getData());

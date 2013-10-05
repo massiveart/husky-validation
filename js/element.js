@@ -15,7 +15,7 @@ define(['form/util'], function(Util) {
     return function(el, form, options) {
 
         var defaults = {
-                type: 'string',
+                type: null,
                 validationTrigger: 'focusout',                     // default validate trigger
                 validationAddClasses: true,                        // add error and success classes
                 validationAddClassesParent: true,                  // add classes to parent element
@@ -99,6 +99,15 @@ define(['form/util'], function(Util) {
                 },
 
                 initValidators: function() {
+                    var addFunction = function(name, options) {
+                        this.requireCounter++;
+                        require(['validator/' + name], function(Validator) {
+                            validators[name] = new Validator(this.$el, form, this, options);
+                            Util.debug('Element Validator', name, options);
+                            that.resolveInitialization.call(this);
+                        }.bind(this));
+                    }.bind(this);
+
                     // create validators for each of the constraints
                     $.each(this.options, function(key, val) {
                         // val not false
@@ -106,33 +115,84 @@ define(['form/util'], function(Util) {
                         // and key starts with validation
                         if (!!val && $.inArray(key, ignoredOptions) === -1 && Util.startsWith(key, 'validation')) {
                             // filter validation prefix
-                            var name = Util.lcFirst(key.replace('validation', ''));
-                            this.requireCounter++;
-                            require(['validator/' + name], function(Validator) {
-                                var options = Util.buildOptions(this.options, 'validation', name);
-                                validators[name] = new Validator(this.$el, form, options);
-                                Util.debug('Element Validator', key, options);
-                                that.resolveInitialization.call(this);
-                            }.bind(this));
+                            var name = Util.lcFirst(key.replace('validation', '')),
+                                options = Util.buildOptions(this.options, 'validation', name);
+
+                            addFunction(name, options);
                         }
                     }.bind(this));
-                },
 
-                initType: function() {
-                    // if type exists
-                    if (!!this.options.type) {
-                        this.requireCounter++;
-                        require(['type/' + this.options.type], function(Type) {
-                            var options = Util.buildOptions(this.options, 'type');
-                            type = new Type(this.$el, options);
-                            Util.debug('Element Type', type, options);
-                            that.resolveInitialization.call(this);
-                        }.bind(this));
+                    // HTML 5 attributes
+                    // required
+                    if (this.$el.attr('required') === 'required' && !validators['required']) {
+                        addFunction('required', {required: true});
+                    }
+                    // min
+                    if (!!this.$el.attr('min') && !validators['min']) {
+                        addFunction('min', {min: parseInt(this.$el.attr('min'), 10)});
+                    }
+                    // max
+                    if (!!this.$el.attr('max') && !validators['max']) {
+                        addFunction('max', {max: parseInt(this.$el.attr('max'), 10)});
+                    }
+                    // regex
+                    if (!!this.$el.attr('pattern') && !validators['pattern']) {
+                        addFunction('regex', {regex: this.$el.attr('pattern')});
                     }
                 },
 
+                initType: function() {
+                    var addFunction = function(typeName, options) {
+                            this.requireCounter++;
+                            require(['type/' + typeName], function(Type) {
+                                type = new Type(this.$el, options);
+                                Util.debug('Element Type', typeName, options);
+                                that.resolveInitialization.call(this);
+                            }.bind(this));
+                        }.bind(this),
+                        options = Util.buildOptions(this.options, 'type'),
+                        typeName, tmpType;
+
+                    // FIXME date HTML5 type browser language format
+
+                    // if type exists
+                    if (!!this.options.type) {
+                        typeName = this.options.type;
+                    } else if (!!this.$el.attr('type')) {
+                        // HTML5 type attribute
+                        tmpType = this.$el.attr('type');
+                        if (tmpType === 'email') {
+                            typeName = 'email';
+                        } else if (tmpType === 'url') {
+                            typeName = 'url';
+                        } else if (tmpType === 'number') {
+                            typeName = 'decimal';
+                        } else if (tmpType === 'date') {
+                            typeName = 'date';
+                            if (!!options.format) {
+                                options.format = 'd';
+                            }
+                        } else if (tmpType === 'time') {
+                            typeName = 'date';
+                            if (!!options.format) {
+                                options.format = 't';
+                            }
+                        } else if (tmpType === 'datetime') {
+                            typeName = 'date';
+                        } else {
+                            typeName = 'string';
+                        }
+                    } else {
+                        typeName = 'string';
+                    }
+                    addFunction(typeName, options);
+                },
+
                 hasConstraints: function() {
-                    return Object.keys(validators).length > 0 || (type !== null && type.needsValidation());
+                    var typeConstraint = (!!type && type.needsValidation()),
+                        validatorsConstraint = Object.keys(validators).length > 0;
+
+                    return validatorsConstraint || typeConstraint;
                 },
 
                 needsValidation: function() {
@@ -163,6 +223,10 @@ define(['form/util'], function(Util) {
                             $element.addClass(this.options.validationErrorClass);
                         }
                     }
+                },
+
+                validateCallback: function(validatorCallback) {
+
                 }
             },
 
@@ -172,7 +236,7 @@ define(['form/util'], function(Util) {
                     if (force || that.needsValidation.call(this)) {
                         if (!that.hasConstraints.call(this)) {
                             // delete state
-                            that.reset.call(this);
+                            //that.reset.call(this);
                             return true;
                         }
 
@@ -190,9 +254,41 @@ define(['form/util'], function(Util) {
                             result = false;
                         }
 
+                        if (!result) {
+                            Util.debug('Field validate', !!result ? 'true' : 'false', this.$el);
+                        }
                         that.setValid.call(this, result);
                     }
                     return this.isValid();
+                },
+
+                update: function() {
+                    if (!that.hasConstraints.call(this)) {
+                        // delete state
+                        //that.reset.call(this);
+                        return true;
+                    }
+
+                    var result = true;
+                    // check each validator
+                    $.each(validators, function(key, validator) {
+                        if (!validator.update()) {
+                            result = false;
+                            // TODO Messages
+                        }
+                    });
+
+                    // check type
+                    if (type !== null && !type.validate()) {
+                        result = false;
+                    }
+
+                    if (!result) {
+                        Util.debug('Field validate', !!result ? 'true' : 'false', this.$el);
+                    }
+                    that.setValid.call(this, result);
+
+                    return result;
                 },
 
                 isValid: function() {
@@ -220,11 +316,36 @@ define(['form/util'], function(Util) {
                 addConstraint: function(name, options) {
                     if ($.inArray(name, Object.keys(validators)) === -1) {
                         require(['validator/' + name], function(Validator) {
-                            validators[name] = new Validator(this.$el, form, options);
+                            validators[name] = new Validator(this.$el, form, this, options);
                         }.bind(this));
                     } else {
                         throw 'Constraint with name: ' + name + ' already exists';
                     }
+                },
+
+                hasConstraint: function(name) {
+                    return !!validators[name];
+                },
+
+                getConstraint: function(name) {
+                    if (!this.hasConstraint(name)) {
+                        return false;
+                    }
+                    return validators[name];
+                },
+
+                fieldAdded: function(element) {
+                    $.each(validators, function(key, validator) {
+                        // FIXME better solution? perhaps only to interested validators?
+                        validator.fieldAdded(element);
+                    });
+                },
+
+                fieldRemoved: function(element) {
+                    $.each(validators, function(key, validator) {
+                        // FIXME better solution? perhaps only to interested validators?
+                        validator.fieldRemoved(element);
+                    });
                 },
 
                 setValue: function(value) {

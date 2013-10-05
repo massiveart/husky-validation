@@ -9,16 +9,14 @@
  */
 
 define([
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     'use strict';
 
     return function($el, form, element, options) {
-
         var defaults = {
-                validationUnique: null
+                equal: null
             },
 
         // elements with same group name
@@ -26,7 +24,7 @@ define([
 
         // is the element related
             isElementRelated = function(element, group) {
-                return relatedElements.indexOf(element) && !!element.options.validationUnique && element.options.validationUnique === group;
+                return relatedElements.indexOf(element) && !!element.options.validationEqual && element.options.validationEqual === group;
             },
 
         // validate all related element
@@ -44,7 +42,7 @@ define([
 
         // validate one element
             validateElement = function(val, element) {
-                return val !== element.getValue();
+                return val === element.getValue();
             },
 
         // update all related elements
@@ -54,7 +52,7 @@ define([
                 });
             },
 
-            result = $.extend({}, new Default($el, form, defaults, options, 'unique'), {
+            result = $.extend(new Default($el, form, defaults, options, 'equal'), {
 
                 initializeSub: function() {
                     // init related elements
@@ -68,7 +66,7 @@ define([
                 validate: function() {
                     var val = this.$el.val(),
                         result;
-                    if (!!this.data.unique) {
+                    if (!!this.data.equal) {
                         result = validateElements(val);
                         updateRelatedElements();
                         return result;
@@ -80,7 +78,7 @@ define([
                 update: function() {
                     var val = this.$el.val(),
                         result;
-                    if (!!this.data.unique) {
+                    if (!!this.data.equal) {
                         result = validateElements(val);
                         return result;
                     } else {
@@ -89,14 +87,12 @@ define([
                 },
 
                 fieldAdded: function(element) {
-                    if (element.$el !== this.$el && isElementRelated(element, this.data.unique)) {
-                        Util.debug('field added', this.$el);
+                    if (element.$el !== this.$el && isElementRelated(element, this.data.equal)) {
                         relatedElements.push(element);
                     }
                 },
 
                 fieldRemoved: function(element) {
-                    Util.debug('field removed', this.$el);
                     relatedElements = relatedElements.splice(relatedElements.indexOf(element), 1);
                 }
             });

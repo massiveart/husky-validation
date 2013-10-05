@@ -9,8 +9,9 @@
  */
 
 define([
-    'type/default'
-], function(Default) {
+    'type/default',
+    'form/util'
+], function(Default, Util) {
 
     'use strict';
 
@@ -20,7 +21,7 @@ define([
             },
 
             getDate = function(value) {
-                console.log(value, new Date(value));
+                Util.debug(value, new Date(value));
                 return new Date(value);
             },
 
@@ -33,6 +34,11 @@ define([
 
                     date = Globalize.parseDate(val, this.options.format);
                     return date !== null;
+                },
+
+                needsValidation: function() {
+                    var val = this.$el.val();
+                    return val !== '';
                 },
 
                 // internationalization of view data: Globalize library

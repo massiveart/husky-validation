@@ -19,6 +19,7 @@ define([
                 id: 'id',
                 label: 'name'
             },
+
             typeInterface = {
                 setValue: function(value) {
                     this.$el.val(value[this.options.id]);

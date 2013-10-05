@@ -26,7 +26,7 @@
                                id="firstName"
                                name="firstName"
                                data-mapper-property="firstName"
-                               data-validation-required="true"/>
+                               required="required"/>
                     </div>
                     <div class="grid-col-6">
                         <label>LastName [minlength=6]:</label>
@@ -57,8 +57,8 @@
                                name="wage"
                                data-type="decimal"
                                data-mapper-property="wage"
-                               data-validation-min="1000"
-                               data-validation-max="1500"/>
+                               min="1000"
+                               max="1500"/>
                     </div>
                 </div>
                 <div class="grid-row" id="phones" data-mapper-property="phones" data-type="array">
@@ -73,18 +73,29 @@
                                class="form-element"
                                id="phone"
                                name="phone"
+                               pattern="/^[0-9 +-]*$/gi"
                                data-mapper-property="phone"
+                               data-validation-unique="phone"
                                data-validation-min-length="6"
                                data-validation-max-length="30"/>
                     </div>
                 </div>
                 <div class="grid-row">
                     <div class="grid-col-4">
+                        <label>Country</label>
                         <select class="form-element" data-type="select" data-mapper-property="country">
                             <option value="1">AT</option>
                             <option value="2">CH</option>
                             <option value="3">DE</option>
                         </select>
+                    </div>
+                    <div class="grid-col-4">
+                        <label>Email 1</label>
+                        <input type="text" class="form-element" data-type="email" data-validation-equal="group1" />
+                    </div>
+                    <div class="grid-col-4">
+                        <label>Email 2</label>
+                        <input type="text" class="form-element" data-type="email" data-validation-equal="group1" />
                     </div>
                 </div>
                 <div class="grid-row">

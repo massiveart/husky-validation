@@ -199,3 +199,8 @@ body {
     z-index: 0;
     margin: auto;
 }
+
+.icon-globe::after {
+    content: "\e371";
+    display: inline-block
+}

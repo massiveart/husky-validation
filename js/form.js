@@ -31,7 +31,9 @@ require.config({
         'validator/minLength': 'js/validators/min-length',
         'validator/maxLength': 'js/validators/max-length',
         'validator/required': 'js/validators/required',
-        'validator/unique': 'js/validators/unique'
+        'validator/unique': 'js/validators/unique',
+        'validator/equal': 'js/validators/equal',
+        'validator/regex': 'js/validators/regex'
     }
 });
 
@@ -46,7 +48,6 @@ define([
 
     return function(el, options) {
         var defaults = {
-                //language: 'de',                // language
                 debug: false,                     // debug on/off
                 validation: true,                 // validation on/off
                 validationTrigger: 'focusout',    // default validate trigger
@@ -55,17 +56,18 @@ define([
                 validationSubmitEvent: true,      // avoid submit if not valid
                 mapper: true                      // mapper on/off
             },
+            dfd = null,
 
         // private functions
             that = {
                 initialize: function() {
+                    // init initialized
+                    dfd = $.Deferred();
+                    this.requireCounter = 0;
+                    this.initialized = dfd.promise();
+
                     this.$el = $(el);
                     this.options = $.extend(defaults, this.$el.data(), options);
-
-                    // set culture
-                    //require(['cultures/globalize.culture.' + this.options.language], function() {
-                    //    Globalize.culture(this.options.language);
-                    //}.bind(this));
 
                     // enable / disable debug
                     Util.debugEnabled = this.options.debug;
@@ -88,8 +90,18 @@ define([
                 // initialize field objects
                 initFields: function() {
                     $.each(Util.getFields(this.$el), function(key, value) {
-                        this.addField.call(this, value);
+                        this.requireCounter++;
+                        that.addField.call(this, value, false).initialized.then(function() {
+                            that.resolveInitialization.call(this)
+                        }.bind(this));
                     }.bind(this));
+                },
+
+                resolveInitialization: function() {
+                    this.requireCounter--;
+                    if (this.requireCounter === 0) {
+                        dfd.resolve();
+                    }
                 },
 
                 bindValidationDomEvents: function() {
@@ -99,6 +111,16 @@ define([
                             return this.validation.validate();
                         }.bind(this));
                     }
+                },
+
+                addField: function(selector) {
+                    var $element = $(selector),
+                        options = Util.parseData($element, '', this.options),
+                        element = new Element($element, this, options);
+
+                    this.elements.push(element);
+                    Util.debug('Element created', options);
+                    return element;
                 }
             },
 
@@ -109,20 +131,30 @@ define([
                 mapper: false,
 
                 addField: function(selector) {
-                    var $element = $(selector),
-                        options = Util.parseData($element, '', this.options),
-                        element = new Element($element, this, options);
+                    var element = that.addField.call(this, selector);
 
-                    this.elements.push(element);
-                    Util.debug('Element created', options);
+                    element.initialized.then(function() {
+                        // say everybody I have a new field
+                        // FIXME better solution?
+                        $.each(this.elements, function(key, element) {
+                            element.fieldAdded(element);
+                        });
+                    }.bind(this));
+
                     return element;
                 },
 
                 removeField: function(selector) {
                     var $element = $(selector),
-                        element = $element.data('element');
+                        el = $element.data('element');
 
-                    this.elements.splice(this.elements.indexOf(element), 1);
+                    // say everybody I have a lost field
+                    // FIXME better solution?
+                    $.each(this.elements, function(key, element) {
+                        element.fieldRemoved(el);
+                    });
+
+                    this.elements.splice(this.elements.indexOf(el), 1);
                 }
             };
 
