@@ -67,6 +67,8 @@ define([
 
                     if (arrayElement.getType().canRemove()) {
                         that.remove.call(this, $element);
+
+                        $('#current-counter-' + $arrayElement.data('mapper-property')).text($arrayElement.children().length);
                     }
                 },
 
