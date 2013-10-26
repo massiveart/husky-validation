@@ -40,22 +40,33 @@ define([
 
                     // init add button
                     form.$el.on('click', '*[data-mapper-add="' + $element.data('mapper-property') + '"]', that.addClick.bind(this));
+
+                    // init remove button
+                    form.$el.on('click', '*[data-mapper-remove="' + $element.data('mapper-property') + '"]', that.removeClick.bind(this));
                 },
 
                 addClick: function(event) {
                     var $addButton = $(event.currentTarget),
-                        $arrayElement = $('#' + $addButton.data('mapper-add')),
+                        propertyName = $addButton.data('mapper-add'),
+                        $arrayElement = $('#' + propertyName),
                         arrayElement = $arrayElement.data('element');
 
                     if (arrayElement.getType().canAdd()) {
                         that.appendChildren.call(this, $arrayElement, arrayElement.$children);
 
                         $('#current-counter-' + $arrayElement.data('mapper-property')).text($arrayElement.children().length);
+                    }
+                },
 
-                        if (!arrayElement.getType().canAdd()) {
-                            $addButton.addClass('disable');
-                            $addButton.removeClass('pointer');
-                        }
+                removeClick: function(event) {
+                    var $removeButton = $(event.currentTarget),
+                        propertyName = $removeButton.data('mapper-remove'),
+                        $arrayElement = $('#' + propertyName),
+                        $element = $removeButton.parent('.' + propertyName + '-element'),
+                        arrayElement = $arrayElement.data('element');
+
+                    if (arrayElement.getType().canRemove()) {
+                        that.remove.call(this, $element);
                     }
                 },
 
@@ -98,7 +109,9 @@ define([
                         $child = arrayElement.$children;
 
                     // remove children
-                    $element.children().remove();
+                    $element.children().each(function(key, value) {
+                        that.remove.call(this, $(value));
+                    }.bind(this));
 
                     // foreach array elements: create a new dom element, call setData recursively
                     $.each(array, function(key, value) {
@@ -129,6 +142,16 @@ define([
                     }.bind(this));
 
                     return dfd.promise();
+                },
+
+                remove: function($element) {
+                    // remove all fields of element
+                    $.each(Util.getFields($element), function(key, value) {
+                        form.removeField(value);
+                    }.bind(this));
+
+                    // remove element
+                    $element.remove();
                 }
 
             },
