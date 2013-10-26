@@ -48,7 +48,8 @@ define([
                         arrayElement = $arrayElement.data('element');
 
                     if (arrayElement.getType().canAdd()) {
-                        $arrayElement.append(arrayElement.$children.clone());
+                        that.appendChildren.call(this, $arrayElement, arrayElement.$children);
+
                         $('#current-counter-' + $arrayElement.data('mapper-property')).text($arrayElement.children().length);
 
                         if (!arrayElement.getType().canAdd()) {
@@ -77,7 +78,13 @@ define([
                         result = [];
                         $.each($el.children(), function(key, value) {
                             item = form.mapper.getData($(value));
-                            if (!filters[property] || (!!filters[property] && filters[property](item))) {
+
+                            var keys = Object.keys(item);
+                            if (keys.length === 1) { // for value only array
+                                if (item[keys[0]] !== '') {
+                                    result.push(item[keys[0]]);
+                                }
+                            } else if (!filters[property] || (!!filters[property] && filters[property](item))) {
                                 result.push(item);
                             }
                         });
@@ -88,37 +95,40 @@ define([
                 setArrayData: function(array, $element) {
                     // remember first child remove the rest
                     var arrayElement = $element.data('element'),
-                        $child = arrayElement.$children,
-                        element;
+                        $child = arrayElement.$children;
 
                     // remove children
                     $element.children().remove();
 
                     // foreach array elements: create a new dom element, call setData recursively
                     $.each(array, function(key, value) {
-                        var $newElement = $child.clone(),
-                            $newFields = Util.getFields($newElement),
-                            dfd = $.Deferred(), counter = $newFields.length;
-
-                        $element.append($newElement);
-
-                        // set data after fields has been added
-                        dfd.then(function() {
+                        that.appendChildren($element, $child).then(function($newElement) {
                             form.mapper.setData(value, $newElement);
                         });
-
-                        // add fields
-                        $.each($newFields, function(key, field) {
-                            element = form.addField($(field));
-                            element.initialized.then(function() {
-                                counter--;
-                                if (counter === 0) {
-                                    dfd.resolve();
-                                }
-                            });
-                        }.bind(this));
-
                     });
+                },
+
+                appendChildren: function($element, $child) {
+                    var $newElement = $child.clone(),
+                        $newFields = Util.getFields($newElement),
+                        dfd = $.Deferred(),
+                        counter = $newFields.length,
+                        element;
+
+                    $element.append($newElement);
+
+                    // add fields
+                    $.each($newFields, function(key, field) {
+                        element = form.addField($(field));
+                        element.initialized.then(function() {
+                            counter--;
+                            if (counter === 0) {
+                                dfd.resolve($newElement);
+                            }
+                        });
+                    }.bind(this));
+
+                    return dfd.promise();
                 }
 
             },
