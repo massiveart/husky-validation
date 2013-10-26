@@ -62,7 +62,7 @@ define([
                     var $removeButton = $(event.currentTarget),
                         propertyName = $removeButton.data('mapper-remove'),
                         $arrayElement = $('#' + propertyName),
-                        $element = $removeButton.parent('.' + propertyName + '-element'),
+                        $element = $removeButton.closest('.' + propertyName + '-element'),
                         arrayElement = $arrayElement.data('element');
 
                     if (arrayElement.getType().canRemove()) {
