@@ -23,7 +23,7 @@ define('form/util',[], function() {
 
         // get form fields
         getFields: function(element) {
-            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"]');
+            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="array"]');
         },
 
         /**
@@ -513,6 +513,10 @@ define('form/element',['form/util'], function(Util) {
 
                 getValue: function(data) {
                     return type.getValue(data);
+                },
+
+                getType: function() {
+                    return type;
                 }
             };
 
@@ -649,6 +653,52 @@ define('form/mapper',[
             that = {
                 initialize: function() {
                     Util.debug('INIT Mapper');
+
+                    form.initialized.then(function() {
+                        var selector = '*[data-type="array"]',
+                            $elements = form.$el.find(selector);
+
+                        $elements.each(that.initArray.bind(this));
+                    });
+                },
+
+                initArray: function(key, value) {
+                    var $element = $(value),
+                        element = $element.data('element');
+
+                    // save first child element
+                    element.$children = $element.children().first().clone();
+
+                    // init add button
+                    form.$el.on('click', '*[data-mapper-add="' + $element.data('mapper-property') + '"]', that.addClick.bind(this));
+
+                    // init remove button
+                    form.$el.on('click', '*[data-mapper-remove="' + $element.data('mapper-property') + '"]', that.removeClick.bind(this));
+                },
+
+                addClick: function(event) {
+                    var $addButton = $(event.currentTarget),
+                        propertyName = $addButton.data('mapper-add'),
+                        $arrayElement = $('#' + propertyName),
+                        arrayElement = $arrayElement.data('element');
+
+                    if (arrayElement.getType().canAdd()) {
+                        that.appendChildren.call(this, $arrayElement, arrayElement.$children);
+
+                        $('#current-counter-' + $arrayElement.data('mapper-property')).text($arrayElement.children().length);
+                    }
+                },
+
+                removeClick: function(event) {
+                    var $removeButton = $(event.currentTarget),
+                        propertyName = $removeButton.data('mapper-remove'),
+                        $arrayElement = $('#' + propertyName),
+                        $element = $removeButton.parent('.' + propertyName + '-element'),
+                        arrayElement = $arrayElement.data('element');
+
+                    if (arrayElement.getType().canRemove()) {
+                        that.remove.call(this, $element);
+                    }
                 },
 
                 processData: function(el) {
@@ -670,7 +720,13 @@ define('form/mapper',[
                         result = [];
                         $.each($el.children(), function(key, value) {
                             item = form.mapper.getData($(value));
-                            if (!filters[property] || (!!filters[property] && filters[property](item))) {
+
+                            var keys = Object.keys(item);
+                            if (keys.length === 1) { // for value only array
+                                if (item[keys[0]] !== '') {
+                                    result.push(item[keys[0]]);
+                                }
+                            } else if (!filters[property] || (!!filters[property] && filters[property](item))) {
                                 result.push(item);
                             }
                         });
@@ -680,40 +736,53 @@ define('form/mapper',[
 
                 setArrayData: function(array, $element) {
                     // remember first child remove the rest
-                    var $child = $element.children().first(),
-                        element;
+                    var arrayElement = $element.data('element'),
+                        $child = arrayElement.$children;
 
-                    // remove fields
-                    $.each(Util.getFields($element), function(key, value) {
-                        form.removeField(value);
+                    // remove children
+                    $element.children().each(function(key, value) {
+                        that.remove.call(this, $(value));
                     }.bind(this));
-                    $element.children().remove();
 
                     // foreach array elements: create a new dom element, call setData recursively
                     $.each(array, function(key, value) {
-                        var $newElement = $child.clone(),
-                            $newFields = Util.getFields($newElement),
-                            dfd = $.Deferred(), counter = $newFields.length;
-
-                        $element.append($newElement);
-
-                        // set data after fields has been added
-                        dfd.then(function() {
+                        that.appendChildren($element, $child).then(function($newElement) {
                             form.mapper.setData(value, $newElement);
                         });
-
-                        // add fields
-                        $.each($newFields, function(key, field) {
-                            element = form.addField($(field));
-                            element.initialized.then(function() {
-                                counter--;
-                                if (counter === 0) {
-                                    dfd.resolve();
-                                }
-                            });
-                        }.bind(this));
-
                     });
+                },
+
+                appendChildren: function($element, $child) {
+                    var $newElement = $child.clone(),
+                        $newFields = Util.getFields($newElement),
+                        dfd = $.Deferred(),
+                        counter = $newFields.length,
+                        element;
+
+                    $element.append($newElement);
+
+                    // add fields
+                    $.each($newFields, function(key, field) {
+                        element = form.addField($(field));
+                        element.initialized.then(function() {
+                            counter--;
+                            if (counter === 0) {
+                                dfd.resolve($newElement);
+                            }
+                        });
+                    }.bind(this));
+
+                    return dfd.promise();
+                },
+
+                remove: function($element) {
+                    // remove all fields of element
+                    $.each(Util.getFields($element), function(key, value) {
+                        form.removeField(value);
+                    }.bind(this));
+
+                    // remove element
+                    $element.remove();
                 }
 
             },
@@ -828,6 +897,7 @@ require.config({
         'type/url': 'js/types/url',
         'type/label': 'js/types/label',
         'type/select': 'js/types/select',
+        'type/array': 'js/types/array',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',
@@ -1359,6 +1429,53 @@ define('type/select',[
             };
 
         return new Default($el, defaults, options, 'select', typeInterface);
+    };
+});
+
+/*
+ * This file is part of the Husky Validation.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ *
+ */
+
+define('type/array',[
+    'type/default',
+    'form/util'
+], function(Default, Util) {
+
+    
+
+    return function($el, options) {
+        var defaults = {
+                min: 1,
+                max: 2
+            },
+
+            subType = {
+                validate: function() {
+                    return true;
+                },
+
+                needsValidation: function() {
+                    return false;
+                },
+
+                canAdd: function() {
+                    var length = this.$el.children().length;
+                    return length < this.options.max;
+                },
+
+                canRemove: function() {
+                    var length = this.$el.children().length;
+                    return length > this.options.min;
+                }
+            };
+
+        return new Default($el, defaults, options, 'array', subType);
     };
 });
 

@@ -24,6 +24,7 @@ module.exports = function(grunt) {
                 'type/url': 'js/types/url',
                 'type/label': 'js/types/label',
                 'type/select': 'js/types/select',
+                'type/array': 'js/types/array',
 
                 'validator/default': 'js/validators/default',
                 'validator/min': 'js/validators/min',
@@ -48,6 +49,7 @@ module.exports = function(grunt) {
                 'type/url',
                 'type/label',
                 'type/select',
+                'type/array',
 
                 'validator/min',
                 'validator/max',
