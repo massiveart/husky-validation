@@ -22,6 +22,40 @@ define([
             that = {
                 initialize: function() {
                     Util.debug('INIT Mapper');
+
+                    form.initialized.then(function() {
+                        var selector = '*[data-type="array"]',
+                            $elements = form.$el.find(selector);
+
+                        $elements.each(that.initArray.bind(this));
+                    });
+                },
+
+                initArray: function(key, value) {
+                    var $element = $(value),
+                        element = $element.data('element');
+
+                    // save first child element
+                    element.$children = $element.children().first().clone();
+
+                    // init add button
+                    form.$el.on('click', '*[data-mapper-add="' + $element.data('mapper-property') + '"]', that.addClick.bind(this));
+                },
+
+                addClick: function(event) {
+                    var $addButton = $(event.currentTarget),
+                        $arrayElement = $('#' + $addButton.data('mapper-add')),
+                        arrayElement = $arrayElement.data('element');
+
+                    if (arrayElement.getType().canAdd()) {
+                        $arrayElement.append(arrayElement.$children.clone());
+                        $('#current-counter-' + $arrayElement.data('mapper-property')).text($arrayElement.children().length);
+
+                        if (!arrayElement.getType().canAdd()) {
+                            $addButton.addClass('disable');
+                            $addButton.removeClass('pointer');
+                        }
+                    }
                 },
 
                 processData: function(el) {
@@ -53,13 +87,11 @@ define([
 
                 setArrayData: function(array, $element) {
                     // remember first child remove the rest
-                    var $child = $element.children().first(),
+                    var arrayElement = $element.data('element'),
+                        $child = arrayElement.$children,
                         element;
 
-                    // remove fields
-                    $.each(Util.getFields($element), function(key, value) {
-                        form.removeField(value);
-                    }.bind(this));
+                    // remove children
                     $element.children().remove();
 
                     // foreach array elements: create a new dom element, call setData recursively

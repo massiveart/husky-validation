@@ -354,6 +354,10 @@ define(['form/util'], function(Util) {
 
                 getValue: function(data) {
                     return type.getValue(data);
+                },
+
+                getType: function() {
+                    return type;
                 }
             };
 

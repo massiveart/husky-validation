@@ -13,18 +13,11 @@ define(['js/form', 'globalize'], function(Form) {
         Globalize.culture(language);
     }.bind(this));
 
-    var form = new Form($('#content-form'));
-    form.mapper.addArrayFilter('phones', function(item) {
-        return item.phone != '';
-    });
+    var form = new Form($('#content-form'), {debug: true});
 
     $('#content-form').on('submit', function() {
         console.log(form.mapper.getData());
 
         return false;
     });
-
-    setTimeout(function() {
-        form.mapper.setData({})
-    }, 2000);
 });

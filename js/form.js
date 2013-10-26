@@ -24,6 +24,7 @@ require.config({
         'type/url': 'js/types/url',
         'type/label': 'js/types/label',
         'type/select': 'js/types/select',
+        'type/array': 'js/types/array',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',
