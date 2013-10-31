@@ -165,29 +165,44 @@ define([
                         $el = form.$el;
                     }
 
-                    $.each(data, function(key, value) {
-                        // search field with mapper property
-                        var selector = '*[data-mapper-property="' + key + '"]',
+                    if(!$.isArray(data)){
+                        var selector = '*[data-mapper-property]',
                             $element = $el.find(selector),
                             element = $element.data('element');
+                        // if element is not in form add it
+                        if (!element) {
+                            element = form.addField($element);
+                            element.initialized.then(function() {
+                                element.setValue(data);
+                            });
+                        } else {
+                            element.setValue(data);
+                        }
+                    }else{
+                        $.each(data, function(key, value) {
+                            // search field with mapper property
+                            var selector = '*[data-mapper-property="' + key + '"]',
+                                $element = $el.find(selector),
+                                element = $element.data('element');
 
-                        if ($element.length > 0) {
-                            // if field is an array
-                            if ($.isArray(value)) {
-                                that.setArrayData.call(this, value, $element);
-                            } else {
-                                // if element is not in form add it
-                                if (!element) {
-                                    element = form.addField($element);
-                                    element.initialized.then(function() {
-                                        element.setValue(value);
-                                    });
+                            if ($element.length > 0) {
+                                // if field is an array
+                                if ($.isArray(value)) {
+                                    that.setArrayData.call(this, value, $element);
                                 } else {
-                                    element.setValue(value);
+                                    // if element is not in form add it
+                                    if (!element) {
+                                        element = form.addField($element);
+                                        element.initialized.then(function() {
+                                            element.setValue(value);
+                                        });
+                                    } else {
+                                        element.setValue(value);
+                                    }
                                 }
                             }
-                        }
-                    }.bind(this));
+                        }.bind(this));
+                    }
                 },
 
                 getData: function($el) {
