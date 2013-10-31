@@ -37,6 +37,7 @@ define([
 
                     // save first child element
                     element.$children = $element.children().first().clone();
+                    element.$children.find('*').removeAttr('id');
 
                     // init add button
                     form.$el.on('click', '*[data-mapper-add="' + $element.data('mapper-property') + '"]', that.addClick.bind(this));
@@ -105,9 +106,11 @@ define([
                     }
                 },
 
-                setArrayData: function(array, $element) {
+                setArrayData: function(array, $el) {
+
                     // remember first child remove the rest
-                    var arrayElement = $element.data('element'),
+                    var $element = $($el[0]),
+                        arrayElement = $element.data('element'),
                         $child = arrayElement.$children;
 
                     // remove children
@@ -124,13 +127,12 @@ define([
                 },
 
                 appendChildren: function($element, $child) {
-                    var $newElement = $child.clone(),
+                    var $newElement =$child.clone(),
+                        $parent = $element.append($newElement),
                         $newFields = Util.getFields($newElement),
                         dfd = $.Deferred(),
                         counter = $newFields.length,
                         element;
-
-                    $element.append($newElement);
 
                     // add fields
                     $.each($newFields, function(key, field) {
@@ -165,7 +167,7 @@ define([
                         $el = form.$el;
                     }
 
-                    if(!$.isArray(data)){
+                    if (typeof data !== 'object') {
                         var selector = '*[data-mapper-property]',
                             $element = $el.find(selector),
                             element = $element.data('element');
@@ -178,7 +180,7 @@ define([
                         } else {
                             element.setValue(data);
                         }
-                    }else{
+                    } else {
                         $.each(data, function(key, value) {
                             // search field with mapper property
                             var selector = '*[data-mapper-property="' + key + '"]',

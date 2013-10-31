@@ -668,6 +668,7 @@ define('form/mapper',[
 
                     // save first child element
                     element.$children = $element.children().first().clone();
+                    element.$children.find('*').removeAttr('id');
 
                     // init add button
                     form.$el.on('click', '*[data-mapper-add="' + $element.data('mapper-property') + '"]', that.addClick.bind(this));
@@ -736,9 +737,11 @@ define('form/mapper',[
                     }
                 },
 
-                setArrayData: function(array, $element) {
+                setArrayData: function(array, $el) {
+
                     // remember first child remove the rest
-                    var arrayElement = $element.data('element'),
+                    var $element = $($el[0]),
+                        arrayElement = $element.data('element'),
                         $child = arrayElement.$children;
 
                     // remove children
@@ -755,13 +758,12 @@ define('form/mapper',[
                 },
 
                 appendChildren: function($element, $child) {
-                    var $newElement = $child.clone(),
+                    var $newElement =$child.clone(),
+                        $parent = $element.append($newElement),
                         $newFields = Util.getFields($newElement),
                         dfd = $.Deferred(),
                         counter = $newFields.length,
                         element;
-
-                    $element.append($newElement);
 
                     // add fields
                     $.each($newFields, function(key, field) {
@@ -796,29 +798,44 @@ define('form/mapper',[
                         $el = form.$el;
                     }
 
-                    $.each(data, function(key, value) {
-                        // search field with mapper property
-                        var selector = '*[data-mapper-property="' + key + '"]',
+                    if (typeof data !== 'object') {
+                        var selector = '*[data-mapper-property]',
                             $element = $el.find(selector),
                             element = $element.data('element');
+                        // if element is not in form add it
+                        if (!element) {
+                            element = form.addField($element);
+                            element.initialized.then(function() {
+                                element.setValue(data);
+                            });
+                        } else {
+                            element.setValue(data);
+                        }
+                    } else {
+                        $.each(data, function(key, value) {
+                            // search field with mapper property
+                            var selector = '*[data-mapper-property="' + key + '"]',
+                                $element = $el.find(selector),
+                                element = $element.data('element');
 
-                        if ($element.length > 0) {
-                            // if field is an array
-                            if ($.isArray(value)) {
-                                that.setArrayData.call(this, value, $element);
-                            } else {
-                                // if element is not in form add it
-                                if (!element) {
-                                    element = form.addField($element);
-                                    element.initialized.then(function() {
-                                        element.setValue(value);
-                                    });
+                            if ($element.length > 0) {
+                                // if field is an array
+                                if ($.isArray(value)) {
+                                    that.setArrayData.call(this, value, $element);
                                 } else {
-                                    element.setValue(value);
+                                    // if element is not in form add it
+                                    if (!element) {
+                                        element = form.addField($element);
+                                        element.initialized.then(function() {
+                                            element.setValue(value);
+                                        });
+                                    } else {
+                                        element.setValue(value);
+                                    }
                                 }
                             }
-                        }
-                    }.bind(this));
+                        }.bind(this));
+                    }
                 },
 
                 getData: function($el) {
