@@ -142,6 +142,7 @@ define([
                         element.initialized.then(function() {
                             counter--;
                             if (counter === 0) {
+                                $element.append($newElement);
                                 dfd.resolve($newElement);
                             }
                         });
