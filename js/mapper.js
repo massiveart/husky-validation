@@ -131,7 +131,6 @@ define([
 
                 appendChildren: function($element, $child) {
                     var $newElement =$child.clone(),
-                        $parent = $element.append($newElement),
                         $newFields = Util.getFields($newElement),
                         dfd = $.Deferred(),
                         counter = $newFields.length,

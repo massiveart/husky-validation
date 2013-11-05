@@ -41,6 +41,6 @@ define([
                 }
             };
 
-        return new Default($el, defaults, options, 'array', subType);
+        return new Default($el, defaults, options, 'collection', subType);
     };
 });

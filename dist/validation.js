@@ -23,7 +23,7 @@ define('form/util',[], function() {
 
         // get form fields
         getFields: function(element) {
-            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="array"]');
+            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="collection"]');
         },
 
         /**
@@ -283,19 +283,19 @@ define('form/element',['form/util'], function(Util) {
 
                     // HTML 5 attributes
                     // required
-                    if (this.$el.attr('required') === 'required' && !validators['required']) {
+                    if (this.$el.attr('required') === 'required' && !validators.required) {
                         addFunction('required', {required: true});
                     }
                     // min
-                    if (!!this.$el.attr('min') && !validators['min']) {
+                    if (!!this.$el.attr('min') && !validators.min) {
                         addFunction('min', {min: parseInt(this.$el.attr('min'), 10)});
                     }
                     // max
-                    if (!!this.$el.attr('max') && !validators['max']) {
+                    if (!!this.$el.attr('max') && !validators.max) {
                         addFunction('max', {max: parseInt(this.$el.attr('max'), 10)});
                     }
                     // regex
-                    if (!!this.$el.attr('pattern') && !validators['pattern']) {
+                    if (!!this.$el.attr('pattern') && !validators.pattern) {
                         addFunction('regex', {regex: this.$el.attr('pattern')});
                     }
                 },
@@ -382,10 +382,6 @@ define('form/element',['form/util'], function(Util) {
                             $element.addClass(this.options.validationErrorClass);
                         }
                     }
-                },
-
-                validateCallback: function(validatorCallback) {
-
                 }
             },
 
@@ -762,7 +758,6 @@ define('form/mapper',[
 
                 appendChildren: function($element, $child) {
                     var $newElement =$child.clone(),
-                        $parent = $element.append($newElement),
                         $newFields = Util.getFields($newElement),
                         dfd = $.Deferred(),
                         counter = $newFields.length,
@@ -1497,7 +1492,7 @@ define('type/collection',[
                 }
             };
 
-        return new Default($el, defaults, options, 'array', subType);
+        return new Default($el, defaults, options, 'collection', subType);
     };
 });
 
