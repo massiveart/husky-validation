@@ -4,4 +4,4 @@ node_js:
   - 0.8
 
 script:
-  - ./travis_build.sh
+  - ./bin/travis_build.sh
