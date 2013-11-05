@@ -24,6 +24,7 @@ require.config({
         'type/url': 'js/types/url',
         'type/label': 'js/types/label',
         'type/select': 'js/types/select',
+        'type/collection': 'js/types/collection',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',
@@ -92,7 +93,7 @@ define([
                     $.each(Util.getFields(this.$el), function(key, value) {
                         this.requireCounter++;
                         that.addField.call(this, value, false).initialized.then(function() {
-                            that.resolveInitialization.call(this)
+                            that.resolveInitialization.call(this);
                         }.bind(this));
                     }.bind(this));
                 },

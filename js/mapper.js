@@ -22,6 +22,55 @@ define([
             that = {
                 initialize: function() {
                     Util.debug('INIT Mapper');
+
+                    form.initialized.then(function() {
+                        var selector = '*[data-type="collection"]',
+                            $elements = form.$el.find(selector);
+
+                        $elements.each(that.initCollection.bind(this));
+                    });
+                },
+
+                initCollection: function(key, value) {
+                    var $element = $(value),
+                        element = $element.data('element');
+
+                    // save first child element
+                    element.$children = $element.children().first().clone();
+                    element.$children.find('*').removeAttr('id');
+
+                    // init add button
+                    form.$el.on('click', '*[data-mapper-add="' + $element.data('mapper-property') + '"]', that.addClick.bind(this));
+
+                    // init remove button
+                    form.$el.on('click', '*[data-mapper-remove="' + $element.data('mapper-property') + '"]', that.removeClick.bind(this));
+                },
+
+                addClick: function(event) {
+                    var $addButton = $(event.currentTarget),
+                        propertyName = $addButton.data('mapper-add'),
+                        $collectionElement = $('#' + propertyName),
+                        collectionElement = $collectionElement.data('element');
+
+                    if (collectionElement.getType().canAdd()) {
+                        that.appendChildren.call(this, $collectionElement, collectionElement.$children);
+
+                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
+                    }
+                },
+
+                removeClick: function(event) {
+                    var $removeButton = $(event.currentTarget),
+                        propertyName = $removeButton.data('mapper-remove'),
+                        $collectionElement = $('#' + propertyName),
+                        $element = $removeButton.closest('.' + propertyName + '-element'),
+                        collectionElement = $collectionElement.data('element');
+
+                    if (collectionElement.getType().canRemove()) {
+                        that.remove.call(this, $element);
+
+                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
+                    }
                 },
 
                 processData: function(el) {
@@ -32,8 +81,8 @@ define([
                         element = $el.data('element'),
                         result, item;
 
-                    // if type == array process children, else get value
-                    if (type !== 'array') {
+                    // if type == collection process children, else get value
+                    if (type !== 'collection') {
                         if (!!element) {
                             return element.getValue();
                         } else {
@@ -43,7 +92,13 @@ define([
                         result = [];
                         $.each($el.children(), function(key, value) {
                             item = form.mapper.getData($(value));
-                            if (!filters[property] || (!!filters[property] && filters[property](item))) {
+
+                            var keys = Object.keys(item);
+                            if (keys.length === 1) { // for value only collection
+                                if (item[keys[0]] !== '') {
+                                    result.push(item[keys[0]]);
+                                }
+                            } else if (!filters[property] || (!!filters[property] && filters[property](item))) {
                                 result.push(item);
                             }
                         });
@@ -51,42 +106,58 @@ define([
                     }
                 },
 
-                setArrayData: function(array, $element) {
+                setCollectionData: function(collection, $el) {
+
                     // remember first child remove the rest
-                    var $child = $element.children().first(),
+                    var $element = $($el[0]),
+                        collectionElement = $element.data('element'),
+                        $child = collectionElement.$children;
+
+                    // remove children
+                    $element.children().each(function(key, value) {
+                        that.remove.call(this, $(value));
+                    }.bind(this));
+
+                    // foreach collection elements: create a new dom element, call setData recursively
+                    $.each(collection, function(key, value) {
+                        that.appendChildren($element, $child).then(function($newElement) {
+                            form.mapper.setData(value, $newElement);
+                        });
+                    });
+
+                    // set current length of collection
+                    $('#current-counter-' + $element.data('mapper-property')).text(collection.length);
+                },
+
+                appendChildren: function($element, $child) {
+                    var $newElement =$child.clone(),
+                        $newFields = Util.getFields($newElement),
+                        dfd = $.Deferred(),
+                        counter = $newFields.length,
                         element;
 
-                    // remove fields
+                    // add fields
+                    $.each($newFields, function(key, field) {
+                        element = form.addField($(field));
+                        element.initialized.then(function() {
+                            counter--;
+                            if (counter === 0) {
+                                dfd.resolve($newElement);
+                            }
+                        });
+                    }.bind(this));
+
+                    return dfd.promise();
+                },
+
+                remove: function($element) {
+                    // remove all fields of element
                     $.each(Util.getFields($element), function(key, value) {
                         form.removeField(value);
                     }.bind(this));
-                    $element.children().remove();
 
-                    // foreach array elements: create a new dom element, call setData recursively
-                    $.each(array, function(key, value) {
-                        var $newElement = $child.clone(),
-                            $newFields = Util.getFields($newElement),
-                            dfd = $.Deferred(), counter = $newFields.length;
-
-                        $element.append($newElement);
-
-                        // set data after fields has been added
-                        dfd.then(function() {
-                            form.mapper.setData(value, $newElement);
-                        });
-
-                        // add fields
-                        $.each($newFields, function(key, field) {
-                            element = form.addField($(field));
-                            element.initialized.then(function() {
-                                counter--;
-                                if (counter === 0) {
-                                    dfd.resolve();
-                                }
-                            });
-                        }.bind(this));
-
-                    });
+                    // remove element
+                    $element.remove();
                 }
 
             },
@@ -98,29 +169,44 @@ define([
                         $el = form.$el;
                     }
 
-                    $.each(data, function(key, value) {
-                        // search field with mapper property
-                        var selector = '*[data-mapper-property="' + key + '"]',
+                    if (typeof data !== 'object') {
+                        var selector = '*[data-mapper-property]',
                             $element = $el.find(selector),
                             element = $element.data('element');
+                        // if element is not in form add it
+                        if (!element) {
+                            element = form.addField($element);
+                            element.initialized.then(function() {
+                                element.setValue(data);
+                            });
+                        } else {
+                            element.setValue(data);
+                        }
+                    } else {
+                        $.each(data, function(key, value) {
+                            // search field with mapper property
+                            var selector = '*[data-mapper-property="' + key + '"]',
+                                $element = $el.find(selector),
+                                element = $element.data('element');
 
-                        if ($element.length > 0) {
-                            // if field is an array
-                            if ($.isArray(value)) {
-                                that.setArrayData.call(this, value, $element);
-                            } else {
-                                // if element is not in form add it
-                                if (!element) {
-                                    element = form.addField($element);
-                                    element.initialized.then(function() {
-                                        element.setValue(value);
-                                    });
+                            if ($element.length > 0) {
+                                // if field is an collection
+                                if ($.isArray(value)) {
+                                    that.setCollectionData.call(this, value, $element);
                                 } else {
-                                    element.setValue(value);
+                                    // if element is not in form add it
+                                    if (!element) {
+                                        element = form.addField($element);
+                                        element.initialized.then(function() {
+                                            element.setValue(value);
+                                        });
+                                    } else {
+                                        element.setValue(value);
+                                    }
                                 }
                             }
-                        }
-                    }.bind(this));
+                        }.bind(this));
+                    }
                 },
 
                 getData: function($el) {
@@ -159,11 +245,11 @@ define([
                     return data;
                 },
 
-                addArrayFilter: function(name, callback) {
+                addCollectionFilter: function(name, callback) {
                     filters[name] = callback;
                 },
 
-                removeArrayFilter: function(name) {
+                removeCollectionFilter: function(name) {
                     delete filters[name];
                 }
 

@@ -124,19 +124,19 @@ define(['form/util'], function(Util) {
 
                     // HTML 5 attributes
                     // required
-                    if (this.$el.attr('required') === 'required' && !validators['required']) {
+                    if (this.$el.attr('required') === 'required' && !validators.required) {
                         addFunction('required', {required: true});
                     }
                     // min
-                    if (!!this.$el.attr('min') && !validators['min']) {
+                    if (!!this.$el.attr('min') && !validators.min) {
                         addFunction('min', {min: parseInt(this.$el.attr('min'), 10)});
                     }
                     // max
-                    if (!!this.$el.attr('max') && !validators['max']) {
+                    if (!!this.$el.attr('max') && !validators.max) {
                         addFunction('max', {max: parseInt(this.$el.attr('max'), 10)});
                     }
                     // regex
-                    if (!!this.$el.attr('pattern') && !validators['pattern']) {
+                    if (!!this.$el.attr('pattern') && !validators.pattern) {
                         addFunction('regex', {regex: this.$el.attr('pattern')});
                     }
                 },
@@ -223,10 +223,6 @@ define(['form/util'], function(Util) {
                             $element.addClass(this.options.validationErrorClass);
                         }
                     }
-                },
-
-                validateCallback: function(validatorCallback) {
-
                 }
             },
 
@@ -354,6 +350,10 @@ define(['form/util'], function(Util) {
 
                 getValue: function(data) {
                     return type.getValue(data);
+                },
+
+                getType: function() {
+                    return type;
                 }
             };
 
