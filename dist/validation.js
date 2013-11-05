@@ -655,14 +655,14 @@ define('form/mapper',[
                     Util.debug('INIT Mapper');
 
                     form.initialized.then(function() {
-                        var selector = '*[data-type="array"]',
+                        var selector = '*[data-type="collection"]',
                             $elements = form.$el.find(selector);
 
-                        $elements.each(that.initArray.bind(this));
+                        $elements.each(that.initCollection.bind(this));
                     });
                 },
 
-                initArray: function(key, value) {
+                initCollection: function(key, value) {
                     var $element = $(value),
                         element = $element.data('element');
 
@@ -680,27 +680,27 @@ define('form/mapper',[
                 addClick: function(event) {
                     var $addButton = $(event.currentTarget),
                         propertyName = $addButton.data('mapper-add'),
-                        $arrayElement = $('#' + propertyName),
-                        arrayElement = $arrayElement.data('element');
+                        $collectionElement = $('#' + propertyName),
+                        collectionElement = $collectionElement.data('element');
 
-                    if (arrayElement.getType().canAdd()) {
-                        that.appendChildren.call(this, $arrayElement, arrayElement.$children);
+                    if (collectionElement.getType().canAdd()) {
+                        that.appendChildren.call(this, $collectionElement, collectionElement.$children);
 
-                        $('#current-counter-' + $arrayElement.data('mapper-property')).text($arrayElement.children().length);
+                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
                     }
                 },
 
                 removeClick: function(event) {
                     var $removeButton = $(event.currentTarget),
                         propertyName = $removeButton.data('mapper-remove'),
-                        $arrayElement = $('#' + propertyName),
+                        $collectionElement = $('#' + propertyName),
                         $element = $removeButton.closest('.' + propertyName + '-element'),
-                        arrayElement = $arrayElement.data('element');
+                        collectionElement = $collectionElement.data('element');
 
-                    if (arrayElement.getType().canRemove()) {
+                    if (collectionElement.getType().canRemove()) {
                         that.remove.call(this, $element);
 
-                        $('#current-counter-' + $arrayElement.data('mapper-property')).text($arrayElement.children().length);
+                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
                     }
                 },
 
@@ -712,8 +712,8 @@ define('form/mapper',[
                         element = $el.data('element'),
                         result, item;
 
-                    // if type == array process children, else get value
-                    if (type !== 'array') {
+                    // if type == collection process children, else get value
+                    if (type !== 'collection') {
                         if (!!element) {
                             return element.getValue();
                         } else {
@@ -725,7 +725,7 @@ define('form/mapper',[
                             item = form.mapper.getData($(value));
 
                             var keys = Object.keys(item);
-                            if (keys.length === 1) { // for value only array
+                            if (keys.length === 1) { // for value only collection
                                 if (item[keys[0]] !== '') {
                                     result.push(item[keys[0]]);
                                 }
@@ -737,24 +737,27 @@ define('form/mapper',[
                     }
                 },
 
-                setArrayData: function(array, $el) {
+                setCollectionData: function(collection, $el) {
 
                     // remember first child remove the rest
                     var $element = $($el[0]),
-                        arrayElement = $element.data('element'),
-                        $child = arrayElement.$children;
+                        collectionElement = $element.data('element'),
+                        $child = collectionElement.$children;
 
                     // remove children
                     $element.children().each(function(key, value) {
                         that.remove.call(this, $(value));
                     }.bind(this));
 
-                    // foreach array elements: create a new dom element, call setData recursively
-                    $.each(array, function(key, value) {
+                    // foreach collection elements: create a new dom element, call setData recursively
+                    $.each(collection, function(key, value) {
                         that.appendChildren($element, $child).then(function($newElement) {
                             form.mapper.setData(value, $newElement);
                         });
                     });
+
+                    // set current length of collection
+                    $('#current-counter-' + $element.data('mapper-property')).text(collection.length);
                 },
 
                 appendChildren: function($element, $child) {
@@ -819,9 +822,9 @@ define('form/mapper',[
                                 element = $element.data('element');
 
                             if ($element.length > 0) {
-                                // if field is an array
+                                // if field is an collection
                                 if ($.isArray(value)) {
-                                    that.setArrayData.call(this, value, $element);
+                                    that.setCollectionData.call(this, value, $element);
                                 } else {
                                     // if element is not in form add it
                                     if (!element) {
@@ -874,11 +877,11 @@ define('form/mapper',[
                     return data;
                 },
 
-                addArrayFilter: function(name, callback) {
+                addCollectionFilter: function(name, callback) {
                     filters[name] = callback;
                 },
 
-                removeArrayFilter: function(name) {
+                removeCollectionFilter: function(name) {
                     delete filters[name];
                 }
 
@@ -916,7 +919,7 @@ require.config({
         'type/url': 'js/types/url',
         'type/label': 'js/types/label',
         'type/select': 'js/types/select',
-        'type/array': 'js/types/array',
+        'type/collection': 'js/types/collection',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',
@@ -985,7 +988,7 @@ define('form',[
                     $.each(Util.getFields(this.$el), function(key, value) {
                         this.requireCounter++;
                         that.addField.call(this, value, false).initialized.then(function() {
-                            that.resolveInitialization.call(this)
+                            that.resolveInitialization.call(this);
                         }.bind(this));
                     }.bind(this));
                 },
@@ -1461,10 +1464,10 @@ define('type/select',[
  *
  */
 
-define('type/array',[
+define('type/collection',[
     'type/default',
     'form/util'
-], function(Default, Util) {
+], function(Default) {
 
     
 

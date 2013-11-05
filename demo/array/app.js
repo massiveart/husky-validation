@@ -20,4 +20,16 @@ define(['js/form', 'globalize'], function(Form) {
 
         return false;
     });
+
+    $('#set-data').on('click', function() {
+        form.mapper.setData({
+            title: 'Titel',
+            tags: [
+                'tag1',
+                'tag2'
+            ],
+            url: '/testurl',
+            article: 'asdfasdf'
+        });
+    });
 });
