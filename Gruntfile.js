@@ -79,11 +79,31 @@ module.exports = function(grunt) {
             dev: {
                 options: getOptions(true)
             }
+        },
+        karma: {
+            unit: {
+                configFile: 'karma.conf.js',
+                autoWatch: true
+            },
+            travis: {
+                configFile: 'karma.travis.conf.js',
+                autoWatch: true
+            }
         }
     });
 
     grunt.registerTask('build', [
         'requirejs:dist',
         'requirejs:dev'
+    ]);
+
+    // register tasks
+    grunt.registerTask('test', [
+        'karma:unit'
+    ]);
+
+    // Travis CI task.
+    grunt.registerTask('travis', [
+        'karma:travis'
     ]);
 };
