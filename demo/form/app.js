@@ -49,11 +49,12 @@ define(['js/form', 'globalize'], function(Form) {
                     },
                     phone: "+43 664 4119649"
                 }
-            ],
-
-        }).then(function(){
+            ]
+        }).then(
+            function() {
                 console.log('resolved');
-            });
+            }
+        );
 
         console.log('started');
     });

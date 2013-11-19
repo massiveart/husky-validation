@@ -240,7 +240,7 @@ define([
                                         resolve();
                                     }
                                 }
-                            }else{
+                            } else {
                                 resolve();
                             }
                         }.bind(this));
