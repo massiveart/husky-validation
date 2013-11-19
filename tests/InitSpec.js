@@ -6,26 +6,34 @@ define(['jquery', 'form'], function($, Form) {
 
         $('body').append('<form id="form"><input type="text" id="field"/></form>');
 
-        var spy = jasmine.createSpyObj('spy', ['then']),
-            form;
+        var initialized = jasmine.createSpyObj('initialized', ['then']),
+            form,
+            then = false;
 
         it('init form', function() {
             form = new Form('#form');
 
             expect(form.initialized.then).toBeDefined();
 
-            form.initialized.then(spy.then);
+            form.initialized.then(function() {
+                then = true;
+                initialized.then();
+            });
         });
 
+        waitsFor(function() {
+            return then;
+        }, 'init should call then', 500);
+
         it('init should call then', function() {
-            expect(spy.then).toHaveBeenCalled();
+            expect(initialized.then).toHaveBeenCalled();
         });
 
         it('should create form-object', function() {
             expect($('#form').data('form-object')).toBeDefined();
         });
 
-        it('should init input field', function(){
+        it('should init input field', function() {
             expect($('#field').attr('class')).toBe('husky-validate');
             expect($('#field').data('element')).toBeDefined();
         });
