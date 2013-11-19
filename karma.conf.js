@@ -22,6 +22,8 @@ files = [
     { pattern: './tests/*Spec.js', included: false},
     { pattern: './tests/**/*Spec.js', included: false},
 
+    { pattern: './tests/templates/*', watched: true, included: false, served: true},
+
     './tests/runner.js'
 ];
 

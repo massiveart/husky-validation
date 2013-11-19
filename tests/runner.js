@@ -13,7 +13,8 @@ require.config({
 
     paths: {
         'jquery': 'bower_components/jquery/jquery',
-        
+        'text':'bower_components/requirejs-text/text',
+
         'form': 'js/form',
         'form/mapper': 'js/mapper',
         'form/validation': 'js/validation',
