@@ -867,6 +867,8 @@ define('form/mapper',[
                                         resolve();
                                     }
                                 }
+                            }else{
+                                resolve();
                             }
                         }.bind(this));
                     }
