@@ -25,7 +25,7 @@ files = [
     './tests/runner.js'
 ];
 
-frameworks = ["jasmine", "phantomjs-launcher"];
+frameworks = ["jasmine"];
 
 // test results reporter to use
 // possible values: 'dots', 'progress', 'junit'
