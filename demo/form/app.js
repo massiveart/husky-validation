@@ -7,13 +7,13 @@ requirejs.config({
 });
 
 define(['js/form', 'globalize'], function(Form) {
-    var language = 'de';
+    var language = 'de',
+        form = new Form($('#contact-form'));
 
     require(['cultures/globalize.culture.' + language], function() {
         Globalize.culture(language);
     }.bind(this));
 
-    var form = new Form($('#contact-form'));
     form.mapper.addCollectionFilter('phones', function(item) {
         return item.phone !== '';
     });
@@ -24,7 +24,7 @@ define(['js/form', 'globalize'], function(Form) {
         return false;
     });
 
-    setTimeout(function() {
+    $('#setdata').on('click', function() {
         form.mapper.setData({
             firstName: 'Johannes',
             lastName: 'Wachter',
@@ -49,7 +49,12 @@ define(['js/form', 'globalize'], function(Form) {
                     },
                     phone: "+43 664 4119649"
                 }
-            ]
-        })
-    }, 2000);
+            ],
+
+        }).then(function(){
+                console.log('resolved');
+            });
+
+        console.log('started');
+    });
 });
