@@ -8,8 +8,7 @@
         "grunt-contrib-requirejs": "0.4.0",
         "karma": "~0.10",
         "karma-jasmine": "*",
-        "grunt-karma": "~0.4.5",
-        "karma-phantomjs-launcher": "*"
+        "grunt-karma": "~0.4.5"
     },
     "engines": {
         "node": ">=0.8.0"
