@@ -2,40 +2,65 @@ define(['jquery', 'form'], function($, Form) {
 
     'use strict';
 
-    describe('Husky Validation', function() {
-
-        $('body').append('<form id="form"><input type="text" id="field"/></form>');
+    describe('Init Deferred', function() {
 
         var initialized = jasmine.createSpyObj('initialized', ['then']),
-            form,
+            form = new Form('#form'),
+            then;
+
+        beforeEach(function() {
+            $('body').html('<form id="form"><input type="text" id="field"/></form>');
+
             then = false;
-
-        it('init form', function() {
-            form = new Form('#form');
-
-            expect(form.initialized.then).toBeDefined();
-
-            form.initialized.then(function() {
-                then = true;
-                initialized.then();
+            runs(function() {
+                form = new Form('#form');
             });
         });
 
-        waitsFor(function() {
-            return then;
-        }, 'init should call then', 500);
+        it('should call then', function() {
 
-        it('init should call then', function() {
-            expect(initialized.then).toHaveBeenCalled();
+            runs(function() {
+                form.initialized.then(function() {
+                    then = true;
+                    initialized.then();
+                });
+            });
+
+            waitsFor(function() {
+                return then;
+            }, 'init should call then', 500);
         });
 
-        it('should create form-object', function() {
-            expect($('#form').data('form-object')).toBeDefined();
-        });
+        describe('Init Data-objects', function() {
+            var initialized = jasmine.createSpyObj('initialized', ['then']),
+                form = new Form('#form'),
+                then;
 
-        it('should init input field', function() {
-            expect($('#field').attr('class')).toBe('husky-validate');
-            expect($('#field').data('element')).toBeDefined();
+            beforeEach(function() {
+                $('body').html('<form id="form"><input type="text" id="field"/></form>');
+
+                then = false;
+                runs(function() {
+                    form = new Form('#form');
+                    form.initialized.then(function() {
+                        then = true;
+                        initialized.then();
+                    });
+                });
+
+                waitsFor(function() {
+                    return then;
+                }, 'init should call then', 500);
+            });
+
+            it('should create form-object', function() {
+                expect($('#form').data('form-object')).toBeDefined();
+            });
+
+            it('should init input field', function() {
+                expect($('#field').attr('class')).toBe('husky-validate');
+                expect($('#field').data('element')).toBeDefined();
+            });
         });
     });
 });

@@ -14,6 +14,8 @@ require.config({
     paths: {
         'jquery': 'bower_components/jquery/jquery',
         'text':'bower_components/requirejs-text/text',
+        'globalize': 'bower_components/globalize/lib/globalize',
+        'cultures': 'bower_components/globalize/lib/cultures',
 
         'form': 'js/form',
         'form/mapper': 'js/mapper',
