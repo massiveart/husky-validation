@@ -848,7 +848,7 @@ define('form/mapper',[
 
                             if ($element.length > 0) {
                                 // if field is an collection
-                                if ($.isArray(value)) {
+                                if ($.isArray(value) && $element.data('type') === 'collection') {
                                     that.setCollectionData.call(this, value, $element).then(function() {
                                         resolve();
                                     });
