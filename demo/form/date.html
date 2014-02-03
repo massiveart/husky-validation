@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link href="../../css/validation.css" rel="stylesheet">
+        <link href="../../assets/css/husky.min.css" rel="stylesheet">
+
+        <style type="text/css">
+            #content {
+                margin-left: auto;
+                margin-right: auto;
+                width: 800px;
+                margin-top: 100px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="content">
+            <form id="contact-form" class="grid" data-debug="true" data-language="fr">
+                <div class="grid-row">
+
+                    <div class="grid-col-4">
+                        <label>Date:</label>
+                        <input type="date"
+                               class="form-element"
+                               id="date"/>
+                    </div>
+
+                    <div class="grid-col-4">
+                        <label>Time:</label>
+                        <input type="time"
+                               class="form-element"
+                               id="time"/>
+                    </div>
+
+                    <div class="grid-col-4">
+                        <label>DateTime:</label>
+                        <input type="datetime"
+                               class="form-element"
+                               id="datetime"/>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <script src="../../assets/js/jquery.js"></script>
+        <script data-main="app_min.js" type="text/javascript" src="../../assets/js/require.js"></script>
+    </body>
+</html>
