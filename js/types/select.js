@@ -9,7 +9,8 @@
  */
 
 define([
-    'type/default'
+    'type/default',
+    'form/util'
 ], function(Default) {
 
     'use strict';
@@ -27,7 +28,7 @@ define([
 
                 getValue: function() {
                     var result = {};
-                    result[this.options.id] = this.$el.val();
+                    result[this.options.id] = Util.getValue(this.$el);
                     result[this.options.label] = this.$el.find('option:selected').text();
                     return result;
                 },

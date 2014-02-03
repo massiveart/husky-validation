@@ -9,8 +9,9 @@
  */
 
 define([
-    'type/default'
-], function(Default) {
+    'type/default',
+    'form/util'
+], function(Default, Util) {
 
     'use strict';
 
@@ -25,13 +26,13 @@ define([
                 },
 
                 validate: function() {
-                    var val = this.$el.val();
+                    var val = Util.getValue(this.$el);
 
                     if (val === '') {
                         return true;
                     }
 
-                    return this.options.regExp.test(this.$el.val());
+                    return this.options.regExp.test(Util.getValue(this.$el));
                 }
             };
 

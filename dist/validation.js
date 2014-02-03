@@ -1659,7 +1659,8 @@ define('validator/max',[
 
             result = $.extend(new Default($el, form, defaults, options, 'max'), {
                 validate: function() {
-                    var val = this.$el.val();
+                    var val = this.$el.html();
+                    alert('hallo');
                     return Number(val) <= this.data.max;
                 }
             });

@@ -22,7 +22,7 @@ define([], function() {
 
         // get form fields
         getFields: function(element) {
-            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="collection"]');
+            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="collection"], *[contenteditable="true"]');
         },
 
         /**
@@ -70,6 +70,30 @@ define([], function() {
             }.bind(this));
 
             return options;
+        },
+
+        /**
+         * Returns input values for elements
+         * @param $el {String|Object} valid selector or dom-object
+         * @returns {String} value or empty string
+         */
+        getValue: function($el) {
+            $el = $($el);
+            if($el.val() !== '') {
+                return $el.val();
+            } else if($el.html !== '') {
+                return $el.html();
+            }
+            return '';
+        },
+
+        /**
+         * Sets a value for an element
+         */
+        setValue: function($el, value) {
+            $el = $(el);
+            //todo add html()
+            $el.val(value);
         },
 
         debug: function(p1, p2, p3) {

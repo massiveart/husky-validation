@@ -9,8 +9,9 @@
  */
 
 define([
-    'validator/default'
-], function(Default) {
+    'validator/default',
+    'form/util'
+], function(Default, Util) {
 
     'use strict';
 
@@ -24,7 +25,7 @@ define([
                     // TODO flags
                     var pattern = this.data.regex,
                         regex = new RegExp(pattern),
-                        val = this.$el.val();
+                        val = Util.getValue(this.$el);
 
                     if (val === '') {
                         return true;
