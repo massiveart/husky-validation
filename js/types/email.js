@@ -27,7 +27,7 @@ define([
                         return true;
                     }
 
-                    return this.options.regExp.test(Util.getValue(this.$el));
+                    return this.options.regExp.test(val);
                 },
 
                 needsValidation: function() {

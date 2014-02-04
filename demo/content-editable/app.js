@@ -7,29 +7,21 @@ requirejs.config({
 });
 
 define(['js/form', 'globalize'], function(Form) {
-    var language = 'de', form;
+
+    'use strict';
+
+    var language = 'de', form, $form;
 
     require(['cultures/globalize.culture.' + language], function() {
         Globalize.culture(language);
     }.bind(this));
 
-    form = new Form($('#content-form'), {debug: true});
+    $form = $('#content-form');
+    form = new Form($form, {debug: true});
 
-    $('#content-form').on('submit', function() {
+    $form.on('submit', function() {
         console.log(form.mapper.getData());
 
         return false;
-    });
-
-    $('#set-data').on('click', function() {
-        form.mapper.setData({
-            title: 'Titel',
-            tags: [
-                'tag1',
-                'tag2'
-            ],
-            url: '/testurl',
-            article: 'asdfasdf'
-        });
     });
 });

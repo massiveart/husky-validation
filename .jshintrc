@@ -4,6 +4,8 @@
         "_": false,
         "Globalize": false,
         "require": false,
+        "requirejs": false,
+        "console": false,
         "define": false
     },
     "bitwise": true,
