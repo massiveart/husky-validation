@@ -90,8 +90,8 @@ define([], function() {
         /**
          * Sets a value for an element
          */
-        setValue: function($el, value) {
-            $el = $(el);
+        setValue: function(el, value) {
+            var $el = $(el);
             //todo add html()
             $el.val(value);
         },

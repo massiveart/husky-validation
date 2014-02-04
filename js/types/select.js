@@ -11,7 +11,7 @@
 define([
     'type/default',
     'form/util'
-], function(Default) {
+], function(Default, Util) {
 
     'use strict';
 

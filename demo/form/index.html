@@ -67,8 +67,8 @@
                                data-type="label"
                                data-type-label="name"
                                data-type-id="id">
-                            Phone [minlength=6, maxlength=30]:
-                        </label>
+                            Phone
+                        </label><span>[minlength=6, maxlength=30]</span>
                         <input type="text"
                                class="form-element"
                                id="phone"
@@ -80,6 +80,12 @@
                                data-validation-max-length="30"/>
                     </div>
                 </div>
+                <div class="grid-row" id="emails" data-mapper-property="emails" data-type="collection">
+                    <div class="grid-col-4">
+                        <label>Email</label>
+                        <input type="text" class="form-element" data-type="email" data-validation-equal="group1" data-mapper-property="email"/>
+                    </div>
+                </div>
                 <div class="grid-row">
                     <div class="grid-col-4">
                         <label>Country</label>
@@ -88,14 +94,6 @@
                             <option value="2">CH</option>
                             <option value="3">DE</option>
                         </select>
-                    </div>
-                    <div class="grid-col-4">
-                        <label>Email 1</label>
-                        <input type="text" class="form-element" data-type="email" data-validation-equal="group1" />
-                    </div>
-                    <div class="grid-col-4">
-                        <label>Email 2</label>
-                        <input type="text" class="form-element" data-type="email" data-validation-equal="group1" />
                     </div>
                 </div>
                 <div class="grid-row">
