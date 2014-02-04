@@ -23,7 +23,6 @@ define([
             result = $.extend(new Default($el, form, defaults, options, 'max'), {
                 validate: function() {
                     var val = Util.getValue(this.$el);
-                    console.log(val);
                     return Number(val) <= this.data.max;
                 }
             });

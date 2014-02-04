@@ -73,13 +73,24 @@ define([], function() {
         },
 
         /**
+         * returns true if .val can be used to this dom object
+         * @param el {String|Object} valid selector or dom-object
+         * @returns {Boolean}
+         */
+        isValueField: function(el) {
+            var $el = $(el);
+
+            return $el.is('input', 'select', 'textarea', 'option', 'button');
+        },
+
+        /**
          * Returns input values for elements
-         * @param $el {String|Object} valid selector or dom-object
+         * @param el {String|Object} valid selector or dom-object
          * @returns {String} value or empty string
          */
-        getValue: function($el) {
-            $el = $($el);
-            if ($el.is('input', 'select', 'textarea', 'option', 'button')) {
+        getValue: function(el) {
+            var $el = $(el);
+            if (this.isValueField($el)) {
                 return $el.val();
             } else {
                 return $el.html();
@@ -88,12 +99,12 @@ define([], function() {
 
         /**
          * Sets a value for an element
-         * @param $el {String|Object} valid selector or dom-object to set the value for
+         * @param el {String|Object} valid selector or dom-object to set the value for
          * @param value {String|Number} value to insert
          */
-        setValue: function($el, value) {
-            $el = $($el);
-            if ($el.is('input', 'select', 'textarea', 'option', 'button')) {
+        setValue: function(el, value) {
+            var $el = $(el);
+            if (this.isValueField($el)) {
                 $el.val(value);
             } else {
                 $el.html(value);
