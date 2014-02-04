@@ -4,6 +4,7 @@
         "_": false,
         "Globalize": false,
         "require": false,
+        "requirejs": false,
         "define": false
     },
     "bitwise": true,

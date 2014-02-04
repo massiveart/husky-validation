@@ -8,7 +8,9 @@
  *
  */
 
-define(function() {
+define([
+    'form/util'
+],function(Util) {
 
     'use strict';
 
@@ -38,12 +40,12 @@ define(function() {
 
                 // mapper functionality set value into input
                 setValue: function(value) {
-                    this.$el.val(this.getViewData.call(this, value));
+                    Util.setValue(this.$el, this.getViewData.call(this, value));
                 },
 
                 // mapper functionality get value from input
                 getValue: function() {
-                    return this.getModelData.call(this, this.$el.val());
+                    return this.getModelData.call(this, Util.getValue(this.$el));
                 },
 
                 // internationalization of view data: default none

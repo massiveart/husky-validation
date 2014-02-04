@@ -9,8 +9,7 @@
  */
 
 define([
-    'type/default',
-    'form/util'
+    'type/default'
 ], function(Default) {
 
     'use strict';
