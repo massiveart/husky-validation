@@ -79,21 +79,25 @@ define([], function() {
          */
         getValue: function($el) {
             $el = $($el);
-            if($el.val() !== '') {
+            if ($el.is('input', 'select', 'textarea', 'option', 'button')) {
                 return $el.val();
-            } else if($el.html !== '') {
+            } else {
                 return $el.html();
             }
-            return '';
         },
 
         /**
          * Sets a value for an element
+         * @param $el {String|Object} valid selector or dom-object to set the value for
+         * @param value {String|Number} value to insert
          */
         setValue: function($el, value) {
-            $el = $(el);
-            //todo add html()
-            $el.val(value);
+            $el = $($el);
+            if ($el.is('input', 'select', 'textarea', 'option', 'button')) {
+                $el.val(value);
+            } else {
+                $el.html(value);
+            }
         },
 
         debug: function(p1, p2, p3) {
