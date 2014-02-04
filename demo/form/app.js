@@ -49,6 +49,14 @@ define(['js/form', 'globalize'], function(Form) {
                     },
                     phone: "+43 664 4119649"
                 }
+            ],
+            emails:[
+                {
+                    email: 'office@asdf.at'
+                },
+                {
+                    email: 'office@asdf.at'
+                }
             ]
         }).then(
             function() {
