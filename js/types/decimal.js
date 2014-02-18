@@ -21,8 +21,9 @@ define([
             },
 
             typeInterface = {
-                initializeSub: function() {
+                initializeSub: function(dfd) {
                     // TODO internationalization
+                    dfd.resolve();
                 },
 
                 validate: function() {

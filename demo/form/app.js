@@ -25,44 +25,46 @@ define(['js/form', 'globalize'], function(Form) {
     });
 
     $('#setdata').on('click', function() {
-        form.mapper.setData({
-            firstName: 'Johannes',
-            lastName: 'Wachter',
-            birthDay: '2013-09-18T08:05:00',
-            wage: 1500,
-            country: {
-                id: 2,
-                name: 'CH'
-            },
-            phones: [
-                {
-                    type: {
-                        id: 5,
-                        name: "Privat"
-                    },
-                    phone: "+43 676 3596681"
+        form.initialized.then(function() {
+            form.mapper.setData({
+                firstName: 'Johannes',
+                lastName: 'Wachter',
+                birthDay: '2013-09-18T08:05:00',
+                wage: 1500,
+                country: {
+                    id: 2,
+                    name: 'CH'
                 },
-                {
-                    type: {
-                        id: 5,
-                        name: "Mobil"
+                phones: [
+                    {
+                        type: {
+                            id: 5,
+                            name: "Privat"
+                        },
+                        phone: "+43 676 3596681"
                     },
-                    phone: "+43 664 4119649"
+                    {
+                        type: {
+                            id: 5,
+                            name: "Mobil"
+                        },
+                        phone: "+43 664 4119649"
+                    }
+                ],
+                emails: [
+                    {
+                        email: 'office@asdf.at'
+                    },
+                    {
+                        email: 'office@asdf.at'
+                    }
+                ]
+            }).then(
+                function() {
+                    console.log('resolved');
                 }
-            ],
-            emails:[
-                {
-                    email: 'office@asdf.at'
-                },
-                {
-                    email: 'office@asdf.at'
-                }
-            ]
-        }).then(
-            function() {
-                console.log('resolved');
-            }
-        );
+            );
+        });
 
         console.log('started');
     });
