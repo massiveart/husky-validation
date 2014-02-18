@@ -1,3 +1,4 @@
+
 /*
  * This file is part of the Husky Validation.
  *
@@ -261,7 +262,6 @@ define('form/element',['form/util'], function(Util) {
                 resolveInitialization: function() {
                     this.requireCounter--;
                     if (this.requireCounter === 0) {
-                        Util.debug('resolve element');
                         dfd.resolve();
                     }
                 },
@@ -2008,7 +2008,7 @@ define('validator/equal',[
 
             result = $.extend(new Default($el, form, defaults, options, 'equal'), {
 
-                initializeSub: function(dfd) {
+                initializeSub: function() {
                     // init related elements
                     element.initialized.then(function() {
                         $.each(form.elements, function(key, element) {
@@ -2099,4 +2099,3 @@ define('validator/regex',[
     };
 
 });
-
