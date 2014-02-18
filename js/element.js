@@ -64,7 +64,6 @@ define(['form/util'], function(Util) {
                 resolveInitialization: function() {
                     this.requireCounter--;
                     if (this.requireCounter === 0) {
-                        Util.debug('resolve element');
                         dfd.resolve();
                     }
                 },
