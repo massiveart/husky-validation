@@ -64,6 +64,7 @@ define(['form/util'], function(Util) {
                 resolveInitialization: function() {
                     this.requireCounter--;
                     if (this.requireCounter === 0) {
+                        Util.debug('resolve element');
                         dfd.resolve();
                     }
                 },
@@ -144,8 +145,12 @@ define(['form/util'], function(Util) {
                             this.requireCounter++;
                             require(['type/' + typeName], function(Type) {
                                 type = new Type(this.$el, options);
-                                Util.debug('Element Type', typeName, options);
-                                that.resolveInitialization.call(this);
+
+                                type.initialized.then(function() {
+                                    Util.debug('Element Type', typeName, options);
+                                    that.resolveInitialization.call(this);
+                                }.bind(this));
+
                             }.bind(this));
                         }.bind(this),
                         options = Util.buildOptions(this.options, 'type'),

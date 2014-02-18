@@ -21,8 +21,14 @@ define([
                     this.$el = $el;
                     this.options = $.extend({}, defaults, options);
 
+                    var dfd = $.Deferred();
+                    this.requireCounter = 0;
+                    this.initialized = dfd.promise();
+
                     if (!!this.initializeSub) {
-                        this.initializeSub();
+                        this.initializeSub(dfd);
+                    } else {
+                        dfd.resolve();
                     }
                 }
             },

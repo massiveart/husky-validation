@@ -55,7 +55,7 @@ define([
 
             result = $.extend(new Default($el, form, defaults, options, 'equal'), {
 
-                initializeSub: function() {
+                initializeSub: function(dfd) {
                     // init related elements
                     element.initialized.then(function() {
                         $.each(form.elements, function(key, element) {
