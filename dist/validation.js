@@ -261,6 +261,7 @@ define('form/element',['form/util'], function(Util) {
                 resolveInitialization: function() {
                     this.requireCounter--;
                     if (this.requireCounter === 0) {
+                        Util.debug('resolve element');
                         dfd.resolve();
                     }
                 },
@@ -1519,13 +1520,6 @@ define('type/select',[
             },
 
             typeInterface = {
-                initializeSub: function(dfd) {
-                    setTimeout(function() {
-                        Util.debug('haha');
-                        dfd.resolve();
-                    }, 5000);
-                },
-
                 setValue: function(value) {
                     this.$el.val(value[this.options.id]);
                 },
@@ -2014,7 +2008,7 @@ define('validator/equal',[
 
             result = $.extend(new Default($el, form, defaults, options, 'equal'), {
 
-                initializeSub: function() {
+                initializeSub: function(dfd) {
                     // init related elements
                     element.initialized.then(function() {
                         $.each(form.elements, function(key, element) {
