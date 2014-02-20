@@ -211,7 +211,7 @@ define([
                             // resolve this set data
                             resolve();
                         }
-                    } else {
+                    } else if (data !== null && !$.isEmptyObject(data)) {
                         count = Object.keys(data).length;
                         $.each(data, function(key, value) {
                             // search field with mapper property
@@ -244,6 +244,8 @@ define([
                                 resolve();
                             }
                         }.bind(this));
+                    } else {
+                        dfd.resolve();
                     }
 
                     return dfd.promise();
