@@ -1,4 +1,3 @@
-
 /*
  * This file is part of the Husky Validation.
  *
@@ -1161,10 +1160,9 @@ define('type/default',[
                     this.initialized = dfd.promise();
 
                     if (!!this.initializeSub) {
-                        this.initializeSub(dfd);
-                    } else {
-                        dfd.resolve();
+                        this.initializeSub();
                     }
+                    dfd.resolve();
                 }
             },
 
@@ -2099,3 +2097,4 @@ define('validator/regex',[
     };
 
 });
+

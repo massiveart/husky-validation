@@ -26,10 +26,9 @@ define([
                     this.initialized = dfd.promise();
 
                     if (!!this.initializeSub) {
-                        this.initializeSub(dfd);
-                    } else {
-                        dfd.resolve();
+                        this.initializeSub();
                     }
+                    dfd.resolve();
                 }
             },
 
