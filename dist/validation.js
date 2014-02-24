@@ -875,7 +875,7 @@ define('form/mapper',[
                             // resolve this set data
                             resolve();
                         }
-                    } else {
+                    } else if (data !== null && !$.isEmptyObject(data)) {
                         count = Object.keys(data).length;
                         $.each(data, function(key, value) {
                             // search field with mapper property
@@ -908,6 +908,8 @@ define('form/mapper',[
                                 resolve();
                             }
                         }.bind(this));
+                    } else {
+                        dfd.resolve();
                     }
 
                     return dfd.promise();
@@ -1325,9 +1327,7 @@ define('type/decimal',[
             },
 
             typeInterface = {
-                initializeSub: function(dfd) {
-                    // TODO internationalization
-                    dfd.resolve();
+                initializeSub: function() {
                 },
 
                 validate: function() {
