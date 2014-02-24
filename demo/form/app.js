@@ -24,7 +24,21 @@ define(['js/form', 'globalize'], function(Form) {
         return false;
     });
 
+    $('#setnull').on('click', function() {
+        console.log('started setnull');
+
+        form.initialized.then(function() {
+            form.mapper.setData({}).then(
+                function() {
+                    console.log('resolved setnull');
+                }
+            );
+        });
+    });
+
     $('#setdata').on('click', function() {
+        console.log('started setdata');
+
         form.initialized.then(function() {
             form.mapper.setData({
                 firstName: 'Johannes',
@@ -61,11 +75,9 @@ define(['js/form', 'globalize'], function(Form) {
                 ]
             }).then(
                 function() {
-                    console.log('resolved');
+                    console.log('resolved setdata');
                 }
             );
         });
-
-        console.log('started');
     });
 });
