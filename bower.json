@@ -9,8 +9,8 @@
         "**/*.txt"
     ],
     "dependencies": {
-        "requirejs": "~2.1.4",
-        "jquery": "~1.10.x",
+        "requirejs": "2.1.*",
+        "jquery": "2.1.*",
         "globalize": "0.1.*"
     }
 }
