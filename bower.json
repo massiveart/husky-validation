@@ -1,0 +1,16 @@
+{
+    "name": "massiveart/husky-validation",
+    "version": "0.1.0",
+    "main": "js/form.js",
+    "description": "Formhandler for the Sulu 2.0 CMF. It handles validation and data-mapping.",
+    "license": "MIT",
+    "ignore": [
+        ".jshintrc",
+        "**/*.txt"
+    ],
+    "dependencies": {
+        "requirejs": "2.1.*",
+        "jquery": "2.1.*",
+        "globalize": "0.1.*"
+    }
+}

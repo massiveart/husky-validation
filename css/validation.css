@@ -1,0 +1,17 @@
+.husky-auto-complete-success .husky-validate:not(label), .husky-validate-success .husky-validate:not(label) {
+    border-color: #1FCA23;
+    border-width: 2px;
+    background-image: url('../assets/img/checkmark.svg');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 30px;
+}
+
+.husky-auto-complete-error label, .husky-validate-error label, .husky-auto-complete-error .control-label, .husky-validate-error .control-label {
+    color: #AD0710;
+}
+
+.husky-auto-complete-error .husky-validate:not(label), .husky-validate-error .husky-validate:not(label) {
+    border-color: #AD0710;
+    border-width: 2px;
+}

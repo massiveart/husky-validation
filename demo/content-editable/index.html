@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link href="../../css/validation.css" rel="stylesheet">
+        <link href="../../assets/css/husky.min.css" rel="stylesheet">
+
+        <style type="text/css">
+            #content {
+                margin-left: auto;
+                margin-right: auto;
+                width: 800px;
+                margin-top: 100px;
+            }
+            span {
+                display: block;
+                width: 100%;
+                background: #fff;
+                line-height: 25px;
+                font-size: 14px;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            span br {
+                display: none;
+            }
+            span * {
+                display: inline;
+                white-space: nowrap;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="content">
+            <form id="content-form" class="grid">
+
+                <div class="grid-row">
+                    <label for="title" class="pointer required">Title</label>
+
+                    <span  class="form-element"
+                           id="title"
+                           data-mapper-property="title"
+                           data-validation-required="true"
+                           contenteditable="true"
+                           data-form="true">This is a demo with the HTML5-contenteditable attribute</span>
+                </div>
+
+                <hr class="divider"/>
+
+                <div class="grid-row">
+                    <label class="pointer required">Url</label>
+
+                    <span  class="form-element"
+                           id="url"
+                           data-mapper-property="url"
+                           data-validation-required="true"
+                           contenteditable="true"></span>
+                </div>
+
+                <div class="grid-row">
+                    <div class="grid-col-6">
+                        <label class="pointer required">Number [max = 10]</label>
+
+                        <span class="form-element"
+                               data-validation-required="true"
+                               data-validation-max="10"
+                               contenteditable="true"></span>
+                    </div>
+                    <div class="grid-col-6">
+                        <label class="pointer required">Number [min = 50]</label>
+
+                        <span class="form-element"
+                              data-validation-required="true"
+                              data-validation-min="50"
+                              contenteditable="true"></span>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-col-6">
+                            <label class="pointer required">String [max-length = 5]</label>
+
+                            <span class="form-element"
+                                  data-validation-required="true"
+                                  data-validation-max-length="5"
+                                  contenteditable="true"></span>
+                        </div>
+                        <div class="grid-col-6">
+                            <label class="pointer required">String [min-length = 5]</label>
+
+                            <span class="form-element"
+                                  data-validation-required="true"
+                                  data-validation-min-length="5"
+                                  contenteditable="true"></span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+        <script src="../../assets/js/jquery.js"></script>
+        <script data-main="app.js" type="text/javascript" src="../../assets/js/require.js"></script>
+    </body>
+</html>
