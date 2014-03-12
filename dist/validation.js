@@ -1,3 +1,4 @@
+
 /*
  * This file is part of the Husky Validation.
  *
@@ -2097,4 +2098,3 @@ define('validator/regex',[
     };
 
 });
-
