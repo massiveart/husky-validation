@@ -136,8 +136,7 @@ define([
                             if (count === 0) {
                                 dfd.resolve();
                             }
-                        }
-                        ;
+                        };
 
                     // remove children
                     $element.children().each(function(key, value) {
@@ -234,11 +233,13 @@ define([
                         $.each(data, function(key, value) {
                             // search field with mapper property
 
-                            var selection, $element, element,
+                            var $element, element,
                                 collection = $.grep(this.collections, function(e) {
                                     // if is array collection
                                     if ($.isArray(e.property) && e.property.indexOf(key) !== -1) {
-                                        e.$child = $($.grep(e.element.$children, function(el) {return (el.dataset.mapperPropertyId === key)})[0]);
+                                        e.$child = $($.grep(e.element.$children, function(el) {
+                                            return (el.dataset.mapperPropertyId === key)
+                                        })[0]);
                                         return true;
                                     }
                                     return e.property === key;
@@ -255,24 +256,23 @@ define([
                                 element = $element.data('element');
 
                                 if ($element.length > 0) {
-                                        // if element is not in form add it
-                                        if (!element) {
-                                            element = form.addField($element);
-                                            element.initialized.then(function() {
-                                                element.setValue(value);
-                                                // resolve this set data
-                                                resolve();
-                                            });
-                                        } else {
+                                    // if element is not in form add it
+                                    if (!element) {
+                                        element = form.addField($element);
+                                        element.initialized.then(function() {
                                             element.setValue(value);
                                             // resolve this set data
                                             resolve();
-                                        }
+                                        });
+                                    } else {
+                                        element.setValue(value);
+                                        // resolve this set data
+                                        resolve();
+                                    }
                                 } else {
                                     resolve();
                                 }
                             }
-
                         }.bind(this));
                     } else {
                         dfd.resolve();
@@ -302,12 +302,7 @@ define([
                         if ($.isArray(property)) {
                             // special case: collection array
                             $.each(property, function(i, prop) {
-                                data[prop] = [];
                                 data[prop] = that.processData.call(this, $childElement, prop);
-//                                $.each($children, function(i,child) {
-//                                    child.dataset.type = 'collection';
-//                                    data[prop].push(that.processData.call(this, child));
-//                                });
                             }.bind(this));
                         } else if (property.match(/.*\..*/)) {
                             parts = property.split('.');
