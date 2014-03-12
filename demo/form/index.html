@@ -63,8 +63,8 @@
                 </div>
 
                 <h2>multiple data</h2>
-                <div class="grid-row" id='phonesandemails' data-mapper-property='["phones","emails"]' data-type="collection">
-                    <div data-mapper-property-id="phones" class="grid-col-4 floating">
+                <div class="grid-row" id='phonesandemails' data-mapper-property='[{"data":"phones","tpl":"phones-tpl"},{"data":"emails","tpl":"emails-tpl"}]' data-type="collection">
+                    <div data-mapper-property-tpl="phones-tpl" class="grid-col-4 floating">
                         <label>Phone
                             <span data-mapper-property="type"
                                      data-type="label"
@@ -76,7 +76,7 @@
                                name="phone"
                                data-mapper-property="phone" />
                     </div>
-                    <div data-mapper-property-id="emails" class="grid-col-4 floating">
+                    <div data-mapper-property-tpl="emails-tpl" class="grid-col-4 floating">
                         <label>Email
                             <span data-mapper-property="type"
                                   data-type="label"
@@ -91,7 +91,7 @@
                 </div>
 
                 <h2>single collections</h2>
-                <div class="grid-row" id="fax" data-mapper-property="fax" data-type="collection">
+                <div class="grid-row" id="faxes" data-mapper-property="faxes" data-type="collection">
                     <div class="grid-col-4 floating">
                         <label>Fax
                             <span data-mapper-property="type"

@@ -38,7 +38,7 @@ define([
                         element = $element.data('element'),
                         property = $element.data('mapper-property');
 
-                    if ($.isArray(property)) {
+                    if ($.isArray(property) || typeof property === 'object') {
                         // special case: collection array
                         element.$children = $element.children().clone();
                     } else {
@@ -70,7 +70,7 @@ define([
                     if (collectionElement.getType().canAdd()) {
                         that.appendChildren.call(this, $collectionElement, collectionElement.$children);
 
-                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
+//                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
                     }
                 },
 
@@ -84,7 +84,7 @@ define([
                     if (collectionElement.getType().canRemove()) {
                         that.remove.call(this, $element);
 
-                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
+//                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
                     }
                 },
 
@@ -106,7 +106,7 @@ define([
                     } else {
                         result = [];
                         $.each($el.children(), function(key, value) {
-                            if (!prop || prop === value.dataset.mapperPropertyId) {
+                            if (!prop || prop.tpl === value.dataset.mapperPropertyTpl) {
                                 item = form.mapper.getData($(value));
 
                                 var keys = Object.keys(item);
@@ -130,7 +130,6 @@ define([
                         $child = collectionElement.$child ? collectionElement.$child : collectionElement.element.$children,
                         count = collection.length,
                         dfd = $.Deferred(),
-                        $currentChild,
                         resolve = function() {
                             count--;
                             if (count === 0) {
@@ -153,7 +152,7 @@ define([
                     });
 
                     // set current length of collection
-                    $('#current-counter-' + $element.data('mapper-property')).text(collection.length);
+//                    $('#current-counter-' + $element.data('mapper-property')).text(collection.length);
 
                     return dfd.promise();
                 },
@@ -233,16 +232,16 @@ define([
                         $.each(data, function(key, value) {
                             // search field with mapper property
 
-                            var $element, element,
-                                collection = $.grep(this.collections, function(e) {
-                                    // if is array collection
-                                    if ($.isArray(e.property) && e.property.indexOf(key) !== -1) {
-                                        e.$child = $($.grep(e.element.$children, function(el) {
-                                            return (el.dataset.mapperPropertyId === key)
+                            var $element, element, colprop,
+                                collection = $.grep(this.collections, function(col) {
+                                    // if collection is array and "data" == key
+                                    if ($.isArray(col.property) && (colprop = $.grep(col.property, function(prop){return prop.data === key;})).length > 0) {
+                                        col.$child = $($.grep(col.element.$children, function(el) {
+                                            return (el.dataset.mapperPropertyTpl === colprop[0].tpl);
                                         })[0]);
                                         return true;
                                     }
-                                    return e.property === key;
+                                    return col.property === key;
                                 });
 
                             // if field is a collection
@@ -302,7 +301,7 @@ define([
                         if ($.isArray(property)) {
                             // special case: collection array
                             $.each(property, function(i, prop) {
-                                data[prop] = that.processData.call(this, $childElement, prop);
+                                data[prop.data] = that.processData.call(this, $childElement, prop);
                             }.bind(this));
                         } else if (property.match(/.*\..*/)) {
                             parts = property.split('.');

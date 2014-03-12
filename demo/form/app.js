@@ -65,7 +65,7 @@ define(['js/form', 'globalize'], function(Form) {
                         phone: "+43 664 4119649"
                     }
                 ],
-                fax: [
+                faxes: [
                     {
                         type: {
                             id: 5,
