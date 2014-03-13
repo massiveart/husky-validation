@@ -230,18 +230,22 @@ define([
                     } else if (data !== null && !$.isEmptyObject(data)) {
                         count = Object.keys(data).length;
                         $.each(data, function(key, value) {
-                            // search field with mapper property
-
                             var $element, element, colprop,
+                                // search for occurence  in collections
                                 collection = $.grep(this.collections, function(col) {
                                     // if collection is array and "data" == key
                                     if ($.isArray(col.property) && (colprop = $.grep(col.property, function(prop){return prop.data === key;})).length > 0) {
+                                        // get template of collection
                                         col.$child = $($.grep(col.element.$children, function(el) {
                                             return (el.dataset.mapperPropertyTpl === colprop[0].tpl);
                                         })[0]);
+                                        // if template is markuped via '<script>'
+                                        if (col.$child.is('script')) {
+                                            col.$child = $(col.$child.html());
+                                        }
                                         return true;
                                     }
-                                    return col.property === key;
+                                    return col.property === key; // TODO: return false, when collection only accepts array of objects anymore
                                 });
 
                             // if field is a collection
@@ -250,6 +254,7 @@ define([
                                     resolve();
                                 });
                             } else {
+                                // search field with mapper property
                                 selector = '*[data-mapper-property="' + key + '"]';
                                 $element = $el.find(selector);
                                 element = $element.data('element');
