@@ -90,12 +90,8 @@ define(['js/form', 'globalize'], function(Form) {
                     }
                 ],
                 jobs: [
-                    {
-                        job: 'Developer'
-                    },
-                    {
-                        job: 'Maintainer'
-                    }
+                    'Developer',
+                    'Maintainer'
                 ]
             }).then(
                 function() {
