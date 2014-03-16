@@ -88,6 +88,14 @@ define(['js/form', 'globalize'], function(Form) {
                     {
                         email: 'office2@asdf.at'
                     }
+                ],
+                jobs: [
+                    {
+                        job: 'Developer'
+                    },
+                    {
+                        job: 'Maintainer'
+                    }
                 ]
             }).then(
                 function() {
