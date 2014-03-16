@@ -7,6 +7,9 @@ requirejs.config({
 });
 
 define(['js/form', 'globalize'], function(Form) {
+
+    'use strict';
+
     var language = 'de',
         form = new Form($('#contact-form'));
 
