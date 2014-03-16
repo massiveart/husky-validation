@@ -1,4 +1,3 @@
-
 /*
  * This file is part of the Husky Validation.
  *
@@ -701,10 +700,10 @@ define('form/mapper',[
                 initCollection: function(key, value) {
                     var $element = $(value),
                         element = $element.data('element'),
-                        property = $element.data('mapper-property');
+                        property = $element.data('mapper-property'),
+                        $newChild;
 
                     if ($.isArray(property) || typeof property === 'object') {
-                        var $newChild;
                         // special case: collection array
                         element.$children = $element.children().clone(true);
                         element.$children.each(function(i, child) {
@@ -765,7 +764,7 @@ define('form/mapper',[
                     }
                 },
 
-                processData: function(el, prop) {
+                processData: function(el, collection) {
                     // get attributes
                     var $el = $(el),
                         type = $el.data('type'),
@@ -783,7 +782,7 @@ define('form/mapper',[
                     } else {
                         result = [];
                         $.each($el.children(), function(key, value) {
-                            if (!prop || prop.tpl === value.dataset.mapperPropertyTpl) {
+                            if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 item = form.mapper.getData($(value));
 
                                 var keys = Object.keys(item);
@@ -976,12 +975,11 @@ define('form/mapper',[
                         $childElement = $($elements.get(0));
                         property = $childElement.data('mapper-property');
 
-
                         if ($.isArray(property)) {
                             // special case: collection array
                             $.each(property, function(i, prop) {
                                 data[prop.data] = that.processData.call(this, $childElement, prop);
-                            }.bind(this));
+                            });
                         } else if (property.match(/.*\..*/)) {
                             parts = property.split('.');
                             data[parts[0]] = {};
@@ -2147,3 +2145,4 @@ define('validator/regex',[
     };
 
 });
+
