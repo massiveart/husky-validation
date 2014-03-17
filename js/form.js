@@ -51,6 +51,11 @@ define([
     return function(el, options) {
         var defaults = {
                 debug: false,                     // debug on/off
+                delimiter: {                      // defines which delimiter should be used for templating
+                    interpolate: /<~=(.+?)~>/g,
+                    escape: /<~-(.+?)~>/g,
+                    evaluate: /<~(.+?)~>/g
+                },
                 validation: true,                 // validation on/off
                 validationTrigger: 'focusout',    // default validate trigger
                 validationAddClassesParent: true, // add classes to parent element

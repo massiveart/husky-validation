@@ -826,7 +826,7 @@ define('form/mapper',[
 
                     // foreach collection elements: create a new dom element, call setData recursively
                     $.each(collection, function(key, value) {
-                        that.appendChildren($element, $child).then(function($newElement) {
+                        that.appendChildren($element, $child, value).then(function($newElement) {
                             form.mapper.setData(value, $newElement).then(function() {
                                 resolve();
                             });
@@ -839,8 +839,9 @@ define('form/mapper',[
                     return dfd.promise();
                 },
 
-                appendChildren: function($element, $child) {
-                    var template = _.template($child.tpl)(),
+                appendChildren: function($element, $child, value) {
+                    value = value || {};
+                    var template = _.template($child.tpl, value, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
                         dfd = $.Deferred(),
@@ -1078,6 +1079,11 @@ define('form',[
     return function(el, options) {
         var defaults = {
                 debug: false,                     // debug on/off
+                delimiter: {                      // defines which delimiter should be used for templating
+                    interpolate: /<~=(.+?)~>/g,
+                    escape: /<~-(.+?)~>/g,
+                    evaluate: /<~(.+?)~>/g
+                },
                 validation: true,                 // validation on/off
                 validationTrigger: 'focusout',    // default validate trigger
                 validationAddClassesParent: true, // add classes to parent element

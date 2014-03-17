@@ -161,7 +161,7 @@ define([
 
                     // foreach collection elements: create a new dom element, call setData recursively
                     $.each(collection, function(key, value) {
-                        that.appendChildren($element, $child).then(function($newElement) {
+                        that.appendChildren($element, $child, value).then(function($newElement) {
                             form.mapper.setData(value, $newElement).then(function() {
                                 resolve();
                             });
@@ -174,8 +174,9 @@ define([
                     return dfd.promise();
                 },
 
-                appendChildren: function($element, $child) {
-                    var template = _.template($child.tpl)(),
+                appendChildren: function($element, $child, value) {
+                    value = value || {};
+                    var template = _.template($child.tpl, value, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
                         dfd = $.Deferred(),
