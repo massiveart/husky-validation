@@ -11,6 +11,7 @@
     "dependencies": {
         "requirejs": "2.1.*",
         "jquery": "2.1.*",
-        "globalize": "0.1.*"
+        "globalize": "0.1.*",
+        "underscore": "~1.5.1"
     }
 }

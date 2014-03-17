@@ -36,28 +36,32 @@ define([
                 initCollection: function(key, value) {
                     var $element = $(value),
                         element = $element.data('element'),
-                        property = $element.data('mapper-property');
+                        property = $element.data('mapper-property'),
+                        $newChild;
 
-                    if ($.isArray(property) || typeof property === 'object') {
-                        var $newChild;
-                        // special case: collection array
-                        element.$children = $element.children().clone(true);
-                        element.$children.each(function(i, child) {
-                            // if template is markuped as '<script>'
-                            var $child = $(child);
-                            if ($child.is('script')) {
-                                $newChild = $($child.html());
-                                $newChild.attr('data-mapper-property-tpl', $child.data('mapper-property-tpl'));
-                                element.$children[i] = $newChild;
-                            } else {
-                                element.$children[i] = $child;
-                            }
-                        });
-                    } else {
-                        // save first child element
-                        element.$children = $element.children().first().clone();
-                        element.$children.find('*').removeAttr('id');
+                    if (!$.isArray(property)) {
+                        if (typeof property === 'object') {
+                            property = [property];
+                        } else {
+                            throw "no valid mapper-property value";
+                        }
                     }
+
+                    // get templates
+                    element.$children = $element.children().clone(true);
+
+                    // iterate through collection
+                    element.$children.each(function(i, child) {
+                        var $child = $(child);
+
+                        // attention: template has to be markuped as 'script'
+                        if (!$child.is('script')) {
+                            throw 'template has to be defined as <script>';
+                        }
+
+                        $newChild = {tpl: $child.html(), id: $child.attr('id')};
+                        element.$children[i] = $newChild;
+                    });
 
                     // add to collections
                     this.collections.push({
@@ -82,7 +86,7 @@ define([
                     if (collectionElement.getType().canAdd()) {
                         that.appendChildren.call(this, $collectionElement, collectionElement.$children);
 
-//                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
+                        $('#current-counter-' + $collectionElement.attr('id')).text($collectionElement.children().length);
                     }
                 },
 
@@ -96,7 +100,7 @@ define([
                     if (collectionElement.getType().canRemove()) {
                         that.remove.call(this, $element);
 
-//                        $('#current-counter-' + $collectionElement.data('mapper-property')).text($collectionElement.children().length);
+                        $('#current-counter-' + $collectionElement.attr('id')).text($collectionElement.children().length);
                     }
                 },
 
@@ -139,7 +143,7 @@ define([
 
                     // remember first child remove the rest
                     var $element = collectionElement.$element,
-                        $child = collectionElement.$child ? collectionElement.$child : collectionElement.element.$children,
+                        $child = collectionElement.$child.get(0),
                         count = collection.length,
                         dfd = $.Deferred(),
                         resolve = function() {
@@ -164,17 +168,21 @@ define([
                     });
 
                     // set current length of collection
-//                    $('#current-counter-' + $element.data('mapper-property')).text(collection.length);
+                    $('#current-counter-' + $element.attr('id')).text(collection.length);
 
                     return dfd.promise();
                 },
 
                 appendChildren: function($element, $child) {
-                    var $newElement = $child.clone(true),
-                        $newFields = Util.getFields($newElement),
+                    var template = _.template($child.tpl)(),
+                        $template = $(template),
+                        $newFields = Util.getFields($template),
                         dfd = $.Deferred(),
                         counter = $newFields.length,
                         element;
+
+                    // adding
+                    $template.attr('data-mapper-property-tpl', $child.id);
 
                     // add fields
                     $.each($newFields, function(key, field) {
@@ -182,8 +190,8 @@ define([
                         element.initialized.then(function() {
                             counter--;
                             if (counter === 0) {
-                                $element.append($newElement);
-                                dfd.resolve($newElement);
+                                $element.append($template);
+                                dfd.resolve($template);
                             }
                         });
                     }.bind(this));
@@ -243,18 +251,19 @@ define([
                         count = Object.keys(data).length;
                         $.each(data, function(key, value) {
                             var $element, element, colprop,
-                                // search for occurence  in collections
+                            // search for occurence  in collections
                                 collection = $.grep(this.collections, function(col) {
                                     // if collection is array and "data" == key
-                                    if ($.isArray(col.property) && (colprop = $.grep(col.property, function(prop){return prop.data === key;})).length > 0) {
+                                    if ($.isArray(col.property) && (colprop = $.grep(col.property, function(prop) {
+                                        return prop.data === key;
+                                    })).length > 0) {
                                         // get template of collection
                                         col.$child = $($.grep(col.element.$children, function(el) {
-                                            return (el.data('mapper-property-tpl') === colprop[0].tpl);
+                                            return (el.id === colprop[0].tpl);
                                         })[0]);
-
                                         return true;
                                     }
-                                    return col.property === key; // TODO: return false, when collection only accepts array of objects anymore
+                                    return false;
                                 });
 
                             // if field is a collection
@@ -311,9 +320,7 @@ define([
                         $childElement = $($elements.get(0));
                         property = $childElement.data('mapper-property');
 
-
                         if ($.isArray(property)) {
-                            // special case: collection array
                             $.each(property, function(i, prop) {
                                 data[prop.data] = that.processData.call(this, $childElement, prop);
                             }.bind(this));
