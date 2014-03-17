@@ -38,10 +38,15 @@ define([
                 },
 
                 getValue: function() {
-                    var result = {};
-                    result[this.options.idProperty] = this.$el.data('id');
-                    result[this.options.outputProperty] = this.$el.text();
-                    return result;
+                    var id = this.$el.data('id'),
+                        i, len;
+
+                    for (i = -1, len = this.options.data.length; i++ < len;) {
+                        if (this.options.data[i][this.options.idProperty] === id) {
+                            return this.options.data[i];
+                        }
+                    }
+                    return null;
                 },
 
                 needsValidation: function() {
@@ -53,6 +58,6 @@ define([
                 }
             };
 
-        return new Default($el, defaults, options, 'static-text', typeInterface);
+        return new Default($el, defaults, options, 'readonly-select', typeInterface);
     };
 });

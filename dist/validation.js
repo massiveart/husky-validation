@@ -707,6 +707,7 @@ define('form/mapper',[
                     if (!$.isArray(property)) {
                         if (typeof property === 'object') {
                             property = [property];
+                            $element.data('mapper-property', property);
                         } else {
                             throw "no valid mapper-property value";
                         }
@@ -1043,6 +1044,7 @@ require.config({
         'form/util': 'js/util',
 
         'type/default': 'js/types/default',
+        'type/readonly-select': 'js/types/readonlySelect',
         'type/string': 'js/types/string',
         'type/date': 'js/types/date',
         'type/decimal': 'js/types/decimal',
@@ -1596,6 +1598,70 @@ define('type/select',[
             };
 
         return new Default($el, defaults, options, 'select', typeInterface);
+    };
+});
+
+/*
+ * This file is part of the Husky Validation.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ *
+ */
+
+define('type/readonly-select',[
+    'type/default'
+], function(Default) {
+
+    
+
+    return function($el, options) {
+        var defaults = {
+                id: null,
+                data: [],
+                idProperty: 'id',
+                outputProperty: 'name'
+            },
+
+            typeInterface = {
+                setValue: function(value) {
+                    var data = this.options.data,
+                        idProperty = this.options.idProperty,
+                        i , len;
+                    this.$el.data('id', value);
+                    if (data.length > 0) {
+                        for (i = -1, len = data.length; ++i < len;) {
+                            if (data[i].hasOwnProperty(idProperty) && data[i][idProperty] === value) {
+                                this.$el.html(data[i][this.options.outputProperty]);
+                            }
+                        }
+                    }
+                },
+
+                getValue: function() {
+                    var id = this.$el.data('id'),
+                        i, len;
+
+                    for (i = -1, len = this.options.data.length; i++ < len;) {
+                        if (this.options.data[i][this.options.idProperty] === id) {
+                            return this.options.data[i];
+                        }
+                    }
+                    return null;
+                },
+
+                needsValidation: function() {
+                    return false;
+                },
+
+                validate: function() {
+                    return true;
+                }
+            };
+
+        return new Default($el, defaults, options, 'readonly-select', typeInterface);
     };
 });
 
