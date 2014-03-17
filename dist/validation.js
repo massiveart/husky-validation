@@ -769,7 +769,7 @@ define('form/mapper',[
                     }
                 },
 
-                processData: function(el, prop) {
+                processData: function(el, collection) {
                     // get attributes
                     var $el = $(el),
                         type = $el.data('type'),
@@ -787,7 +787,7 @@ define('form/mapper',[
                     } else {
                         result = [];
                         $.each($el.children(), function(key, value) {
-                            if (!prop || prop.tpl === value.dataset.mapperPropertyTpl) {
+                            if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 item = form.mapper.getData($(value));
 
                                 var keys = Object.keys(item);
@@ -988,7 +988,7 @@ define('form/mapper',[
                         if ($.isArray(property)) {
                             $.each(property, function(i, prop) {
                                 data[prop.data] = that.processData.call(this, $childElement, prop);
-                            }.bind(this));
+                            });
                         } else if (property.match(/.*\..*/)) {
                             parts = property.split('.');
                             data[parts[0]] = {};

@@ -42,6 +42,7 @@ define([
                     if (!$.isArray(property)) {
                         if (typeof property === 'object') {
                             property = [property];
+                            $element.data('mapper-property', property);
                         } else {
                             throw "no valid mapper-property value";
                         }
@@ -104,7 +105,7 @@ define([
                     }
                 },
 
-                processData: function(el, prop) {
+                processData: function(el, collection) {
                     // get attributes
                     var $el = $(el),
                         type = $el.data('type'),
@@ -122,7 +123,7 @@ define([
                     } else {
                         result = [];
                         $.each($el.children(), function(key, value) {
-                            if (!prop || prop.tpl === value.dataset.mapperPropertyTpl) {
+                            if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 item = form.mapper.getData($(value));
 
                                 var keys = Object.keys(item);
@@ -323,7 +324,7 @@ define([
                         if ($.isArray(property)) {
                             $.each(property, function(i, prop) {
                                 data[prop.data] = that.processData.call(this, $childElement, prop);
-                            }.bind(this));
+                            });
                         } else if (property.match(/.*\..*/)) {
                             parts = property.split('.');
                             data[parts[0]] = {};

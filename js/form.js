@@ -17,6 +17,7 @@ require.config({
         'form/util': 'js/util',
 
         'type/default': 'js/types/default',
+        'type/static-text': 'js/types/staticText',
         'type/string': 'js/types/string',
         'type/date': 'js/types/date',
         'type/decimal': 'js/types/decimal',

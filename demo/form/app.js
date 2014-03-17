@@ -7,6 +7,9 @@ requirejs.config({
 });
 
 define(['js/form', 'globalize'], function(Form) {
+
+    'use strict';
+
     var language = 'de',
         form = new Form($('#contact-form'));
 
@@ -88,6 +91,10 @@ define(['js/form', 'globalize'], function(Form) {
                     {
                         email: 'office2@asdf.at'
                     }
+                ],
+                jobs: [
+                    'Developer',
+                    'Maintainer'
                 ]
             }).then(
                 function() {
