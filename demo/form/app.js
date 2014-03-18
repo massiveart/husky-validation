@@ -52,6 +52,7 @@ define(['js/form', 'globalize'], function(Form) {
                     id: 2,
                     name: 'CH'
                 },
+                empty: [],
                 phones: [
                     {
                         type: {

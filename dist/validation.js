@@ -776,7 +776,15 @@ define('form/mapper',[
                         type = $el.data('type'),
                         property = $el.data('mapper-property'),
                         element = $el.data('element'),
-                        result, item;
+                        result, item,
+                        filtersAction;
+
+
+                    if (collection && !!filters[collection.data]) {
+                        filtersAction = filters[collection.data];
+                    } else if (!!filters[property]) {
+                        filtersAction = filters[property];
+                    }
 
                     // if type == collection process children, else get value
                     if (type !== 'collection') {
@@ -796,7 +804,7 @@ define('form/mapper',[
                                     if (item[keys[0]] !== '') {
                                         result.push(item[keys[0]]);
                                     }
-                                } else if (!filters[property] || (!!filters[property] && filters[property](item))) {
+                                } else if (!filtersAction || filtersAction(item)) {
                                     result.push(item);
                                 }
                             }
@@ -819,20 +827,25 @@ define('form/mapper',[
                             }
                         };
 
-                    // remove children
-                    $element.children().each(function(key, value) {
-                        that.remove.call(this, $(value));
-                    }.bind(this));
+                    if (count===0) {
+                        dfd.resolve();
+                    } else {
 
-                    // foreach collection elements: create a new dom element, call setData recursively
-                    $.each(collection, function(key, value) {
-                        that.appendChildren($element, $child, value).then(function($newElement) {
-                            form.mapper.setData(value, $newElement).then(function() {
-                                resolve();
+                        // remove children
+                        $element.children().each(function(key, value) {
+                            that.remove.call(this, $(value));
+                        }.bind(this));
+
+                        // foreach collection elements: create a new dom element, call setData recursively
+                        $.each(collection, function(key, value) {
+                            that.appendChildren($element, $child, value).then(function($newElement) {
+                                form.mapper.setData(value, $newElement).then(function() {
+                                    resolve();
+                                });
                             });
                         });
-                    });
-
+                    }
+                    
                     // set current length of collection
                     $('#current-counter-' + $element.attr('id')).text(collection.length);
 
@@ -950,15 +963,13 @@ define('form/mapper',[
                                         element = form.addField($element);
                                         element.initialized.then(function() {
                                             element.setValue(value);
-                                            // resolve this set data
                                             resolve();
                                         });
                                     } else {
                                         element.setValue(value);
-                                        // resolve this set data
                                         resolve();
                                     }
-                                } else {
+                                } else{
                                     resolve();
                                 }
                             }
