@@ -162,10 +162,10 @@ define([
                             }
                         };
 
-                    if (count===0) {
+                    // no element in collection
+                    if (count === 0) {
                         dfd.resolve();
                     } else {
-
                         // remove children
                         $element.children().each(function(key, value) {
                             that.remove.call(this, $(value));
@@ -304,7 +304,7 @@ define([
                                         element.setValue(value);
                                         resolve();
                                     }
-                                } else{
+                                } else {
                                     resolve();
                                 }
                             }
