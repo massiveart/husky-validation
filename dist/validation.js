@@ -844,7 +844,7 @@ define('form/mapper',[
                             });
                         });
                     }
-                    
+
                     // set current length of collection
                     $('#current-counter-' + $element.attr('id')).text(collection.length);
 
