@@ -27,11 +27,28 @@ define([
                     var data = this.options.data,
                         idProperty = this.options.idProperty,
                         i , len;
+
+                    // check if value is an object
+                    if (typeof value === 'object') {
+                        if (value.hasOwnProperty(idProperty)) {
+                            value = value[idProperty];
+                        } else {
+                            throw "value has no property named " + idProperty;
+                        }
+                    // if value is null continue
+                    } else if (value === null) {
+                        return;
+                    }
+
+                    // set data id to value
                     this.$el.data('id', value);
+
+                    // find value in data
                     if (data.length > 0) {
                         for (i = -1, len = data.length; ++i < len;) {
                             if (data[i].hasOwnProperty(idProperty) && data[i][idProperty] === value) {
                                 this.$el.html(data[i][this.options.outputProperty]);
+                                break;
                             }
                         }
                     }
