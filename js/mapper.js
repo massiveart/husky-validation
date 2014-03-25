@@ -39,7 +39,7 @@ define([
                     var $element = $(value),
                         element = $element.data('element'),
                         property = $element.data('mapper-property'),
-                        $newChild, collection, x;
+                        $newChild, collection;
 
                     if (!$.isArray(property)) {
                         if (typeof property === 'object') {
