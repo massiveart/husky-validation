@@ -25,6 +25,7 @@ define([
 
                     this.collections = [];
                     this.templates = {};
+                    this.collectionsInitiated = $.Deferred();
 
                     form.initialized.then(function() {
                         var selector = '*[data-type="collection"]',
@@ -231,10 +232,10 @@ define([
                     // add fields
                     $.each($newFields, function(key, field) {
                         element = form.addField($(field));
+                        $element.append($template);
                         element.initialized.then(function() {
                             counter--;
                             if (counter === 0) {
-                                $element.append($template);
                                 dfd.resolve($template);
                             }
                         });
