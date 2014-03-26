@@ -39,6 +39,18 @@ define(['js/form', 'globalize'], function(Form) {
         });
     });
 
+    $('#addemail').on('click', function() {
+       form.mapper.addToCollection('emails', {email:'test@test.com'});
+    });
+
+    $('#addemailend').on('click', function() {
+       form.mapper.addToCollection('emails', {email:''}, true);
+    });
+
+    $('#addphone').on('click', function() {
+       form.mapper.addToCollection('phones', {phone:'12121212121'});
+    });
+
     $('#setdata').on('click', function() {
         console.log('started setdata');
 

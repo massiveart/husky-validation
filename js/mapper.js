@@ -53,11 +53,16 @@ define([
                     // get templates
                     element.$children = $element.children().clone(true);
 
+                    // remove children
+                    $element.html('');
+
+                    // add to collections
                     collection = {
                         property: property,
                         $element: $element,
                         element: element
                     };
+                    this.collections.push(collection);
 
                     // iterate through collection
                     element.$children.each(function(i, child) {
@@ -77,7 +82,7 @@ define([
                             }
                         }
                         if (!!propertyName) {
-                            this.templates[propertyName] = {tpl: $newChild, collection: collection};
+                            this.templates[propertyName] = {tpl: $newChild, id:$newChild.id, collection: collection};
                             // init default children
                             for (x = collection.element.getType().getMinOccurs() + 1; --x > 0;) {
                                 that.appendChildren.call(this, collection.$element, $newChild).then(function() {
@@ -87,9 +92,6 @@ define([
                             }
                         }
                     }.bind(this));
-
-                    // add to collections
-                    this.collections.push(collection);
 
                     $.each(property, function(i, item) {
                         // init add button
@@ -190,11 +192,6 @@ define([
                     if (count === 0) {
                         dfd.resolve();
                     } else {
-                        // remove children
-                        $element.children().each(function(key, value) {
-                            that.remove.call(this, $(value));
-                        }.bind(this));
-
                         if (collection.length < collectionElement.element.getType().getMinOccurs()) {
                             for (x = collectionElement.element.getType().getMinOccurs() + 1, len = collection.length; --x > len;) {
                                 collection.push({});
@@ -217,9 +214,9 @@ define([
                     return dfd.promise();
                 },
 
-                appendChildren: function($element, $child, value) {
-                    value = value || {};
-                    var template = _.template($child.tpl, value, form.options.delimiter),
+                appendChildren: function($element, $child, tplOptions, data, insertAfter) {
+                    tplOptions = tplOptions || {};
+                    var template = _.template($child.tpl, tplOptions, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
                         dfd = $.Deferred(),
@@ -232,7 +229,11 @@ define([
                     // add fields
                     $.each($newFields, function(key, field) {
                         element = form.addField($(field));
-                        $element.append($template);
+                        if (insertAfter) {
+                            $element.after($template);
+                        } else {
+                            $element.append($template);
+                        }
                         element.initialized.then(function() {
                             counter--;
                             if (counter === 0) {
@@ -241,6 +242,12 @@ define([
                         });
                     }.bind(this));
 
+                    // if automatically set data after initialization ( needed for adding elements afterwards)
+                    if (!!data) {
+                        dfd.then(function() {
+                            result.setData(data, $newFields);
+                        });
+                    }
                     return dfd.promise();
                 },
 
@@ -313,13 +320,24 @@ define([
 
                             // if field is a collection
                             if ($.isArray(value) && collection.length > 0) {
-                                that.setCollectionData.call(this, value, collection[0]).then(function() {
+                                collection = collection[0];
+                                // if first element of collection, clear collection
+                                if (collection.property[0].data === key) {
+                                    collection.$element.children().each(function(key, value) {
+                                        that.remove.call(this, $(value));
+                                    }.bind(this));
+                                }
+                                that.setCollectionData.call(this, value, collection).then(function() {
                                     resolve();
                                 });
                             } else {
                                 // search field with mapper property
                                 selector = '*[data-mapper-property="' + key + '"]';
-                                $element = $el.find(selector);
+                                if ($el.is(selector)) {
+                                    $element = $el;
+                                } else {
+                                    $element = $el.find(selector);
+                                }
                                 element = $element.data('element');
 
                                 if ($element.length > 0) {
@@ -392,8 +410,26 @@ define([
 
                 removeCollectionFilter: function(name) {
                     delete filters[name];
-                }
+                },
 
+                /**
+                 * adds an element to a existing collection
+                 * @param {String} propertyName property defined by 'data' attribute in data-mapper-property
+                 * @param {Object} [data] Possibility to set data
+                 * @param {Boolean} [append=false] Define if element should be added at the end of the collection. By default items are grouped by tpl name
+                 */
+                addToCollection: function(propertyName, data, append) {
+                    var template = this.templates[propertyName],
+                        element = template.collection.$element,
+                        insertAfterLast = false,
+                        lastElement;
+                    // check if element exists and put it after last
+                    if (!append && (lastElement = element.find('*[data-mapper-property-tpl="' + template.id + '"]').last()).length > 0) {
+                        element = lastElement;
+                        insertAfterLast = true;
+                    }
+                    that.appendChildren.call(this, element, template.tpl, data, data, insertAfterLast);
+                }
             };
 
         that.initialize.call(result);
