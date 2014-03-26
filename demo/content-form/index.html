@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link href="../../css/validation.css" rel="stylesheet">
+        <link href="../../assets/css/husky.min.css" rel="stylesheet">
+
+        <style type="text/css">
+            #content {
+                margin-left: auto;
+                margin-right: auto;
+                width: 800px;
+                margin-top: 100px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="content">
+            <form id="content-form" class="grid">
+
+                <div class="grid-row form-group">
+                    <label for="title" class="pointer required">Title</label>
+
+                    <input id="title" type="text" class="form-element preview-update trigger-save-button"
+                           data-mapper-property="title"
+                           data-validation-required="true"/>
+                </div>
+
+                <div class="grid-row form-group">
+                    <label for="url" class="pointer required">Url</label>
+
+                    <input id="url" type="text" class="form-element preview-update trigger-save-button"
+                           data-mapper-property="url"
+                           data-validation-required="true"/>
+                </div>
+
+                <div class="grid-row form-group">
+                    <label for="article" class="pointer required">Article</label>
+
+                    <textarea id="article" class="form-element"
+                              data-mapper-property="article"
+                              data-validation-required="true"></textarea>
+                </div>
+
+                <h2>Block1</h2>
+                <div id="block1" data-type="collection" data-type-min="2"
+                     data-type-max="5"
+                     data-mapper-property='{"data": "block1", "tpl": "block1-tpl"}'>
+                    <script id="block1-tpl" type="text/template">
+                        <div class="block1-element grid-row">
+                            <div class="grid-col-11">
+                                <div class="block block-block1">
+
+
+                                    <div class="grid-row form-group">
+                                        <label for="block1" class="pointer required">Title</label>
+
+                                        <input id="block1" type="text" class="form-element preview-update trigger-save-button"
+                                               data-mapper-property="title"
+                                               data-validation-required="true"/>
+                                    </div>
+
+
+                                    <div class="grid-row form-group">
+                                        <label for="block1" class="pointer required">Article</label>
+
+                                        <textarea id="block1" class="form-element preview-update trigger-save-button"
+                                                  data-mapper-property="article"
+                                                  data-validation-required="true"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid-col-1 m-top-15">
+                                <div class="mapper-remove-block1 pointer" data-mapper-remove="block1">
+                                    <span class="icon-remove"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </script>
+                </div>
+
+                <div id="mapper-add-block1" class="pointer" data-mapper-add="block1">
+                    <span class="icon-add"></span> add block1 (<span id="current-counter-block1">2</span> out of 5)
+                </div>
+
+                <div class="grid-row">
+                    <input type="submit" value="Send" class="btn"/>
+                    <a href="#" class="btn" id="setdata">SetData</a>
+                    <a href="#" class="btn" id="setnull">SetData {}</a>
+                </div>
+            </form>
+        </div>
+
+        <script src="../../assets/js/jquery.js"></script>
+        <script src="../../assets/js/underscore.js"></script>
+        <script data-main="app.js" type="text/javascript" src="../../assets/js/require.js"></script>
+    </body>
+</html>
