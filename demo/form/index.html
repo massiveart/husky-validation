@@ -73,7 +73,7 @@
                 <h2>multiple data</h2>
 
                 <div class="grid-row" id='phonesandemails'
-                     data-mapper-property='[{"data":"phones","tpl":"phones-tpl"},{"data":"emails","tpl":"emails-tpl"}]'
+                     data-mapper-property='[{"data":"emails","tpl":"emails-tpl"},{"data":"phones","tpl":"phones-tpl"}]'
                      data-type="collection">
                     <script type="text/template" id="phones-tpl">
                         <div class="grid-col-4 floating">
@@ -82,7 +82,7 @@
                                 <span data-mapper-property="type"
                                       data-type="label"
                                       data-type-label="name"
-                                      data-type-id="id"></span>
+                                      data-type-id="id" data-form="true"></span>
                             </label>
                             <input id="<~= uid ~>"
                                    type="text"
