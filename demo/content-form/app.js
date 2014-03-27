@@ -21,6 +21,16 @@ define(['js/form', 'globalize'], function(Form) {
         return item.phone !== '';
     });
 
+    $('#content-form').on('form-add', function(e, property) {
+        console.log(property, 'added element');
+    });
+    $('#content-form').on('form-remove', function(e, property) {
+        console.log(property, 'removed element');
+    });
+    $('#content-form').on('form-collection-init', function(e, property) {
+        console.log(property, 'initiated');
+    });
+
     $('#content-form').on('submit', function() {
         var object = form.mapper.getData();
         console.log(object);

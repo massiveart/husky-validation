@@ -21,6 +21,10 @@ define(['js/form', 'globalize'], function(Form) {
         return item.phone !== '';
     });
 
+    $('#contact-form').on('form-collection-init', function(e, property) {
+        console.log(property, 'initiated');
+    });
+
     $('#contact-form').on('submit', function() {
         console.log(form.mapper.getData());
 

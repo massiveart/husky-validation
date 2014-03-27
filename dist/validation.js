@@ -1,4 +1,3 @@
-
 /*
  * This file is part of the Husky Validation.
  *
@@ -705,7 +704,15 @@ define('form/mapper',[
                     var $element = $(value),
                         element = $element.data('element'),
                         property = $element.data('mapper-property'),
-                        $newChild, collection;
+                        $newChild, collection,
+                        dfd = $.Deferred(),
+                        counter = 0,
+                        resolve = function() {
+                            counter--;
+                            if (counter === 0) {
+                                dfd.resolve();
+                            }
+                        };
 
                     if (!$.isArray(property)) {
                         if (typeof property === 'object') {
@@ -731,9 +738,17 @@ define('form/mapper',[
                     };
                     this.collections.push(collection);
 
+                    counter += element.$children.length;
                     // iterate through collection
                     element.$children.each(function(i, child) {
-                        var $child = $(child), propertyName, x, len;
+                        var $child = $(child), propertyName, x, len,
+                            propertyCount = 0,
+                            resolveElement = function() {
+                                propertyCount--;
+                                if (propertyCount === 0) {
+                                    resolve();
+                                }
+                            };
 
                         // attention: template has to be markuped as 'script'
                         if (!$child.is('script')) {
@@ -749,14 +764,18 @@ define('form/mapper',[
                             }
                         }
                         if (!!propertyName) {
+                            propertyCount = collection.element.getType().getMinOccurs();
                             this.templates[propertyName] = {tpl: $newChild, collection: collection};
                             // init default children
                             for (x = collection.element.getType().getMinOccurs() + 1; --x > 0;) {
                                 that.appendChildren.call(this, collection.$element, $newChild).then(function() {
                                     // set counter
                                     $('#current-counter-' + propertyName).text(collection.element.getType().getChildren($newChild.id).length);
+                                    resolveElement();
                                 }.bind(this));
                             }
+                        } else {
+                            resolveElement();
                         }
                     }.bind(this));
 
@@ -766,7 +785,18 @@ define('form/mapper',[
 
                         // init remove button
                         form.$el.on('click', '*[data-mapper-remove="' + item.data + '"]', that.removeClick.bind(this));
+
+                        // emit collection init event after resolve
+                        dfd.then(function() {
+                            that.emitInitCollectionEvent(item.data);
+                        });
                     }.bind(this));
+
+                    dfd.then(function() {
+                        Util.debug('collection resolved');
+                    });
+
+                    return dfd.promise();
                 },
 
                 addClick: function(event) {
@@ -779,6 +809,7 @@ define('form/mapper',[
                         that.appendChildren.call(this, collection.$element, tpl).then(function() {
                             // set counter
                             $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(tpl.id).length);
+                            that.emitAddEvent(propertyName, null);
                         }.bind(this));
                     }
                 },
@@ -794,7 +825,20 @@ define('form/mapper',[
                         that.remove.call(this, $element);
                         // set counter
                         $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(tpl.id).length);
+                        that.emitRemoveEvent(propertyName, null);
                     }
+                },
+
+                emitInitCollectionEvent: function(propertyName) {
+                    $(form.$el).trigger('form-collection-init', [propertyName]);
+                },
+
+                emitAddEvent: function(propertyName, data) {
+                    $(form.$el).trigger('form-add', [propertyName, data]);
+                },
+
+                emitRemoveEvent: function(propertyName, data) {
+                    $(form.$el).trigger('form-remove', [propertyName, data]);
                 },
 
                 processData: function(el, collection) {
@@ -2325,3 +2369,4 @@ define('validator/regex',[
     };
 
 });
+
