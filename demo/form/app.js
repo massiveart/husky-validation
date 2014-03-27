@@ -43,6 +43,24 @@ define(['js/form', 'globalize'], function(Form) {
         });
     });
 
+    $('#addemail').on('click', function() {
+       form.mapper.addToCollection('emails', {email:'test@test.com'});
+    });
+
+    $('#addemailend').on('click', function() {
+       form.mapper.addToCollection('emails', {email:''}, true);
+    });
+
+    $('#addphone').on('click', function() {
+       form.mapper.addToCollection('phones', {
+           type: {
+               id: 5,
+               name: "Privat"
+           },
+           phone: "+43 676 3596681"
+       });
+    });
+
     $('#setdata').on('click', function() {
         console.log('started setdata');
 
@@ -57,6 +75,14 @@ define(['js/form', 'globalize'], function(Form) {
                     name: 'CH'
                 },
                 empty: [],
+                emails: [
+                    {
+                        email: 'office@asdf.at'
+                    },
+                    {
+                        email: 'office2@asdf.at'
+                    }
+                ],
                 phones: [
                     {
                         type: {
@@ -87,14 +113,6 @@ define(['js/form', 'globalize'], function(Form) {
                             name: "Mobil"
                         },
                         fax: "+43 664 4119649-4"
-                    }
-                ],
-                emails: [
-                    {
-                        email: 'office@asdf.at'
-                    },
-                    {
-                        email: 'office2@asdf.at'
                     }
                 ],
                 jobs: [

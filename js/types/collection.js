@@ -16,8 +16,8 @@ define([
 
     return function($el, options) {
         var defaults = {
-                min: 1,
-                max: 2
+                min: 0,
+                max: null
             },
 
             subType = {
@@ -43,7 +43,7 @@ define([
 
                 canAdd: function(id) {
                     var length = this.getChildren(id).length;
-                    return length < this.getMaxOccurs();
+                    return this.getMaxOccurs() === null || length < this.getMaxOccurs();
                 },
 
                 canRemove: function(id) {
