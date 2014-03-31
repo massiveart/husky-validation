@@ -128,6 +128,8 @@ define([
                         });
                     }.bind(this));
 
+                    that.checkFullAndEmpty.call(this, property[0].data);
+
                     dfd.then(function() {
                         Util.debug('collection resolved');
                     });
@@ -148,6 +150,7 @@ define([
                             that.emitAddEvent(propertyName, null);
                         }.bind(this));
                     }
+                    that.checkFullAndEmpty.call(this, propertyName);
                 },
 
                 removeClick: function(event) {
@@ -162,6 +165,35 @@ define([
                         // set counter
                         $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(tpl.id).length);
                         that.emitRemoveEvent(propertyName, null);
+                    }
+                    that.checkFullAndEmpty.call(this, propertyName);
+                },
+
+                checkFullAndEmpty: function(propertyName) {
+                    var $addButton = $("[data-mapper-add='"+ propertyName +"']"),
+                        $removeButton = $("[data-mapper-remove='"+ propertyName +"']"),
+                        tpl = this.templates[propertyName].tpl,
+                        collection = this.templates[propertyName].collection,
+                        fullClass = collection.element.$el.data('mapper-full-class') || 'full',
+                        emptyClass = collection.element.$el.data('mapper-empty-class') || 'empty';
+
+                    $addButton.removeClass(fullClass);
+                    $addButton.removeClass(emptyClass);
+                    $(collection.element.$el).removeClass(fullClass);
+                    $(collection.element.$el).removeClass(emptyClass);
+
+                    if (!!$addButton.length || !!$removeButton.length) {
+                        // if no add is possible add full style-classes
+                        if (!collection.element.getType().canAdd(tpl.id)) {
+                            $addButton.addClass(fullClass);
+                            $(collection.element.$el).addClass(fullClass);
+
+                        // else, if no remove is possible add empty style-classes
+                        } else if (!collection.element.getType().canRemove(tpl.id)) {
+                            $addButton.addClass(emptyClass);
+                            $(collection.element.$el).addClass(emptyClass);
+
+                        }
                     }
                 },
 
