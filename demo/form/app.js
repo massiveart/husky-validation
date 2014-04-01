@@ -51,6 +51,19 @@ define(['js/form', 'globalize'], function(Form) {
        form.mapper.addToCollection('emails', {email:''}, true);
     });
 
+    $('#deleteemail').on('click', function() {
+        form.mapper.removeFromCollection(9);
+    });
+
+    $('#editphone').on('click', function() {
+        form.mapper.editInCollection(11, {
+            type: {
+                id: 5,
+                name: "Home"
+            }
+        });
+    });
+
     $('#addphone').on('click', function() {
        form.mapper.addToCollection('phones', {
            type: {
