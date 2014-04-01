@@ -109,7 +109,11 @@
                 <h2>single collections</h2>
 
                 <div class="grid-row" id="faxes" data-mapper-property='{"data":"faxes","tpl":"fax-tpl"}'
-                     data-type="collection">
+                     data-type="collection"
+                     data-type-min="2"
+                     data-type-max="6"
+                     data-mapper-full-class="MyFullClass"
+                     data-mapper-empty-class="MyEmptyClass">
                     <script type="text/template" id="fax-tpl">
                         <div class="grid-col-4 floating">
                             <label>Fax
@@ -125,6 +129,7 @@
                         </div>
                     </script>
                 </div>
+                <div id="mapper-add-faxes" data-mapper-add="faxes">Add element</div>
 
                 <div class="grid-row">
                     <div class="grid-col-4">
