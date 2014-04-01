@@ -26,6 +26,7 @@ define([
                     this.collections = [];
                     this.collectionsSet = {};
                     this.templates = {};
+                    this.elements = [];
                     this.collectionsInitiated = $.Deferred();
 
                     form.initialized.then(function() {
@@ -205,6 +206,7 @@ define([
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 item = form.mapper.getData($(value));
+                                item.mapperId = value.dataset.mapperId;
 
                                 var keys = Object.keys(item);
                                 if (keys.length === 1) { // for value only collection
@@ -246,12 +248,12 @@ define([
 
                         // foreach collection elements: create a new dom element, call setData recursively
                         $.each(collection, function(key, value) {
-                            that.appendChildren($element, $child, value).then(function($newElement) {
+                            that.appendChildren.call(this, $element, $child, value).then(function($newElement) {
                                 that.setData.call(this, value, $newElement).then(function() {
                                     resolve();
-                                });
-                            });
-                        });
+                                }.bind(this));
+                            }.bind(this));
+                        }.bind(this));
                     }
 
                     // set current length of collection
@@ -271,6 +273,7 @@ define([
 
                     // adding
                     $template.attr('data-mapper-property-tpl', $child.id);
+                    $template.attr('data-mapper-id', _.uniqueId());
 
                     // add fields
                     $.each($newFields, function(key, field) {
@@ -294,7 +297,41 @@ define([
                             that.setData.call(this, data, $newFields);
                         });
                     }
+
+                    // push element to global array
+                    this.elements.push($template);
+
                     return dfd.promise();
+                },
+
+                /**
+                 * Returns a collection element for a given mapper-id
+                 * @param {number} mapperId
+                 * @return {Object|null} the dom object or null
+                 **/
+                getElementByMapperId: function(mapperId) {
+                    for (var i = -1, length = this.elements.length; ++i < length;) {
+                        if (this.elements[i].data('mapper-id') === mapperId) {
+                            return this.elements[i];
+                        }
+                    }
+                    return null;
+                },
+
+                /**
+                 * Delets an element from the DOM and the global object by a given unique-id
+                 * @param {number} mapperId
+                 * @return {boolean} true if an element was found and deleted
+                 **/
+                deleteElementByMapperId: function(mapperId) {
+                    for (var i = -1, length = this.elements.length; ++i < length;) {
+                        if (this.elements[i].data('mapper-id') === mapperId) {
+                            this.elements[i].remove();
+                            this.elements.splice(i, 1);
+                            return true;
+                        }
+                    }
+                    return false;
                 },
 
                 remove: function($element) {
@@ -335,7 +372,7 @@ define([
                                 element.setValue(data);
                                 // resolve this set data
                                 resolve();
-                            });
+                            }.bind(this));
                         } else {
                             element.setValue(data);
                             // resolve this set data
@@ -376,7 +413,7 @@ define([
                                         element.initialized.then(function() {
                                             element.setValue(value);
                                             resolve();
-                                        });
+                                        }.bind(this));
                                     } else {
                                         element.setValue(value);
                                         resolve();
@@ -467,6 +504,24 @@ define([
                         insertAfterLast = true;
                     }
                     that.appendChildren.call(this, element, template.tpl, data, data, insertAfterLast);
+                },
+
+                /**
+                 * Edits a field in an collection
+                 * @param mapperId {Number} the unique Id of the field
+                 * @param data {Object} new data to apply
+                 */
+                editInCollection: function(mapperId, data) {
+                    var $element = that.getElementByMapperId.call(this, mapperId);
+                    that.setData.call(this, data, $element);
+                },
+
+                /**
+                 * Removes a field from a collection
+                 * @param mapperId {Number} the unique Id of the field
+                 */
+                removeFromCollection: function(mapperId) {
+                    that.deleteElementByMapperId.call(this, mapperId);
                 }
             };
 
