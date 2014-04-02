@@ -109,7 +109,12 @@ define(['js/form', 'globalize'], function(Form) {
                             id: 5,
                             name: "Mobil"
                         },
-                        phone: "+43 664 4119649"
+                        phone: "+43 664 4119649",
+                        attributes: {
+                            something: true,
+                            somethingElse: 'asdf',
+                            hereIsANumber: 42
+                        }
                     }
                 ],
                 faxes: [

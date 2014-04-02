@@ -1256,6 +1256,7 @@ require.config({
         'type/label': 'js/types/label',
         'type/select': 'js/types/select',
         'type/collection': 'js/types/collection',
+        'type/attributes': 'js/types/attributes',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',

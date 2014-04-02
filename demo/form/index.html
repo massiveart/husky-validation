@@ -78,6 +78,7 @@
                     <script type="text/template" id="phones-tpl">
                         <div class="grid-col-4 floating">
                             <~ var uid = _.uniqueId('test_'); ~>
+                            <span style="display: none" data-mapper-property="attributes" data-form="true" data-type="attributes"></span>
                             <label for="<~= uid ~>">Phone
                                 <span data-mapper-property="type"
                                       data-type="label"
