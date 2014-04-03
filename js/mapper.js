@@ -290,7 +290,7 @@ define([
 
                     // set current length of collection
                     $('#current-counter-' + $element.attr('id')).text(collection.length);
-
+                    that.checkFullAndEmpty.call(this, collectionElement.property[0].data);
                     return dfd.promise();
                 },
 
