@@ -26,6 +26,7 @@ module.exports = function(grunt) {
                 'type/select': 'js/types/select',
                 'type/collection': 'js/types/collection',
                 'type/readonly-select': 'js/types/readonlySelect',
+                'type/attributes': 'js/types/attributes',
 
                 'validator/default': 'js/validators/default',
                 'validator/min': 'js/validators/min',
@@ -52,6 +53,7 @@ module.exports = function(grunt) {
                 'type/select',
                 'type/readonly-select',
                 'type/collection',
+                'type/attributes',
 
                 'validator/min',
                 'validator/max',

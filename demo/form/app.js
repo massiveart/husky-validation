@@ -51,6 +51,19 @@ define(['js/form', 'globalize'], function(Form) {
        form.mapper.addToCollection('emails', {email:''}, true);
     });
 
+    $('#deleteemail').on('click', function() {
+        form.mapper.removeFromCollection(9);
+    });
+
+    $('#editphone').on('click', function() {
+        form.mapper.editInCollection(11, {
+            type: {
+                id: 5,
+                name: "Home"
+            }
+        });
+    });
+
     $('#addphone').on('click', function() {
        form.mapper.addToCollection('phones', {
            type: {
@@ -96,7 +109,12 @@ define(['js/form', 'globalize'], function(Form) {
                             id: 5,
                             name: "Mobil"
                         },
-                        phone: "+43 664 4119649"
+                        phone: "+43 664 4119649",
+                        attributes: {
+                            something: true,
+                            somethingElse: 'asdf',
+                            hereIsANumber: 42
+                        }
                     }
                 ],
                 faxes: [
