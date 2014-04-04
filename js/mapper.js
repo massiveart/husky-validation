@@ -91,7 +91,7 @@ define([
                             throw 'template has to be defined as <script>';
                         }
 
-                        $newChild = {tpl: $child.html(), id: $child.attr('id')};
+                        $newChild = {tpl: $child.html(), id: $child.attr('id'), collection: collection};
                         element.$children[i] = $newChild;
 
                         for (x = -1, len = property.length; ++x < len;) {
@@ -100,6 +100,7 @@ define([
                             }
                         }
                         if (!!propertyName) {
+                            $newChild.propertyName = propertyName;
                             propertyCount = collection.element.getType().getMinOccurs();
                             this.templates[propertyName] = {tpl: $newChild, collection: collection};
                             // init default children
@@ -261,8 +262,9 @@ define([
                 },
 
                 appendChildren: function($element, $child, tplOptions, data, insertAfter) {
-                    tplOptions = tplOptions || {};
-                    var template = _.template($child.tpl, tplOptions, form.options.delimiter),
+                    var index = $child.collection.element.getType().getChildren($child.id).length,
+                        options = $.extend({}, {index: index}, tplOptions || {}),
+                        template = _.template($child.tpl, options, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
                         dfd = $.Deferred(),
