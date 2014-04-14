@@ -7,6 +7,9 @@ requirejs.config({
 });
 
 define(['js/form', 'globalize'], function(Form) {
+
+    'use strict';
+
     var language = 'de',
         form = new Form($('#contact-form'));
 
@@ -16,6 +19,10 @@ define(['js/form', 'globalize'], function(Form) {
 
     form.mapper.addCollectionFilter('phones', function(item) {
         return item.phone !== '';
+    });
+
+    $('#contact-form').on('form-collection-init', function(e, property) {
+        console.log(property, 'initiated');
     });
 
     $('#contact-form').on('submit', function() {
@@ -36,6 +43,37 @@ define(['js/form', 'globalize'], function(Form) {
         });
     });
 
+    $('#addemail').on('click', function() {
+       form.mapper.addToCollection('emails', {email:'test@test.com'});
+    });
+
+    $('#addemailend').on('click', function() {
+       form.mapper.addToCollection('emails', {email:''}, true);
+    });
+
+    $('#deleteemail').on('click', function() {
+        form.mapper.removeFromCollection(9);
+    });
+
+    $('#editphone').on('click', function() {
+        form.mapper.editInCollection(11, {
+            type: {
+                id: 5,
+                name: "Home"
+            }
+        });
+    });
+
+    $('#addphone').on('click', function() {
+       form.mapper.addToCollection('phones', {
+           type: {
+               id: 5,
+               name: "Privat"
+           },
+           phone: "+43 676 3596681"
+       });
+    });
+
     $('#setdata').on('click', function() {
         console.log('started setdata');
 
@@ -49,6 +87,15 @@ define(['js/form', 'globalize'], function(Form) {
                     id: 2,
                     name: 'CH'
                 },
+                empty: [],
+                emails: [
+                    {
+                        email: 'office@asdf.at'
+                    },
+                    {
+                        email: 'office2@asdf.at'
+                    }
+                ],
                 phones: [
                     {
                         type: {
@@ -62,16 +109,33 @@ define(['js/form', 'globalize'], function(Form) {
                             id: 5,
                             name: "Mobil"
                         },
-                        phone: "+43 664 4119649"
+                        phone: "+43 664 4119649",
+                        attributes: {
+                            something: true,
+                            somethingElse: 'asdf',
+                            hereIsANumber: 42
+                        }
                     }
                 ],
-                emails: [
+                faxes: [
                     {
-                        email: 'office@asdf.at'
+                        type: {
+                            id: 5,
+                            name: "Privat"
+                        },
+                        fax: "+43 676 3596681-2"
                     },
                     {
-                        email: 'office@asdf.at'
+                        type: {
+                            id: 5,
+                            name: "Mobil"
+                        },
+                        fax: "+43 664 4119649-4"
                     }
+                ],
+                jobs: [
+                    'Developer',
+                    'Maintainer'
                 ]
             }).then(
                 function() {

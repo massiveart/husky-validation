@@ -16,8 +16,8 @@ define([
 
     return function($el, options) {
         var defaults = {
-                min: 1,
-                max: 2
+                min: 0,
+                max: null
             },
 
             subType = {
@@ -29,14 +29,26 @@ define([
                     return false;
                 },
 
-                canAdd: function() {
-                    var length = this.$el.children().length;
-                    return length < this.options.max;
+                getChildren: function(id) {
+                    return this.$el.find('*[data-mapper-property-tpl="' + id + '"]');
                 },
 
-                canRemove: function() {
-                    var length = this.$el.children().length;
-                    return length > this.options.min;
+                getMinOccurs: function() {
+                    return this.options.min;
+                },
+
+                getMaxOccurs: function() {
+                    return this.options.max;
+                },
+
+                canAdd: function(id) {
+                    var length = this.getChildren(id).length;
+                    return this.getMaxOccurs() === null || length < this.getMaxOccurs();
+                },
+
+                canRemove: function(id) {
+                    var length = this.getChildren(id).length;
+                    return length > this.getMinOccurs();
                 }
             };
 

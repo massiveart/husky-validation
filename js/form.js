@@ -17,6 +17,7 @@ require.config({
         'form/util': 'js/util',
 
         'type/default': 'js/types/default',
+        'type/readonly-select': 'js/types/readonlySelect',
         'type/string': 'js/types/string',
         'type/date': 'js/types/date',
         'type/decimal': 'js/types/decimal',
@@ -25,6 +26,7 @@ require.config({
         'type/label': 'js/types/label',
         'type/select': 'js/types/select',
         'type/collection': 'js/types/collection',
+        'type/attributes': 'js/types/attributes',
 
         'validator/default': 'js/validators/default',
         'validator/min': 'js/validators/min',
@@ -50,6 +52,11 @@ define([
     return function(el, options) {
         var defaults = {
                 debug: false,                     // debug on/off
+                delimiter: {                      // defines which delimiter should be used for templating
+                    interpolate: /<~=(.+?)~>/g,
+                    escape: /<~-(.+?)~>/g,
+                    evaluate: /<~(.+?)~>/g
+                },
                 validation: true,                 // validation on/off
                 validationTrigger: 'focusout',    // default validate trigger
                 validationAddClassesParent: true, // add classes to parent element
