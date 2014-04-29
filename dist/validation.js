@@ -340,7 +340,7 @@ define('form/element',['form/util'], function(Util) {
                     var addFunction = function(typeName, options) {
                             this.requireCounter++;
                             require(['type/' + typeName], function(Type) {
-                                type = new Type(this.$el, options);
+                                type = new Type(this.$el, options, form);
 
                                 type.initialized.then(function() {
                                     Util.debug('Element Type', typeName, options);
@@ -1132,9 +1132,10 @@ define('form/mapper',[
 
         // define mapper interface
             result = {
-                setData: function(data) {
+                setData: function(data, $el) {
                     this.collectionsSet = {};
-                    return that.setData.call(this, data);
+
+                    return that.setData.call(this, data, $el);
                 },
 
                 getData: function($el) {
@@ -1295,23 +1296,17 @@ define('form',[
                 validationSubmitEvent: true,      // avoid submit if not valid
                 mapper: true                      // mapper on/off
             },
-            dfd = null,
 
         // private functions
             that = {
                 initialize: function() {
-                    // init initialized
-                    dfd = $.Deferred();
-                    this.requireCounter = 0;
-                    this.initialized = dfd.promise();
-
                     this.$el = $(el);
                     this.options = $.extend(defaults, this.$el.data(), options);
 
                     // enable / disable debug
                     Util.debugEnabled = this.options.debug;
 
-                    that.initFields.call(this);
+                    this.initialized = that.initFields.call(this);
 
                     if (!!this.options.validation) {
                         this.validation = new Validation(this);
@@ -1327,20 +1322,22 @@ define('form',[
                 },
 
                 // initialize field objects
-                initFields: function() {
-                    $.each(Util.getFields(this.$el), function(key, value) {
-                        this.requireCounter++;
-                        that.addField.call(this, value, false).initialized.then(function() {
-                            that.resolveInitialization.call(this);
-                        }.bind(this));
-                    }.bind(this));
-                },
+                initFields: function($el) {
+                    var dfd = $.Deferred(),
+                        requireCounter = 0,
+                        resolve = function() {
+                            requireCounter--;
+                            if (requireCounter === 0) {
+                                dfd.resolve();
+                            }
+                        };
 
-                resolveInitialization: function() {
-                    this.requireCounter--;
-                    if (this.requireCounter === 0) {
-                        dfd.resolve();
-                    }
+                    $.each(Util.getFields($el || this.$el), function(key, value) {
+                        requireCounter++;
+                        that.addField.call(this, value, false).initialized.then(resolve.bind(this));
+                    }.bind(this));
+
+                    return dfd.promise();
                 },
 
                 bindValidationDomEvents: function() {
@@ -1383,6 +1380,10 @@ define('form',[
                     return element;
                 },
 
+                initFields: function($el) {
+                    return that.initFields.call(this, $el);
+                },
+
                 removeField: function(selector) {
                     var $element = $(selector),
                         el = $element.data('element');
@@ -1419,7 +1420,7 @@ define('type/default',[
 
     
 
-    return function($el, defaults, options, name, typeInterface) {
+    return function($el, defaults, options, name, typeInterface, form) {
 
         var that = {
                 initialize: function() {
@@ -1439,6 +1440,8 @@ define('type/default',[
 
             defaultInterface = {
                 name: name,
+
+                form: form,
 
                 needsValidation: function() {
                     return true;

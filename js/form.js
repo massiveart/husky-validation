@@ -64,23 +64,17 @@ define([
                 validationSubmitEvent: true,      // avoid submit if not valid
                 mapper: true                      // mapper on/off
             },
-            dfd = null,
 
         // private functions
             that = {
                 initialize: function() {
-                    // init initialized
-                    dfd = $.Deferred();
-                    this.requireCounter = 0;
-                    this.initialized = dfd.promise();
-
                     this.$el = $(el);
                     this.options = $.extend(defaults, this.$el.data(), options);
 
                     // enable / disable debug
                     Util.debugEnabled = this.options.debug;
 
-                    that.initFields.call(this);
+                    this.initialized = that.initFields.call(this);
 
                     if (!!this.options.validation) {
                         this.validation = new Validation(this);
@@ -96,20 +90,22 @@ define([
                 },
 
                 // initialize field objects
-                initFields: function() {
-                    $.each(Util.getFields(this.$el), function(key, value) {
-                        this.requireCounter++;
-                        that.addField.call(this, value, false).initialized.then(function() {
-                            that.resolveInitialization.call(this);
-                        }.bind(this));
-                    }.bind(this));
-                },
+                initFields: function($el) {
+                    var dfd = $.Deferred(),
+                        requireCounter = 0,
+                        resolve = function() {
+                            requireCounter--;
+                            if (requireCounter === 0) {
+                                dfd.resolve();
+                            }
+                        };
 
-                resolveInitialization: function() {
-                    this.requireCounter--;
-                    if (this.requireCounter === 0) {
-                        dfd.resolve();
-                    }
+                    $.each(Util.getFields($el || this.$el), function(key, value) {
+                        requireCounter++;
+                        that.addField.call(this, value, false).initialized.then(resolve.bind(this));
+                    }.bind(this));
+
+                    return dfd.promise();
                 },
 
                 bindValidationDomEvents: function() {
@@ -150,6 +146,10 @@ define([
                     }.bind(this));
 
                     return element;
+                },
+
+                initFields: function($el) {
+                    return that.initFields.call(this, $el);
                 },
 
                 removeField: function(selector) {

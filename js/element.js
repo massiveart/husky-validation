@@ -143,7 +143,7 @@ define(['form/util'], function(Util) {
                     var addFunction = function(typeName, options) {
                             this.requireCounter++;
                             require(['type/' + typeName], function(Type) {
-                                type = new Type(this.$el, options);
+                                type = new Type(this.$el, options, form);
 
                                 type.initialized.then(function() {
                                     Util.debug('Element Type', typeName, options);

@@ -468,9 +468,10 @@ define([
 
         // define mapper interface
             result = {
-                setData: function(data) {
+                setData: function(data, $el) {
                     this.collectionsSet = {};
-                    return that.setData.call(this, data);
+
+                    return that.setData.call(this, data, $el);
                 },
 
                 getData: function($el) {

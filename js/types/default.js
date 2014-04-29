@@ -14,7 +14,7 @@ define([
 
     'use strict';
 
-    return function($el, defaults, options, name, typeInterface) {
+    return function($el, defaults, options, name, typeInterface, form) {
 
         var that = {
                 initialize: function() {
@@ -34,6 +34,8 @@ define([
 
             defaultInterface = {
                 name: name,
+
+                form: form,
 
                 needsValidation: function() {
                     return true;
