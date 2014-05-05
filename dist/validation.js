@@ -541,7 +541,18 @@ define('form/element',['form/util'], function(Util) {
                 },
 
                 setValue: function(value) {
-                    type.setValue(value);
+                    var dfd = $.Deferred(),
+                        result = type.setValue(value);
+
+                    // if setvalue returns a deferred wait for that
+                    if (!!result) {
+                        result.then(function() {
+                            dfd.resolve();
+                        });
+                    } else {
+                        dfd.resolve();
+                    }
+                    return dfd.promise();
                 },
 
                 getValue: function(data) {
@@ -1067,14 +1078,16 @@ define('form/mapper',[
                         if (!element) {
                             element = form.addField($element);
                             element.initialized.then(function() {
-                                element.setValue(data);
-                                // resolve this set data
-                                resolve();
+                                element.setValue(data).then(function() {
+                                    // resolve this set data
+                                    resolve();
+                                });
                             }.bind(this));
                         } else {
-                            element.setValue(data);
-                            // resolve this set data
-                            resolve();
+                            element.setValue(data).then(function() {
+                                // resolve this set data
+                                resolve();
+                            });
                         }
                     } else if (data !== null && !$.isEmptyObject(data)) {
                         count = Object.keys(data).length;
@@ -1109,12 +1122,14 @@ define('form/mapper',[
                                     if (!element) {
                                         element = form.addField($element);
                                         element.initialized.then(function() {
-                                            element.setValue(value);
-                                            resolve();
+                                            element.setValue(value).then(function() {
+                                                resolve();
+                                            });
                                         }.bind(this));
                                     } else {
-                                        element.setValue(value);
-                                        resolve();
+                                        element.setValue(value).then(function() {
+                                            resolve();
+                                        });
                                     }
                                 } else {
                                     resolve();

@@ -344,7 +344,18 @@ define(['form/util'], function(Util) {
                 },
 
                 setValue: function(value) {
-                    type.setValue(value);
+                    var dfd = $.Deferred(),
+                        result = type.setValue(value);
+
+                    // if setvalue returns a deferred wait for that
+                    if (!!result) {
+                        result.then(function() {
+                            dfd.resolve();
+                        });
+                    } else {
+                        dfd.resolve();
+                    }
+                    return dfd.promise();
                 },
 
                 getValue: function(data) {

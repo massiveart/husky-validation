@@ -403,14 +403,16 @@ define([
                         if (!element) {
                             element = form.addField($element);
                             element.initialized.then(function() {
-                                element.setValue(data);
-                                // resolve this set data
-                                resolve();
+                                element.setValue(data).then(function() {
+                                    // resolve this set data
+                                    resolve();
+                                });
                             }.bind(this));
                         } else {
-                            element.setValue(data);
-                            // resolve this set data
-                            resolve();
+                            element.setValue(data).then(function() {
+                                // resolve this set data
+                                resolve();
+                            });
                         }
                     } else if (data !== null && !$.isEmptyObject(data)) {
                         count = Object.keys(data).length;
@@ -445,12 +447,14 @@ define([
                                     if (!element) {
                                         element = form.addField($element);
                                         element.initialized.then(function() {
-                                            element.setValue(value);
-                                            resolve();
+                                            element.setValue(value).then(function() {
+                                                resolve();
+                                            });
                                         }.bind(this));
                                     } else {
-                                        element.setValue(value);
-                                        resolve();
+                                        element.setValue(value).then(function() {
+                                            resolve();
+                                        });
                                     }
                                 } else {
                                     resolve();
