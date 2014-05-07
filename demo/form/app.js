@@ -89,6 +89,7 @@ define(['js/form', 'globalize'], function(Form) {
                 lastName: 'Wachter',
                 birthDay: '2013-09-18T08:05:00',
                 wage: 1500,
+                disabled: 1,
                 country: {
                     id: 2,
                     name: 'CH'
