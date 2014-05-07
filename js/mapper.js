@@ -523,11 +523,11 @@ define([
                 },
 
                 /**
-                 *
-                 *  @param {Boolean} [returnMapperId=false] returnMapperId
+                 * extracts data from $element or default form element
                  *  @param {Object} [$el=undefined] element to select data from
+                 *  @param {Boolean} [returnMapperId=false] returnMapperId
                  */
-                getData: function(returnMapperId, $el) {
+                getData: function($el, returnMapperId) {
                     return that.getData.call(this, $el, returnMapperId);
                 },
 
