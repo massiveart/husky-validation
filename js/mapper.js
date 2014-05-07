@@ -211,7 +211,7 @@ define([
                     $(form.$el).trigger('form-remove', [propertyName, data]);
                 },
 
-                processData: function(el, collection) {
+                processData: function(el, collection, returnMapperId) {
                     // get attributes
                     var $el = $(el),
                         type = $el.data('type'),
@@ -238,8 +238,11 @@ define([
                         result = [];
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
-                                item = form.mapper.getData($(value));
-                                item.mapperId = value.dataset.mapperId;
+                                item = that.getData($(value));
+                                    // only set mapper-id if explicitly set
+                                if (!!returnMapperId) {
+                                    item.mapperId = value.dataset.mapperId;
+                                }
 
                                 var keys = Object.keys(item);
                                 if (keys.length === 1) { // for value only collection
@@ -250,7 +253,7 @@ define([
                                     result.push(item);
                                 }
                             }
-                        });
+                        }.bind(this));
                         return result;
                     }
                 },
@@ -378,6 +381,46 @@ define([
                     $element.remove();
                 },
 
+                getData: function($el, returnMapperId) {
+                    if (!$el) {
+                        $el = form.$el;
+                    }
+
+                    var data = { }, $childElement, property, parts,
+
+                    // search field with mapper property
+                        selector = '*[data-mapper-property]',
+                        $elements = $el.find(selector);
+
+                    // do it while elements exists
+                    while ($elements.length > 0) {
+                        // get first
+                        $childElement = $($elements.get(0));
+                        property = $childElement.data('mapper-property');
+
+                        if ($.isArray(property)) {
+                            $.each(property, function(i, prop) {
+                                data[prop.data] = that.processData.call(this, $childElement, prop, returnMapperId);
+                            }.bind(this));
+                        } else if (property.match(/.*\..*/)) {
+                            parts = property.split('.');
+                            data[parts[0]] = {};
+                            data[parts[0]][parts[1]] = that.processData.call(this, $childElement);
+                        } else {
+                            // process it
+                            data[property] = that.processData.call(this, $childElement);
+                        }
+
+                        // remove element itself
+                        $elements = $elements.not($childElement);
+
+                        // remove child elements
+                        $elements = $elements.not($childElement.find(selector));
+                    }
+
+                    return data;
+                },
+
                 setData: function(data, $el) {
                     if (!$el) {
                         $el = form.$el;
@@ -403,14 +446,16 @@ define([
                         if (!element) {
                             element = form.addField($element);
                             element.initialized.then(function() {
-                                element.setValue(data);
-                                // resolve this set data
-                                resolve();
+                                element.setValue(data).then(function() {
+                                    // resolve this set data
+                                    resolve();
+                                });
                             }.bind(this));
                         } else {
-                            element.setValue(data);
-                            // resolve this set data
-                            resolve();
+                            element.setValue(data).then(function() {
+                                // resolve this set data
+                                resolve();
+                            });
                         }
                     } else if (data !== null && !$.isEmptyObject(data)) {
                         count = Object.keys(data).length;
@@ -445,12 +490,14 @@ define([
                                     if (!element) {
                                         element = form.addField($element);
                                         element.initialized.then(function() {
-                                            element.setValue(value);
-                                            resolve();
+                                            element.setValue(value).then(function() {
+                                                resolve();
+                                            });
                                         }.bind(this));
                                     } else {
-                                        element.setValue(value);
-                                        resolve();
+                                        element.setValue(value).then(function() {
+                                            resolve();
+                                        });
                                     }
                                 } else {
                                     resolve();
@@ -462,55 +509,26 @@ define([
                     }
 
                     return dfd.promise();
-                },
+                }
 
             },
 
         // define mapper interface
             result = {
-                setData: function(data) {
+
+                setData: function(data, $el) {
                     this.collectionsSet = {};
-                    return that.setData.call(this, data);
+
+                    return that.setData.call(this, data, $el);
                 },
 
-                getData: function($el) {
-                    if (!$el) {
-                        $el = form.$el;
-                    }
-
-                    var data = { }, $childElement, property, parts,
-
-                    // search field with mapper property
-                        selector = '*[data-mapper-property]',
-                        $elements = $el.find(selector);
-
-                    // do it while elements exists
-                    while ($elements.length > 0) {
-                        // get first
-                        $childElement = $($elements.get(0));
-                        property = $childElement.data('mapper-property');
-
-                        if ($.isArray(property)) {
-                            $.each(property, function(i, prop) {
-                                data[prop.data] = that.processData.call(this, $childElement, prop);
-                            });
-                        } else if (property.match(/.*\..*/)) {
-                            parts = property.split('.');
-                            data[parts[0]] = {};
-                            data[parts[0]][parts[1]] = that.processData.call(this, $childElement);
-                        } else {
-                            // process it
-                            data[property] = that.processData.call(this, $childElement);
-                        }
-
-                        // remove element itself
-                        $elements = $elements.not($childElement);
-
-                        // remove child elements
-                        $elements = $elements.not($childElement.find(selector));
-                    }
-
-                    return data;
+                /**
+                 * extracts data from $element or default form element
+                 *  @param {Object} [$el=undefined] element to select data from
+                 *  @param {Boolean} [returnMapperId=false] returnMapperId
+                 */
+                getData: function($el, returnMapperId) {
+                    return that.getData.call(this, $el, returnMapperId);
                 },
 
                 addCollectionFilter: function(name, callback) {
