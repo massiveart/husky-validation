@@ -50,7 +50,9 @@ define(['js/form', 'globalize'], function(Form) {
     });
 
     $('#addemail').on('click', function() {
-       form.mapper.addToCollection('emails', {email:'test@test.com'});
+       form.mapper.addToCollection('emails', {email:'test@test.com'}).then(function($element) {
+           console.log($element);
+       });
     });
 
     $('#addemailend').on('click', function() {
