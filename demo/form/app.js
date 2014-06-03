@@ -32,7 +32,7 @@ define(['js/form', 'globalize'], function(Form) {
     });
 
     $('#send-mapperid').on('click', function() {
-        console.log(form.mapper.getData(true));
+        console.log(form.mapper.getData(undefined,true));
 
         return false;
     });
@@ -53,6 +53,19 @@ define(['js/form', 'globalize'], function(Form) {
        form.mapper.addToCollection('emails', {email:'test@test.com'}).then(function($element) {
            console.log($element);
        });
+    });
+
+    $('#addempty').on('click', function() {
+       form.mapper.addToCollection('empty', {value:'dudldu'}).then(function($element) {
+           console.log($element);
+       });
+    });
+
+    $('#removeempty').on('click', function() {
+        var mapperId = $('body').find('*[data-mapper-property-tpl=empty-tpl]').eq(0).attr('data-mapper-id');
+        if (mapperId) {
+           form.mapper.removeFromCollection(parseInt(mapperId,10));
+        }
     });
 
     $('#addemailend').on('click', function() {

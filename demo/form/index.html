@@ -76,17 +76,20 @@
                 </div>
 
                 <div class="grid-row" id='emptei'
-                     data-mapper-property='[{"data":"empty","tpl":"empty-tpl"}]'
+                     data-mapper-property='[{"data":"empty","tpl":"empty-tpl","empty-tpl":"empty-empty-tpl"}]'
                      data-type="collection">
+                    <script type="text/template" id="empty-empty-tpl">
+                        <div>i am the empty template</div>
+                    </script>
                     <script type="text/template" id="empty-tpl">
-                        <div></div>
+                        <div>here i am</div>
                     </script>
                 </div>
 
                 <h2>multiple data</h2>
 
                 <div class="grid-row" id='phonesandemails'
-                     data-mapper-property='[{"data":"emails","tpl":"emails-tpl"},{"data":"phones","tpl":"phones-tpl"}]'
+                     data-mapper-property='[{"data":"emails","tpl":"emails-tpl","empty-tpl":"emails-empty-tpl"},{"data":"phones","tpl":"phones-tpl"}]'
                      data-type="collection">
                     <script type="text/template" id="phones-tpl">
                         <div class="grid-col-4 floating">
@@ -103,6 +106,11 @@
                                    class="form-element"
                                    name="phone"
                                    data-mapper-property="phone"/>
+                        </div>
+                    </script>
+                    <script type="text/template" id="emails-empty-tpl">
+                        <div class="grid-col-4 floating">
+                            no emails found
                         </div>
                     </script>
                     <script type="text/template" id="emails-tpl">
@@ -165,6 +173,8 @@
                     <a href="#" class="btn" id="editphone">edit Phone Privat</a>
                     <a href="#" class="btn" id="deleteemail">delete email</a>
                     <a href="#" class="btn" id="send-mapperid">send with mapper-id</a>
+                    <a href="#" class="btn" id="addempty">add to empty</a>
+                    <a href="#" class="btn" id="removeempty">remove empty</a>
                 </div>
             </form>
         </div>
