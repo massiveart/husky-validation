@@ -125,8 +125,6 @@ define([
                         } else {
                             resolveElement();
                         }
-                        // check if child is empty template
-
                     }.bind(this));
 
                     $.each(property, function(i, item) {
@@ -335,7 +333,7 @@ define([
                     $template.attr('data-mapper-property-tpl', $child.id);
                     $template.attr('data-mapper-id', _.uniqueId());
 
-
+                    // add template to element
                     if (insertAfter) {
                         $element.after($template);
                     } else {
