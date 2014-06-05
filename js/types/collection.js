@@ -8,6 +8,13 @@
  *
  */
 
+// TODO min / max for each collection in config
+// TODO add / remove handling (buttons)
+// TODO check full and empty
+// TODO empty template remove (set data add to collection)
+// TODO add / remove from collection function
+// TODO edit in collection
+
 define([
     'type/default',
     'form/util'
