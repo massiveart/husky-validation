@@ -1,0 +1,19 @@
+<div id="sulu-header-container" class="sulu-header squeezed">
+    <div class="inner" style="margin-left: 250px; width: 1430px;">
+        <div class="info">
+            <ul class="breadcrumb">
+                <li class="active">
+                    <a href="{{ page.base_url }}">Home</a>
+                </li>
+                {% if page.slug != "home" %}
+                <li class="active">
+                    <a href="{{ page.base_url }}{{ page.slug }}">{{ page.title }}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="headline">
+            <h1 class="bright">{{ page.title }}</h1>
+        </div>
+    </div>
+</div>

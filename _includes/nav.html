@@ -1,42 +1,83 @@
-<div id="navigation">
-    <div class="navigation">
-        <ul class="navigation-columns">
-            <li id="column-0" class="navigation-column">
-                <ul class="navigation-items">
-                    <li title="CSS" class="navigation-column-item{% if page.slug == "home" %} selected{% endif %}">
-                    <a href="{{ page.base_url }}">
-                        <span class="icon-book"></span>Home
-                    </a>
-                    </li>
-                    <li title="CSS" class="navigation-column-item{% if page.slug == "contribute" %} selected{% endif %}">
-                    <a href="{{ page.base_url }}contribute">
-                        <span class="icon-cogwheel"></span>Contribute
-                    </a>
-                    </li>
-                    <li title="JavaScript Components" class="navigation-column-item{% if page.slug == "demonstration" %} selected{% endif %}">
-                    <a href="{{ page.base_url }}demonstration">
-                        <span class="icon-bank"></span>Demonstration
-                    </a>
-                    </li>
-                    <li title="JavaScript Components" class="navigation-column-item{% if page.slug == "documentation" %} selected{% endif %}">
-                    <a href="{{ page.base_url }}documentation">
-                        <span class="icon-js"></span>Documentation
-                    </a>
-                    </li>
-                    </li>
-                    <li title="Extend" class="navigation-column-item{% if page.slug == "extend" %} selected{% endif %}">
-                    <a href="{{ page.base_url }}extend">
-                        <span class="icon-cogwheels"></span>Extend
-                    </a>
-                    </li>
-                    </li>
-                    <li title="Globalize" class="navigation-column-item{% if page.slug == "globalize" %} selected{% endif %}">
-                    <a href="{{ page.base_url }}globalize">
-                        <span class="icon-globe"></span>Globalize
-                    </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+<nav class="navigation">
+    <div class="navigation-content">
+        <div class="wrapper">
+            <header class="navigation-header">
+                <div class="logo"></div>
+                <div class="navigation-header-title"> Husky-Valiidation</div>
+            </header>
+
+            <div id="navigation-item-container" class="navigation-item-container">
+                <div class="section">
+                    <ul class="section-items">
+                        <li title="Home" class="navigation-items{% if page.slug == "home" %} is-active is-expanded{% endif %}">
+                        <div class="navigation-items-toggle">
+                            <a class="navigation-item" href="{{ page.base_url }}">
+                                <span class="fa-home navigation-item-icon"></span>
+                                <span class="navigation-item-title">Home</span>
+                            </a>
+                        </div>
+                        </li>
+                        <li title="Contribute" class="navigation-items{% if page.slug == "contribute" %} is-active is-expanded{% endif %}">
+                        <div class="navigation-items-toggle">
+                            <a class="navigation-item" href="{{ page.base_url }}contribute">
+                                <span class="fa-cog navigation-item-icon"></span>
+                                <span class="navigation-item-title">Contribute</span>
+                            </a>
+                        </div>
+                        </li>
+                        <li title="Demonstration" class="navigation-items{% if page.slug == "demonstration" %} is-active is-expanded{% endif %}">
+                        <div class="navigation-items-toggle">
+                            <a class="navigation-item" href="{{ page.base_url }}demonstration">
+                                <span class="fa-bank navigation-item-icon"></span>
+                                <span class="navigation-item-title">Demonstration</span>
+                            </a>
+                        </div>
+                        </li>
+                        <li title="Documentation" class="navigation-items{% if page.slug == "documentation" %} is-active is-expanded{% endif %}">
+                        <div class="navigation-items-toggle">
+                            <a class="navigation-item" href="{{ page.base_url }}documentation">
+                                <span class="fa-book navigation-item-icon"></span>
+                                <span class="navigation-item-title">Documentation</span>
+                            </a>
+                        </div>
+                        </li>
+                        <li title="Extend" class="navigation-items{% if page.slug == "extend" %} is-active is-expanded{% endif %}">
+                        <div class="navigation-items-toggle">
+                            <a class="navigation-item" href="{{ page.base_url }}extend">
+                                <span class="fa-cogs navigation-item-icon"></span>
+                                <span class="navigation-item-title">Extend</span>
+                            </a>
+                        </div>
+                        </li>
+                        <li title="Globalize" class="navigation-items{% if page.slug == "globalize" %} is-active is-expanded{% endif %}">
+                        <div class="navigation-items-toggle">
+                            <a class="navigation-item" href="{{ page.base_url }}globalize">
+                                <span class="fa-globe navigation-item-icon"></span>
+                                <span class="navigation-item-title">Globalize</span>
+                            </a>
+                        </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div class="options">
+                <div class="user">
+                    <div class="doc-social-btn">
+                        <iframe src="http://ghbtns.com/github-btn.html?user=massiveart&repo=husky-validation&type=fork"
+                                allowtransparency="true" frameborder="0" scrolling="0" width="62" height="20"></iframe>
+                    </div>
+
+                    <div class="doc-social-btn">
+                        <iframe src="http://ghbtns.com/github-btn.html?user=massiveart&repo=husky-validation&type=watch"
+                                allowtransparency="true" frameborder="0" scrolling="0" width="62" height="20"></iframe>
+                    </div>
+                </div>
+                <div class="version">
+                    Husky-Validation (0.3)
+                </div>
+            </div>
+        </footer>
     </div>
-</div>
+</nav>
