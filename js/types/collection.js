@@ -91,7 +91,7 @@ define([
                     var options, $template, dfd = $.Deferred();
 
                     if (typeof index === 'undefined' || index === null) {
-                        index = this.getChildren().length;
+                        index = this.getChildren(propertyName).length;
                     }
 
                     if (this.canAdd()) {
