@@ -343,12 +343,12 @@ define(['form/util'], function(Util) {
                     });
                 },
 
-                setValue: function(value) {
+                setValue: function(value, propertyName) {
                     var dfd = $.Deferred(),
                         result;
 
                     this.initialized.then(function() {
-                        result = type.setValue(value);
+                        result = type.setValue(value, propertyName);
 
                         // if setvalue returns a deferred wait for that
                         if (!!result) {

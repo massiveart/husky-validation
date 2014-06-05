@@ -144,6 +144,15 @@ define([], function() {
             }
         },
 
+        insertAt: function(index, selector, $container, $item) {
+            if (index === 0) {
+                $container.prepend($item);
+            } else {
+                var $before = $container.find(selector + ':nth-child(' + index + ')');
+                $before.after($item);
+            }
+        },
+
         /**
          *  JavaScript equivalent of PHP’s ucfirst
          *  inspired by http://kevin.vanzonneveld.net

@@ -28,6 +28,7 @@ define([
                     this.emptyTemplates = {};
                     this.templates = {};
                     this.elements = [];
+                    /*
                     this.collectionsInitiated = $.Deferred();
 
                     form.initialized.then(function() {
@@ -36,6 +37,7 @@ define([
 
                         $elements.each(that.initCollection.bind(this));
                     }.bind(this));
+                    */
                 },
 
                 initCollection: function(key, value) {
@@ -190,8 +192,8 @@ define([
                 },
 
                 checkFullAndEmpty: function(propertyName) {
-                    var $addButton = $("[data-mapper-add='"+ propertyName +"']"),
-                        $removeButton = $("[data-mapper-remove='"+ propertyName +"']"),
+                    var $addButton = $("[data-mapper-add='" + propertyName + "']"),
+                        $removeButton = $("[data-mapper-remove='" + propertyName + "']"),
                         tpl = this.templates[propertyName].tpl,
                         collection = this.templates[propertyName].collection,
                         fullClass = collection.element.$el.data('mapper-full-class') || 'full',
@@ -208,7 +210,7 @@ define([
                             $addButton.addClass(fullClass);
                             $(collection.element.$el).addClass(fullClass);
 
-                        // else, if no remove is possible add empty style-classes
+                            // else, if no remove is possible add empty style-classes
                         } else if (!collection.element.getType().canRemove(tpl.id)) {
                             $addButton.addClass(emptyClass);
                             $(collection.element.$el).addClass(emptyClass);
@@ -257,7 +259,7 @@ define([
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 item = that.getData($(value));
-                                    // only set mapper-id if explicitly set
+                                // only set mapper-id if explicitly set
                                 if (!!returnMapperId) {
                                     item.mapperId = value.dataset.mapperId;
                                 }
@@ -475,13 +477,13 @@ define([
                         if (!element) {
                             element = form.addField($element);
                             element.initialized.then(function() {
-                                element.setValue(data).then(function() {
+                                element.setValue(data, 'TODO').then(function() {
                                     // resolve this set data
                                     resolve();
                                 });
                             }.bind(this));
                         } else {
-                            element.setValue(data).then(function() {
+                            element.setValue(data, 'TODO').then(function() {
                                 // resolve this set data
                                 resolve();
                             });
@@ -492,46 +494,48 @@ define([
                             var $element, element, collection;
 
                             // if field is a collection
-                            if ($.isArray(value) && this.templates.hasOwnProperty(key)) {
-                                collection = this.templates[key].collection;
-                                collection.$child = this.templates[key].tpl;
+                            /*
+                             if ($.isArray(value) && this.templates.hasOwnProperty(key)) {
+                             collection = this.templates[key].collection;
+                             collection.$child = this.templates[key].tpl;
 
-                                // if first element of collection, clear collection
-                                if (!this.collectionsSet.hasOwnProperty(collection.id)) {
-                                    collection.$element.children().each(function(key, value) {
-                                        that.remove.call(this, $(value));
-                                    }.bind(this));
-                                }
-                                this.collectionsSet[collection.id] = true;
+                             // if first element of collection, clear collection
+                             if (!this.collectionsSet.hasOwnProperty(collection.id)) {
+                             collection.$element.children().each(function(key, value) {
+                             that.remove.call(this, $(value));
+                             }.bind(this));
+                             }
+                             this.collectionsSet[collection.id] = true;
 
-                                that.setCollectionData.call(this, value, collection).then(function() {
-                                    resolve();
-                                });
-                            } else {
-                                // search field with mapper property
-                                selector = '*[data-mapper-property="' + key + '"]';
-                                $element = $el.andSelf().find(selector);
+                             that.setCollectionData.call(this, value, collection).then(function() {
+                             resolve();
+                             });
+                             } else {
+                             */
+                            // search field with mapper property
+                            selector = '*[data-mapper-property*="' + key + '"]';
+                            $element = $el.andSelf().find(selector);
 
-                                element = $element.data('element');
+                            element = $element.data('element');
 
-                                if ($element.length > 0) {
-                                    // if element is not in form add it
-                                    if (!element) {
-                                        element = form.addField($element);
-                                        element.initialized.then(function() {
-                                            element.setValue(value).then(function() {
-                                                resolve();
-                                            });
-                                        }.bind(this));
-                                    } else {
-                                        element.setValue(value).then(function() {
+                            if ($element.length > 0) {
+                                // if element is not in form add it
+                                if (!element) {
+                                    element = form.addField($element);
+                                    element.initialized.then(function() {
+                                        element.setValue(value, key).then(function() {
                                             resolve();
                                         });
-                                    }
+                                    }.bind(this));
                                 } else {
-                                    resolve();
+                                    element.setValue(value, key).then(function() {
+                                        resolve();
+                                    });
                                 }
+                            } else {
+                                resolve();
                             }
+                            //}
                         }.bind(this));
                     } else {
                         dfd.resolve();
@@ -589,7 +593,7 @@ define([
                     }
                     // check if empty template is set and lookup in dom
                     if (template.emptyTemplate) {
-                        $emptyTpl = $(element).find('#'+template.emptyTemplate);
+                        $emptyTpl = $(element).find('#' + template.emptyTemplate);
                         if ($emptyTpl) {
                             $emptyTpl.remove();
                         }
@@ -621,7 +625,7 @@ define([
                         templateName = that.deleteElementByMapperId.call(this, mapperId);
 
                     // check if collection still has elements with propertyName, else render empty Template
-                    if (form.$el.find('*[data-mapper-property-tpl='+templateName+']').length < 1) {
+                    if (form.$el.find('*[data-mapper-property-tpl=' + templateName + ']').length < 1) {
                         // get collection with is owner of templateName
                         for (i in this.templates) {
                             // if emptyTemplates is set

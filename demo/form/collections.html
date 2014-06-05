@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<link href="../../css/validation.css" rel="stylesheet">
+		<link href="../../assets/css/husky.min.css" rel="stylesheet">
+
+		<style type="text/css">
+			#content {
+				margin-left: auto;
+				margin-right: auto;
+				width: 800px;
+				margin-top: 100px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="content">
+			<form id="contact-form" class="grid" data-debug="true" data-language="fr">
+				<h2>empty</h2>
+
+				<div class="grid-row" id='emptei'
+					 data-type-config='{"empty": {"tpl":"empty-tpl","emptyTpl":"empty-empty-tpl"}}'
+					 data-type="collection"
+						data-mapper-property="empty">
+					<script type="text/template" id="empty-empty-tpl">
+						<div>i am the empty template</div>
+					</script>
+					<script type="text/template" id="empty-tpl">
+						<div>here i am</div>
+					</script>
+				</div>
+
+				<h2>multiple data</h2>
+
+				<div class="grid-row" id='phonesandemails'
+					 data-type="collection"
+					 data-type-config='{"emails":{"tpl":"emails-tpl","emptyTpl":"emails-empty-tpl"},"phones": {"tpl":"phones-tpl"}}'
+					 data-mapper-property="emails,phones">
+					<script type="text/template" id="phones-tpl">
+						<div class="grid-col-4 floating">
+							[% var uid = _.uniqueId('test_'); %]
+							<span style="display: none" data-mapper-property="attributes" data-form="true"
+								  data-type="attributes"></span>
+							<label for="[%= uid %]">Phone
+                                <span data-mapper-property="type"
+									  data-type="label"
+									  data-type-label="name"
+									  data-type-id="id" data-form="true"></span>
+							</label>
+							<input id="[%= uid %]"
+								   type="text"
+								   class="form-element"
+								   name="phone"
+								   data-mapper-property="phone"/>
+						</div>
+					</script>
+					<script type="text/template" id="emails-empty-tpl">
+						<div class="grid-col-4 floating">
+							no emails found
+						</div>
+					</script>
+					<script type="text/template" id="emails-tpl">
+						<div class="grid-col-4 floating">
+							[% var uid = _.uniqueId('email_'); %]
+							<label for="[%= uid %]">Email
+							</label>
+							<input id="email[%= index %]"
+								   type="text"
+								   class="form-element"
+								   name="email"
+								   data-mapper-property="email"/>
+						</div>
+					</script>
+				</div>
+				<div class="grid-row">
+					<input type="submit" value="Send" class="btn"/>
+					<a href="#" class="btn" id="setdata">SetData</a>
+					<a href="#" class="btn" id="setnull">SetData {}</a>
+					<a href="#" class="btn" id="addemail">add new email</a>
+					<a href="#" class="btn" id="addemailend">add new email at end</a>
+					<a href="#" class="btn" id="addphone">add new phone</a>
+					<a href="#" class="btn" id="editphone">edit Phone Privat</a>
+					<a href="#" class="btn" id="deleteemail">delete email</a>
+					<a href="#" class="btn" id="send-mapperid">send with mapper-id</a>
+					<a href="#" class="btn" id="addempty">add to empty</a>
+					<a href="#" class="btn" id="removeempty">remove empty</a>
+				</div>
+			</form>
+		</div>
+
+		<script src="../../assets/js/jquery.js"></script>
+		<script src="../../assets/js/underscore.js"></script>
+		<script data-main="app.js" type="text/javascript" src="../../assets/js/require.js"></script>
+	</body>
+</html>
