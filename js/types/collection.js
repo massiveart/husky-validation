@@ -22,6 +22,9 @@ define([
             },
 
             subType = {
+                /**
+                 * initialize collection
+                 */
                 initializeSub: function() {
                     var i, len, property, $tpl, $emptyTpl;
 
@@ -43,6 +46,13 @@ define([
                     }
                 },
 
+                /**
+                 * maps given array (value) with given templates to this.$el
+                 * @param {object} templates includes tpl and empty template
+                 * @param {array} value array of data
+                 * @param {string} propertyName name of property
+                 * @returns {object} deferred objects that´s indicates end of asynchronous functions
+                 */
                 internalSetValue: function(templates, value, propertyName) {
                     var i, len, count, item,
                         dfd = $.Deferred(),
@@ -63,26 +73,31 @@ define([
                     for (i = 0; i < len; i++) {
                         item = value[i] || {};
 
-                        this.addChild(i, item, templates).then(resolve);
+                        this.addChild(i, item, templates.tpl, propertyName).then(resolve);
                     }
 
                     return dfd.promise();
                 },
 
-                addChild: function(index, item, templates, propertyName) {
-                    var options, template, $template, dfd = $.Deferred();
+                /**
+                 * add a child to this.$el but on
+                 * @param {number} index for resulting $item dom element
+                 * @param {object} item data for resulting $item dom element
+                 * @param {string} template to render $item
+                 * @param {string} propertyName name of property
+                 * @returns {object} deferred objects that´s indicates end of asynchronous functions
+                 */
+                addChild: function(index, item, template, propertyName) {
+                    var options, $template, dfd = $.Deferred();
 
                     if (typeof index === 'undefined' || index === null) {
                         index = this.getChildren().length;
                     }
 
                     if (this.canAdd()) {
-                        // if index exists remove it
-                        this.$el.find('> *[data-mapper-property-tpl="' + propertyName + '"]:nth-child(' + (index + 1) + ')').remove();
-
                         // render child
                         options = $.extend({}, {index: index}, item);
-                        template = _.template(templates.tpl, options, form.options.delimiter);
+                        template = _.template(template, options, form.options.delimiter);
                         $template = $(template);
                         $template.attr('data-mapper-property-tpl', propertyName);
 
@@ -102,6 +117,12 @@ define([
                     return dfd.promise();
                 },
 
+                /**
+                 * map value to this.$el
+                 * @param {array} data
+                 * @param {string }propertyName
+                 * @returns {object} deferred objects that´s indicates end of asynchronous functions
+                 */
                 setValue: function(data, propertyName) {
                     var templates = this.templates[propertyName], dfd;
                     if (data.length === 0) {
@@ -116,33 +137,62 @@ define([
                     }
                 },
 
+                /**
+                 * validates this type of data
+                 * @returns {boolean}
+                 */
                 validate: function() {
                     return true;
                 },
 
+                /**
+                 * indicates data to validate
+                 * @returns {boolean}
+                 */
                 needsValidation: function() {
                     return false;
                 },
 
+                /**
+                 * returns childs for given property
+                 * @param {string} propertyName
+                 * @returns {array}
+                 */
                 getChildren: function(propertyName) {
                     return this.$el.find('*[data-mapper-property-tpl="' + propertyName + '"]');
                 },
 
+                /**
+                 * returns min occurs
+                 * @returns {number}
+                 */
                 getMinOccurs: function() {
                     return this.options.min;
                 },
 
+                /**
+                 * returns min occurs
+                 * @returns {number}
+                 */
                 getMaxOccurs: function() {
                     return this.options.max;
                 },
 
-                canAdd: function(id) {
-                    var length = this.getChildren(id).length;
+                /**
+                 * returns TRUE if a child can be added for given property
+                 * @returns {boolean}
+                 */
+                canAdd: function(propertyName) {
+                    var length = this.getChildren(propertyName).length;
                     return this.getMaxOccurs() === null || length < this.getMaxOccurs();
                 },
 
-                canRemove: function(id) {
-                    var length = this.getChildren(id).length;
+                /**
+                 * returns TRUE if a child can be removed for given property
+                 * @returns {boolean}
+                 */
+                canRemove: function(propertyName) {
+                    var length = this.getChildren(propertyName).length;
                     return length > this.getMinOccurs();
                 }
             };
