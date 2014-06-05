@@ -110,51 +110,35 @@ define([
                     $(form.$el).trigger('form-remove', [propertyName, data]);
                 },
 
-                processData: function(el, collection, returnMapperId) {
+                processData: function(el, propertyName, returnMapperId) {
                     // get attributes
                     var $el = $(el),
-                        type = $el.data('type'),
-                        property = $el.data('mapper-property'),
                         element = $el.data('element'),
-                        result, item,
-                        filtersAction;
+                        filterAction = filters[propertyName],
+                        value = element.getValue(propertyName, returnMapperId),
+                        result = [],
+                        i, len;
 
-
-                    if (collection && !!filters[collection.data]) {
-                        filtersAction = filters[collection.data];
-                    } else if (!!filters[property]) {
-                        filtersAction = filters[property];
-                    }
-
-                    // if type == collection process children, else get value
-                    if (type !== 'collection') {
-                        if (!!element) {
-                            return element.getValue();
-                        } else {
-                            return null;
-                        }
-                    } else {
-                        result = [];
-                        $.each($el.children(), function(key, value) {
-                            if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
-                                item = that.getData($(value));
-                                // only set mapper-id if explicitly set
-                                if (!!returnMapperId) {
-                                    item.mapperId = value.dataset.mapperId;
-                                }
-
-                                var keys = Object.keys(item);
-                                if (keys.length === 1) { // for value only collection
-                                    if (item[keys[0]] !== '') {
-                                        result.push(item[keys[0]]);
-                                    }
-                                } else if (!filtersAction || filtersAction(item)) {
-                                    result.push(item);
+                    // filter result
+                    if (!!filterAction) {
+                        if ($.isArray(value)) {
+                            for (i = 0, len = value.length; i < len; i++) {
+                                if (filterAction(value[i])) {
+                                    result.push(value[i]);
                                 }
                             }
-                        }.bind(this));
-                        return result;
+                        } else {
+                            if (filterAction(value)) {
+                                result = value;
+                            } else {
+                                result = null;
+                            }
+                        }
+                    } else {
+                        result = value;
                     }
+
+                    return result;
                 },
 
                 /**
@@ -203,8 +187,10 @@ define([
                     if (!$el) {
                         $el = form.$el;
                     }
+                    // fix dom node bug
+                    $el = $($el);
 
-                    var data = { }, $childElement, property, parts,
+                    var data = {}, $childElement, properties, parts, i, len, property,
 
                     // search field with mapper property
                         selector = '*[data-mapper-property]',
@@ -214,19 +200,18 @@ define([
                     while ($elements.length > 0) {
                         // get first
                         $childElement = $($elements.get(0));
-                        property = $childElement.data('mapper-property');
+                        properties = $childElement.data('mapperProperty').split(',');
 
-                        if ($.isArray(property)) {
-                            $.each(property, function(i, prop) {
-                                data[prop.data] = that.processData.call(this, $childElement, prop, returnMapperId);
-                            }.bind(this));
-                        } else if (property.match(/.*\..*/)) {
-                            parts = property.split('.');
-                            data[parts[0]] = {};
-                            data[parts[0]][parts[1]] = that.processData.call(this, $childElement);
-                        } else {
-                            // process it
-                            data[property] = that.processData.call(this, $childElement);
+                        for (i = 0, len = properties.length; i < len; i++) {
+                            property = properties[i];
+
+                            if (property.match(/.*\..*/)) {
+                                parts = property.split('.');
+                                data[parts[0]] = {};
+                                data[parts[0]][parts[1]] = that.processData.call(this, $childElement, parts[0], returnMapperId);
+                            } else {
+                                data[property] = that.processData.call(this, $childElement, property, returnMapperId);
+                            }
                         }
 
                         // remove element itself

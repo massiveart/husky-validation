@@ -75,6 +75,29 @@
 					</div>
 				</div>
 
+				<h2>single value collections</h2>
+
+				<div class="grid-row"
+					 id="jobs"
+					 data-type="collection"
+					 data-type-config='{"jobs": {"tpl": "jobs-tpl"}}'
+					 data-type-min="2"
+					 data-type-max="6"
+					 data-type-single-value="job"
+					 data-mapper-property="jobs"
+					 data-mapper-full-class="MyFullClass"
+					 data-mapper-empty-class="MyEmptyClass">
+					<script type="text/template" id="jobs-tpl">
+						<div class="grid-col-4 floating">
+							<label>Job:</label>
+							<input type="text"
+								   data-mapper-property="job"
+								   class="form-element"
+								   name="name"/>
+						</div>
+					</script>
+				</div>
+
 				<h2>Empty Collection</h2>
 
 				<div class="grid-row" id='emptei'
@@ -158,6 +181,7 @@
 						</div>
 					</script>
 				</div>
+
 				<div id="mapper-add-faxes" data-mapper-add="faxes">Add element</div>
 
 				<div class="grid-row">

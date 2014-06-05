@@ -363,8 +363,8 @@ define(['form/util'], function(Util) {
                     return dfd.promise();
                 },
 
-                getValue: function(data) {
-                    return type.getValue(data);
+                getValue: function(propertyName, returnMapperId) {
+                    return type.getValue(propertyName, returnMapperId);
                 },
 
                 getType: function() {

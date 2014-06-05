@@ -18,7 +18,8 @@ define([
     return function($el, options, form) {
         var defaults = {
                 min: 0,
-                max: null
+                max: null,
+                singleValue: false
             },
 
             subType = {
@@ -88,7 +89,7 @@ define([
                  * @returns {object} deferred objects that´s indicates end of asynchronous functions
                  */
                 addChild: function(index, item, template, propertyName) {
-                    var options, $template, dfd = $.Deferred();
+                    var options, $template, tmp, dfd = $.Deferred();
 
                     if (typeof index === 'undefined' || index === null) {
                         index = this.getChildren(propertyName).length;
@@ -99,13 +100,22 @@ define([
                         options = $.extend({}, {index: index}, item);
                         template = _.template(template, options, form.options.delimiter);
                         $template = $(template);
+
+                        // set attributes to identify item
                         $template.attr('data-mapper-property-tpl', propertyName);
+                        $template.attr('data-mapper-id', _.uniqueId());
 
                         // insert child
                         Util.insertAt(index, '> *', this.$el, $template);
 
                         // init fields and set data
                         this.form.initFields($template).then(function() {
+                            if (!!this.options.singleValue) {
+                                tmp = item;
+                                item = {};
+                                item[this.options.singleValue] = tmp;
+                            }
+
                             this.form.mapper.setData(item, $template).then(function() {
                                 dfd.resolve();
                             }.bind(this));
@@ -135,6 +145,35 @@ define([
                     } else {
                         return this.internalSetValue(templates, data, propertyName);
                     }
+                },
+
+                /**
+                 * returns data array
+                 * @param {string} propertyName
+                 * @param {string} returnMapperId
+                 * @returns {array}
+                 */
+                getValue: function(propertyName, returnMapperId) {
+                    var $children = this.getChildren(propertyName), i, len, item, keys, result = [];
+
+                    for (i = 0, len = $children.length; i < len; i++) {
+                        item = this.form.mapper.getData($children[i], returnMapperId);
+                        if (!!returnMapperId) {
+                            item.mapperId = $($children[i]).data('mapperId');
+                        }
+
+                        if (!!this.options.singleValue) {
+                            // for value only collection
+                            keys = Object.keys(item);
+                            if (item[keys[0]] !== '') {
+                                result.push(item[keys[0]]);
+                            }
+                        } else {
+                            result.push(item);
+                        }
+                    }
+
+                    return result;
                 },
 
                 /**
