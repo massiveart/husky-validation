@@ -28,127 +28,6 @@ define([
                     this.emptyTemplates = {};
                     this.templates = {};
                     this.elements = [];
-                    /*
-                    this.collectionsInitiated = $.Deferred();
-
-                    form.initialized.then(function() {
-                        var selector = '*[data-type="collection"]',
-                            $elements = form.$el.find(selector);
-
-                        $elements.each(that.initCollection.bind(this));
-                    }.bind(this));
-                    */
-                },
-
-                initCollection: function(key, value) {
-                    var $element = $(value),
-                        element = $element.data('element'),
-                        property = $element.data('mapper-property'),
-                        $newChild, collection, emptyTemplate,
-                        dfd = $.Deferred(),
-                        counter = 0,
-                        resolve = function() {
-                            counter--;
-                            if (counter === 0) {
-                                dfd.resolve();
-                            }
-                        };
-
-                    if (!$.isArray(property)) {
-                        if (typeof property === 'object') {
-                            property = [property];
-                            $element.data('mapper-property', property);
-                        } else {
-                            throw "no valid mapper-property value";
-                        }
-                    }
-
-                    // get templates
-                    element.$children = $element.children().clone(true);
-
-                    // remove children
-                    $element.html('');
-
-                    // add to collections
-                    collection = {
-                        id: _.uniqueId('collection_'),
-                        property: property,
-                        $element: $element,
-                        element: element
-                    };
-                    this.collections.push(collection);
-
-                    counter += element.$children.length;
-                    // iterate through collection
-                    element.$children.each(function(i, child) {
-                        var $child = $(child), propertyName, x, len,
-                            propertyCount = 0,
-                            resolveElement = function() {
-                                propertyCount--;
-                                if (propertyCount === 0) {
-                                    resolve();
-                                }
-                            };
-
-                        // attention: template has to be markuped as 'script'
-                        if (!$child.is('script')) {
-                            throw 'template has to be defined as <script>';
-                        }
-
-                        $newChild = {tpl: $child.html(), id: $child.attr('id'), collection: collection};
-                        element.$children[i] = $newChild;
-
-                        for (x = -1, len = property.length; ++x < len;) {
-                            if (property[x].tpl === $newChild.id) {
-                                propertyName = property[x].data;
-                                emptyTemplate = property[x]['empty-tpl'];
-                            }
-                            // if child has empty template, set to empty templates
-                            if (property[x]['empty-tpl'] && property[x]['empty-tpl'] === $newChild.id) {
-                                this.emptyTemplates[property[x].data] = {
-                                    id: property[x]['empty-tpl'],
-                                    tpl: $child.html()
-                                };
-                            }
-                        }
-                        // check if template is set
-                        if (!!propertyName) {
-                            $newChild.propertyName = propertyName;
-                            propertyCount = collection.element.getType().getMinOccurs();
-                            this.templates[propertyName] = {tpl: $newChild, collection: collection, emptyTemplate: emptyTemplate};
-                            // init default children
-                            for (x = collection.element.getType().getMinOccurs() + 1; --x > 0;) {
-                                that.appendChildren.call(this, collection.$element, $newChild).then(function() {
-                                    // set counter
-                                    $('#current-counter-' + propertyName).text(collection.element.getType().getChildren($newChild.id).length);
-                                    resolveElement();
-                                }.bind(this));
-                            }
-                        } else {
-                            resolveElement();
-                        }
-                    }.bind(this));
-
-                    $.each(property, function(i, item) {
-                        // init add button
-                        form.$el.on('click', '*[data-mapper-add="' + item.data + '"]', that.addClick.bind(this));
-
-                        // init remove button
-                        form.$el.on('click', '*[data-mapper-remove="' + item.data + '"]', that.removeClick.bind(this));
-
-                        // emit collection init event after resolve
-                        dfd.then(function() {
-                            that.emitInitCollectionEvent(item.data);
-                        });
-                    }.bind(this));
-
-                    that.checkFullAndEmpty.call(this, property[0].data);
-
-                    dfd.then(function() {
-                        Util.debug('collection resolved');
-                    });
-
-                    return dfd.promise();
                 },
 
                 addClick: function(event) {
@@ -278,98 +157,6 @@ define([
                     }
                 },
 
-                setCollectionData: function(collection, collectionElement) {
-                    // remember first child remove the rest
-                    var $element = collectionElement.$element,
-                        $child = collectionElement.$child,
-                        $emptyTemplate,
-                        count = collection.length,
-                        dfd = $.Deferred(),
-                        resolve = function() {
-                            count--;
-                            if (count === 0) {
-                                dfd.resolve();
-                            }
-                        },
-                        x, len;
-
-                    // no element in collection
-                    if (count === 0) {
-                        // check if empty template exists for that element and show it
-                        that.addEmptyTemplate.call(this, $element, $child.propertyName);
-                        dfd.resolve();
-                    } else {
-                        if (collection.length < collectionElement.element.getType().getMinOccurs()) {
-                            for (x = collectionElement.element.getType().getMinOccurs() + 1, len = collection.length; --x > len;) {
-                                collection.push({});
-                            }
-                        }
-
-                        // foreach collection elements: create a new dom element, call setData recursively
-                        $.each(collection, function(key, value) {
-                            that.appendChildren.call(this, $element, $child, value).then(function($newElement) {
-                                that.setData.call(this, value, $newElement).then(function() {
-                                    resolve();
-                                }.bind(this));
-                            }.bind(this));
-                        }.bind(this));
-                    }
-
-                    // set current length of collection
-                    $('#current-counter-' + $element.attr('id')).text(collection.length);
-                    that.checkFullAndEmpty.call(this, collectionElement.property[0].data);
-                    return dfd.promise();
-                },
-
-                appendChildren: function($element, $child, tplOptions, data, insertAfter) {
-                    var index = $child.collection.element.getType().getChildren($child.id).length,
-                        options = $.extend({}, {index: index}, tplOptions || {}),
-                        template = _.template($child.tpl, options, form.options.delimiter),
-                        $template = $(template),
-                        $newFields = Util.getFields($template),
-                        dfd = $.Deferred(),
-                        counter = $newFields.length,
-                        element;
-
-                    // adding
-                    $template.attr('data-mapper-property-tpl', $child.id);
-                    $template.attr('data-mapper-id', _.uniqueId());
-
-                    // add template to element
-                    if (insertAfter) {
-                        $element.after($template);
-                    } else {
-                        $element.append($template);
-                    }
-
-                    // add fields
-                    if ($newFields.length > 0) {
-                        $.each($newFields, function(key, field) {
-                            element = form.addField($(field));
-                            element.initialized.then(function() {
-                                counter--;
-                                if (counter === 0) {
-                                    dfd.resolve($template);
-                                }
-                            });
-                        }.bind(this));
-                    } else {
-                        dfd.resolve($template);
-                    }
-
-                    // if automatically set data after initialization ( needed for adding elements afterwards)
-                    if (!!data) {
-                        dfd.then(function() {
-                            that.setData.call(this, data, $newFields);
-                        });
-                    }
-
-                    // push element to global array
-                    this.elements.push($template);
-
-                    return dfd.promise();
-                },
-
                 /**
                  * Returns a collection element for a given mapper-id
                  * @param {number} mapperId
@@ -491,27 +278,8 @@ define([
                     } else if (data !== null && !$.isEmptyObject(data)) {
                         count = Object.keys(data).length;
                         $.each(data, function(key, value) {
-                            var $element, element, collection;
+                            var $element, element;
 
-                            // if field is a collection
-                            /*
-                             if ($.isArray(value) && this.templates.hasOwnProperty(key)) {
-                             collection = this.templates[key].collection;
-                             collection.$child = this.templates[key].tpl;
-
-                             // if first element of collection, clear collection
-                             if (!this.collectionsSet.hasOwnProperty(collection.id)) {
-                             collection.$element.children().each(function(key, value) {
-                             that.remove.call(this, $(value));
-                             }.bind(this));
-                             }
-                             this.collectionsSet[collection.id] = true;
-
-                             that.setCollectionData.call(this, value, collection).then(function() {
-                             resolve();
-                             });
-                             } else {
-                             */
                             // search field with mapper property
                             selector = '*[data-mapper-property*="' + key + '"]';
                             $element = $el.andSelf().find(selector);
@@ -535,7 +303,6 @@ define([
                             } else {
                                 resolve();
                             }
-                            //}
                         }.bind(this));
                     } else {
                         dfd.resolve();
