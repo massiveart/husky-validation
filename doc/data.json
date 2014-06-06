@@ -1,0 +1,622 @@
+{
+    "project": {
+        "name": "husky-validation",
+        "description": "",
+        "version": "0.1.0",
+        "url": ""
+    },
+    "files": {
+        "js/types/collection.js": {
+            "name": "js/types/collection.js",
+            "modules": {},
+            "classes": {
+                "Collection": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/mapper.js": {
+            "name": "js/mapper.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/util.js": {
+            "name": "js/util.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "Collection": {
+            "name": "Collection",
+            "shortname": "Collection",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/types/collection.js",
+            "line": 19,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "configuration object",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "min",
+                            "description": "min default min items",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "max",
+                            "description": "max default max items",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "singleValue",
+                            "description": "singleValue property name of single value",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "js/types/collection.js",
+            "line": 43,
+            "description": "initialize templates",
+            "itemtype": "method",
+            "name": "initializeSub",
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 68,
+            "description": "maps given array (value) with given templates to this.$el",
+            "itemtype": "method",
+            "name": "internalSetValue",
+            "params": [
+                {
+                    "name": "templates",
+                    "description": "includes tpl and empty template",
+                    "type": "Object"
+                },
+                {
+                    "name": "value",
+                    "description": "array of data",
+                    "type": "Array"
+                },
+                {
+                    "name": "propertyName",
+                    "description": "name of property",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "deferred objects that´s indicates end of asynchronous functions",
+                "type": "Object"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 102,
+            "description": "add a child to this.$el but on",
+            "itemtype": "method",
+            "name": "addChild",
+            "params": [
+                {
+                    "name": "index",
+                    "description": "for resulting $item dom element",
+                    "type": "Number"
+                },
+                {
+                    "name": "item",
+                    "description": "data for resulting $item dom element",
+                    "type": "Object"
+                },
+                {
+                    "name": "template",
+                    "description": "to render $item",
+                    "type": "String"
+                },
+                {
+                    "name": "propertyName",
+                    "description": "name of property",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "deferred objects that´s indicates end of asynchronous functions",
+                "type": "Object"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 150,
+            "description": "map value to this.$el",
+            "itemtype": "method",
+            "name": "setValue",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "",
+                    "type": "Array"
+                },
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "deferred objects that´s indicates end of asynchronous functions",
+                "type": "Object"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 171,
+            "description": "returns data array",
+            "itemtype": "method",
+            "name": "getValue",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "returnMapperId",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Array"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 201,
+            "description": "validates this type of data",
+            "itemtype": "method",
+            "name": "validate",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 210,
+            "description": "indicates data to validate",
+            "itemtype": "method",
+            "name": "needsValidation",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 219,
+            "description": "returns children for given property",
+            "itemtype": "method",
+            "name": "getChildren",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Array"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 229,
+            "description": "returns min occurs",
+            "itemtype": "method",
+            "name": "getMinOccurs",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 239,
+            "description": "returns min occurs",
+            "itemtype": "method",
+            "name": "getMaxOccurs",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 249,
+            "description": "returns TRUE if a child can be added for given property",
+            "itemtype": "method",
+            "name": "canAdd",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 259,
+            "description": "returns TRUE if a child can be removed for given property",
+            "itemtype": "method",
+            "name": "canRemove",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Collection"
+        },
+        {
+            "file": "js/mapper.js",
+            "line": 146,
+            "description": "Returns a collection element for a given mapper-id",
+            "params": [
+                {
+                    "name": "mapperId",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "the dom object or null",
+                "type": "Object|null"
+            },
+            "class": ""
+        },
+        {
+            "file": "js/mapper.js",
+            "line": 160,
+            "description": "Delets an element from the DOM and the global object by a given unique-id",
+            "params": [
+                {
+                    "name": "mapperId",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "if an element was found and deleted it returns its template-name, else it returns false",
+                "type": "Boolean|string"
+            },
+            "class": ""
+        },
+        {
+            "file": "js/mapper.js",
+            "line": 312,
+            "description": "extracts data from $element or default form element",
+            "params": [
+                {
+                    "name": "$el",
+                    "description": "element to select data from",
+                    "type": "Object",
+                    "optional": true,
+                    "optdefault": "undefined"
+                },
+                {
+                    "name": "returnMapperId",
+                    "description": "returnMapperId",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/mapper.js",
+            "line": 329,
+            "description": "adds an element to a existing collection",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "property defined by 'data' attribute in data-mapper-property",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "Possibility to set data",
+                    "type": "Object",
+                    "optional": true
+                },
+                {
+                    "name": "append",
+                    "description": "Define if element should be added at the end of the collection. By default items are grouped by tpl name",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/mapper.js",
+            "line": 363,
+            "description": "Edits a field in an collection",
+            "params": [
+                {
+                    "name": "mapperId",
+                    "description": "the unique Id of the field",
+                    "type": "Number"
+                },
+                {
+                    "name": "data",
+                    "description": "new data to apply",
+                    "type": "Object"
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/mapper.js",
+            "line": 373,
+            "description": "Removes a field from a collection",
+            "params": [
+                {
+                    "name": "mapperId",
+                    "description": "the unique Id of the field",
+                    "type": "Number"
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 28,
+            "description": "Parses the data of a element\nInspired by aurajs <http://aurajs.com>",
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 37,
+            "description": "Build options for given data\nInspired by aurajs <http://aurajs.com>\n\nTODO Example",
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 75,
+            "description": "returns true if .val can be used to this dom object",
+            "params": [
+                {
+                    "name": "el",
+                    "description": "valid selector or dom-object",
+                    "type": "String|Object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 86,
+            "description": "returns true if element is checkbox",
+            "params": [
+                {
+                    "name": "el",
+                    "description": "valid selector or dom-object",
+                    "type": "String|Object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 97,
+            "description": "Returns input values for elements",
+            "params": [
+                {
+                    "name": "el",
+                    "description": "valid selector or dom-object",
+                    "type": "String|Object"
+                }
+            ],
+            "return": {
+                "description": "value or empty string",
+                "type": "String"
+            },
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 113,
+            "description": "Sets a value for an element",
+            "params": [
+                {
+                    "name": "el",
+                    "description": "valid selector or dom-object to set the value for",
+                    "type": "String|Object"
+                },
+                {
+                    "name": "value",
+                    "description": "value to insert",
+                    "type": "String|Number"
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 156,
+            "description": "JavaScript equivalent of PHP’s ucfirst\ninspired by http://kevin.vanzonneveld.net",
+            "class": ""
+        },
+        {
+            "file": "js/util.js",
+            "line": 174,
+            "description": "Prints object",
+            "class": ""
+        }
+    ],
+    "warnings": [
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:68"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:102"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:150"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:171"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:201"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:210"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:219"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:229"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:239"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:249"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:259"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/util.js:75"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/util.js:86"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/util.js:97"
+        },
+        {
+            "message": "Missing item type\nReturns a collection element for a given mapper-id",
+            "line": " js/mapper.js:146"
+        },
+        {
+            "message": "Missing item type\nDelets an element from the DOM and the global object by a given unique-id",
+            "line": " js/mapper.js:160"
+        },
+        {
+            "message": "Missing item type\nextracts data from $element or default form element",
+            "line": " js/mapper.js:312"
+        },
+        {
+            "message": "Missing item type\nadds an element to a existing collection",
+            "line": " js/mapper.js:329"
+        },
+        {
+            "message": "Missing item type\nEdits a field in an collection",
+            "line": " js/mapper.js:363"
+        },
+        {
+            "message": "Missing item type\nRemoves a field from a collection",
+            "line": " js/mapper.js:373"
+        },
+        {
+            "message": "Missing item type\nParses the data of a element\nInspired by aurajs <http://aurajs.com>",
+            "line": " js/util.js:28"
+        },
+        {
+            "message": "Missing item type\nBuild options for given data\nInspired by aurajs <http://aurajs.com>\n\nTODO Example",
+            "line": " js/util.js:37"
+        },
+        {
+            "message": "Missing item type\nreturns true if .val can be used to this dom object",
+            "line": " js/util.js:75"
+        },
+        {
+            "message": "Missing item type\nreturns true if element is checkbox",
+            "line": " js/util.js:86"
+        },
+        {
+            "message": "Missing item type\nReturns input values for elements",
+            "line": " js/util.js:97"
+        },
+        {
+            "message": "Missing item type\nSets a value for an element",
+            "line": " js/util.js:113"
+        },
+        {
+            "message": "Missing item type\nJavaScript equivalent of PHP’s ucfirst\ninspired by http://kevin.vanzonneveld.net",
+            "line": " js/util.js:156"
+        },
+        {
+            "message": "Missing item type\nPrints object",
+            "line": " js/util.js:174"
+        }
+    ]
+}

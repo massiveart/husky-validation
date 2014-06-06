@@ -76,6 +76,8 @@ module.exports = function(grunt) {
 
     // project configuration
     grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+
         requirejs: {
             dist: {
                 options: getOptions(false)
@@ -83,7 +85,19 @@ module.exports = function(grunt) {
             dev: {
                 options: getOptions(true)
             }
-        }
+        },
+        yuidoc: {
+            compile: {
+                name: '<%= pkg.name %>',
+                description: '<%= pkg.description %>',
+                version: '<%= pkg.version %>',
+                url: '<%= pkg.homepage %>',
+                options: {
+                    paths: ['js/'],
+                    outdir: 'doc'
+                }
+            }
+        },
     });
 
     grunt.registerTask('build', [

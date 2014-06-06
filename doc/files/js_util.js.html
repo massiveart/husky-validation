@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>js/util.js - husky-validation</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title="husky-validation"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/Collection.html">Collection</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: js/util.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/*
+ * This file is part of the Husky Validation.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ *
+ */
+
+define([], function() {
+
+    &#x27;use strict&#x27;;
+
+    var ignoredKeys = [
+        &#x27;form&#x27;,
+        &#x27;validation&#x27;
+    ];
+
+    return {
+        debugEnabled: false,
+
+        // get form fields
+        getFields: function(element) {
+            return $(element).find(&#x27;input:not([data-form=&quot;false&quot;], [type=&quot;submit&quot;], [type=&quot;button&quot;]), textarea:not([data-form=&quot;false&quot;]), select:not([data-form=&quot;false&quot;]), *[data-form=&quot;true&quot;], *[data-type=&quot;collection&quot;], *[contenteditable=&quot;true&quot;]&#x27;);
+        },
+
+        /**
+         * Parses the data of a element
+         * Inspired by aurajs &lt;http://aurajs.com&gt;
+         */
+        parseData: function(el, namespace, defaults) {
+            var $el = $(el);
+            return this.buildOptions($el.data(), namespace, &#x27;&#x27;, defaults);
+        },
+
+        /**
+         * Build options for given data
+         * Inspired by aurajs &lt;http://aurajs.com&gt;
+         *
+         * TODO Example
+         */
+        buildOptions: function(data, namespace, subNamespace, defaults) {
+            if (!subNamespace) {
+                subNamespace = &#x27;&#x27;;
+            }
+
+            if (!defaults) {
+                defaults = {};
+            }
+
+            var options = $.extend({}, defaults, {}),
+                fullNamespace = namespace + this.ucFirst(subNamespace);
+
+            $.each(data, function(key, value) {
+                var regExp = new RegExp(&#x27;^&#x27; + fullNamespace);
+                if (regExp.test(key)) {
+                    if ($.inArray(key, ignoredKeys) === -1) {
+                        if (key !== fullNamespace) {
+                            key = key.replace(regExp, &#x27;&#x27;);
+                        } else {
+                            key = key.replace(new RegExp(&#x27;^&#x27; + namespace), &#x27;&#x27;);
+                        }
+                        if (key !== &#x27;&#x27;) {
+                            key = this.lcFirst(key);
+                            options[key] = value;
+                        }
+                    }
+                }
+            }.bind(this));
+
+            return options;
+        },
+
+        /**
+         * returns true if .val can be used to this dom object
+         * @param el {String|Object} valid selector or dom-object
+         * @returns {Boolean}
+         */
+        isValueField: function(el) {
+            var $el = $(el);
+
+            return $el.is(&#x27;input, select, textarea, option, button&#x27;);
+        },
+
+        /**
+         * returns true if element is checkbox
+         * @param el {String|Object} valid selector or dom-object
+         * @returns {Boolean}
+         */
+        isCheckbox: function(el) {
+            var $el = $(el);
+
+            return $el.is(&#x27;:checkbox&#x27;);
+        },
+
+        /**
+         * Returns input values for elements
+         * @param el {String|Object} valid selector or dom-object
+         * @returns {String} value or empty string
+         */
+        getValue: function(el) {
+            var $el = $(el);
+            if (this.isCheckbox($el)) {
+                return $el.prop(&#x27;checked&#x27;);
+            } else if (this.isValueField($el)) {
+                return $el.val();
+            } else {
+                return $el.html();
+            }
+        },
+
+        /**
+         * Sets a value for an element
+         * @param el {String|Object} valid selector or dom-object to set the value for
+         * @param value {String|Number} value to insert
+         */
+        setValue: function(el, value) {
+            var $el = $(el);
+            if (this.isCheckbox($el)) {
+                $el.prop(&#x27;checked&#x27;, value);
+            } else if (this.isValueField($el)) {
+                $el.val(value);
+            } else {
+                $el.html(value);
+            }
+        },
+
+        debug: function(p1, p2, p3) {
+            if (!!this.debugEnabled) {
+                if (!!p1) {
+                    if (!!p2) {
+                        if (!!p3) {
+                            console.log(&#x27;Husky Validation:&#x27;, p1, p2, p3);
+                        } else {
+                            console.log(&#x27;Husky Validation:&#x27;, p1, p2);
+                        }
+                    } else {
+                        console.log(&#x27;Husky Validation:&#x27;, p1);
+                    }
+                } else {
+                    console.log(&#x27;Husky Validation&#x27;);
+                }
+            }
+        },
+
+        insertAt: function(index, selector, $container, $item) {
+            if (index === 0) {
+                $container.prepend($item);
+            } else {
+                var $before = $container.find(selector + &#x27;:nth-child(&#x27; + index + &#x27;)&#x27;);
+                $before.after($item);
+            }
+        },
+
+        /**
+         *  JavaScript equivalent of PHP’s ucfirst
+         *  inspired by http://kevin.vanzonneveld.net
+         */
+        ucFirst: function(str) {
+            str += &#x27;&#x27;;
+            var f = str.charAt(0).toUpperCase();
+            return f + str.substr(1);
+        },
+
+        lcFirst: function(str) {
+            return str.charAt(0).toLowerCase() + str.slice(1);
+        },
+
+        startsWith: function(str, starts) {
+            return str.indexOf(starts) === 0;
+        },
+
+        /**
+         * Prints object
+         */
+        print: function(object, stage) {
+            if (!stage) {
+                stage = 1;
+            }
+
+            var str = &#x27;&#x27;,
+                oneIndent = &#x27;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&#x27;,
+                property, value,
+                indent = &#x27;&#x27;,
+                i = 0;
+
+            while (i &lt; stage) {
+                indent += oneIndent;
+                i++;
+            }
+
+            for (property in object) {
+                if (object.hasOwnProperty(property)) {
+                    value = object[property];
+                    if (typeof value === &#x27;string&#x27;) {
+                        if (this.isNumeric(value)) {
+                            str += indent + property + &#x27;: &#x27; + value + &#x27;; &lt;/br&gt;&#x27;;
+                        } else {
+                            if (value.length &gt; 7) {
+                                value = value.substring(0, 6) + &#x27; ...&#x27;;
+                            }
+                            str += indent + property + &#x27;: \&#x27;&#x27; + value + &#x27;\&#x27;; &lt;/br&gt;&#x27;;
+                        }
+                    } else {
+                        str += indent + property + &#x27;: { &lt;/br&gt;&#x27; + indent + oneIndent + print(value, stage++) + &#x27;}&#x27;;
+                    }
+                }
+            }
+
+            return str;
+        },
+
+        isNumeric: function(str) {
+            return str.match(/-?\d+(.\d+)?/);
+        }
+
+    };
+
+});
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
