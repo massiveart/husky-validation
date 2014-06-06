@@ -87,7 +87,7 @@ define([
                     this.getChildren(propertyName).remove();
 
                     // get important values
-                    len = value.length < this.getMinOccurs() ? this.getMinOccurs() : value.length;
+                    len = value.length < this.getMinOccurs(propertyName) ? this.getMinOccurs(propertyName) : value.length;
                     count = len;
 
                     for (i = 0; i < len; i++) {
@@ -253,7 +253,7 @@ define([
                  */
                 canAdd: function(propertyName) {
                     var length = this.getChildren(propertyName).length;
-                    return this.getMaxOccurs() === null || length < this.getMaxOccurs();
+                    return this.getMaxOccurs(propertyName) === null || length < this.getMaxOccurs(propertyName);
                 },
 
                 /**
@@ -263,7 +263,7 @@ define([
                  */
                 canRemove: function(propertyName) {
                     var length = this.getChildren(propertyName).length;
-                    return length > this.getMinOccurs();
+                    return length > this.getMinOccurs(propertyName);
                 }
             };
 
