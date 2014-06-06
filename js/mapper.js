@@ -32,84 +32,12 @@ define([
                     this.elements = [];
                 },
 
-                addClick: function(event) {
-                    var $addButton = $(event.currentTarget),
-                        propertyName = $addButton.data('mapper-add'),
-                        tpl = this.templates[propertyName].tpl,
-                        collection = this.templates[propertyName].collection;
-
-                    if (collection.element.getType().canAdd(tpl.id)) {
-                        that.appendChildren.call(this, collection.$element, tpl).then(function() {
-                            // set counter
-                            $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(tpl.id).length);
-                            that.emitAddEvent(propertyName, null);
-                        }.bind(this));
-                    }
-                    that.checkFullAndEmpty.call(this, propertyName);
-                },
-
                 addEmptyTemplate: function($element, propertyName) {
                     if (this.emptyTemplates.hasOwnProperty(propertyName)) {
                         var $emptyTemplate = $(this.emptyTemplates[propertyName].tpl);
                         $emptyTemplate.attr('id', this.emptyTemplates[propertyName].id);
                         $element.append($emptyTemplate);
                     }
-                },
-
-                removeClick: function(event) {
-                    var $removeButton = $(event.currentTarget),
-                        propertyName = $removeButton.data('mapper-remove'),
-                        tpl = this.templates[propertyName].tpl,
-                        collection = this.templates[propertyName].collection,
-                        $element = $removeButton.closest('.' + propertyName + '-element');
-
-                    if (collection.element.getType().canRemove(tpl.id)) {
-                        that.remove.call(this, $element);
-                        // set counter
-                        $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(tpl.id).length);
-                        that.emitRemoveEvent(propertyName, null);
-                    }
-                    that.checkFullAndEmpty.call(this, propertyName);
-                },
-
-                checkFullAndEmpty: function(propertyName) {
-                    var $addButton = $("[data-mapper-add='" + propertyName + "']"),
-                        $removeButton = $("[data-mapper-remove='" + propertyName + "']"),
-                        tpl = this.templates[propertyName].tpl,
-                        collection = this.templates[propertyName].collection,
-                        fullClass = collection.element.$el.data('mapper-full-class') || 'full',
-                        emptyClass = collection.element.$el.data('mapper-empty-class') || 'empty';
-
-                    $addButton.removeClass(fullClass);
-                    $addButton.removeClass(emptyClass);
-                    $(collection.element.$el).removeClass(fullClass);
-                    $(collection.element.$el).removeClass(emptyClass);
-
-                    if (!!$addButton.length || !!$removeButton.length) {
-                        // if no add is possible add full style-classes
-                        if (!collection.element.getType().canAdd(tpl.id)) {
-                            $addButton.addClass(fullClass);
-                            $(collection.element.$el).addClass(fullClass);
-
-                            // else, if no remove is possible add empty style-classes
-                        } else if (!collection.element.getType().canRemove(tpl.id)) {
-                            $addButton.addClass(emptyClass);
-                            $(collection.element.$el).addClass(emptyClass);
-
-                        }
-                    }
-                },
-
-                emitInitCollectionEvent: function(propertyName) {
-                    $(form.$el).trigger('form-collection-init', [propertyName]);
-                },
-
-                emitAddEvent: function(propertyName, data) {
-                    $(form.$el).trigger('form-add', [propertyName, data]);
-                },
-
-                emitRemoveEvent: function(propertyName, data) {
-                    $(form.$el).trigger('form-remove', [propertyName, data]);
                 },
 
                 processData: function(el, propertyName, returnMapperId) {
@@ -173,16 +101,6 @@ define([
                         }
                     }
                     return false;
-                },
-
-                remove: function($element) {
-                    // remove all fields of element
-                    $.each(Util.getFields($element), function(key, value) {
-                        form.removeField(value);
-                    }.bind(this));
-
-                    // remove element
-                    $element.remove();
                 },
 
                 getData: function($el, returnMapperId) {

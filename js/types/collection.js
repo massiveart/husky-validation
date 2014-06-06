@@ -9,10 +9,10 @@
  * @module husky-validation/type/collection
  */
 
-// TODO min / max for each collection in config
-// TODO add / remove handling (buttons)
-// TODO check full and empty
-// TODO empty template remove (set data add to collection)
+// TODO [TESTS] min / max for each collection in config
+// TODO [TESTS] add / remove handling (buttons)
+// TODO [TESTS] check full and empty
+// TODO [TESTS] empty template remove (set data add to collection)
 // TODO add / remove from collection function
 // TODO edit in collection
 
@@ -20,10 +20,22 @@
  * @class Collection
  * @constructor
  *
- * @param {Object} [options] configuration object
- * @param {number} [options.min] min default min items
- * @param {number} [options.max] max default max items
- * @param {string} [options.singleValue] singleValue property name of single value
+ * @param {object} options configuration object
+ * @param {number} [options.min] default min items
+ * @param {number} [options.max] default max items
+ * @param {string} [options.fullClass] class for container if collection item count more than minimum
+ * @param {string} [options.emptyClass] class for container if collection item count is minimum
+ * @param {string} [options.singleValue] property name of single value
+ *
+ * @param {object} options.config configuration object (key is property name)
+ * @param {string} options.config.tpl id to template for each item
+ * @param {string} [options.config.emptyTpl] id to empty template for collection
+ * @param {string} [options.config.addButton] selector for add button
+ * @param {string} [options.config.removeButton] selector for remove button
+ * @param {string} [options.config.counter] selector for counter span
+ * @param {string} [options.config.min] minimum count of items (overrides options.min)
+ * @param {string} [options.config.max] maximum count of items (overrides options.max)
+ * @param {string} [options.config.defaultData] data for new items
  */
 define([
     'type/default',
@@ -36,8 +48,26 @@ define([
         var defaults = {
                 min: 0,
                 max: null,
+                fullClass: 'full',
+                emptyClass: 'empty',
                 singleValue: false
             },
+
+            /**
+             * event emitted for new item in collection
+             * @event form-add
+             * @param {string} propertyName name of property has new item
+             * @param {object} data data of new item
+             */
+            FORM_ADD = 'form-add',
+
+            /**
+             * event emitted for removed item in collection
+             * @event form-add
+             * @param {string} propertyName name of property has removed item
+             * @param {object} data data of removed item
+             */
+            FORM_REMOVE = 'form-remove',
 
             subType = {
                 /**
@@ -54,6 +84,11 @@ define([
                     // extract templates from dom
                     for (i = 0, len = this.properties.length; i < len; i++) {
                         property = this.properties[i];
+
+                        // bind dom events
+                        this.bindDomEvents(property);
+
+                        // load template from dom
                         $tpl = $('#' + this.options.config[property].tpl);
                         $emptyTpl = $('#' + this.options.config[property].emptyTpl);
 
@@ -62,6 +97,142 @@ define([
                             tpl: $tpl.html(),
                             emptyTpl: $emptyTpl.html()
                         };
+                    }
+                },
+
+                /**
+                 * bind dom event-handler
+                 * @method bindDomEvents
+                 * @param {string} propertyName
+                 */
+                bindDomEvents: function(propertyName) {
+                    if (!!this.options.config[propertyName].addButton) {
+                        // init add button
+                        this.form.$el.on('click', this.options.config[propertyName].addButton, {propertyName: propertyName}, this.addClickHandler.bind(this));
+                    }
+
+                    if (!!this.options.config[propertyName].removeButton) {
+                        // init remove button
+                        this.form.$el.on('click', this.options.config[propertyName].removeButton, {propertyName: propertyName}, this.removeClickHandler.bind(this));
+                    }
+                },
+
+                /**
+                 * event handle for add button
+                 * @method addClickHandler
+                 * @param {object} event
+                 */
+                addClickHandler: function(event) {
+                    var propertyName = event.data.propertyName,
+                        tpl = this.templates[propertyName].tpl,
+                        data = this.options.config[propertyName].defaultData || {};
+
+                    if (this.canAdd(propertyName)) {
+                        this.addChild(null, data, tpl, propertyName).then(function() {
+                            this.updateCounter(propertyName);
+                            this.emitAddEvent(propertyName, data);
+                        }.bind(this));
+                    }
+
+                    this.checkFullAndEmpty.call(this, propertyName);
+                },
+
+                /**
+                 * event handler for remove button
+                 * @method removeClickHandler
+                 * @param {object} event
+                 */
+                removeClickHandler: function(event) {
+                    var $removeButton = $(event.currentTarget),
+                        propertyName = event.data.propertyName,
+                        $element = $removeButton.closest('*[data-mapper-property-tpl="' + propertyName + '"]'),
+                        data;
+
+                    if (this.canRemove(propertyName)) {
+                        data = this.form.mapper.getData($element, false);
+
+                        this.remove($element);
+                        this.updateCounter(propertyName);
+                        this.emitRemoveEvent(propertyName, data);
+                    }
+
+                    this.checkFullAndEmpty(propertyName);
+                },
+
+                /**
+                 * removes element from form and collection
+                 * @method remove
+                 * @param $element
+                 */
+                remove: function($element) {
+                    // remove all fields of element
+                    $.each(Util.getFields($element), function(key, value) {
+                        this.form.removeField(value);
+                    }.bind(this));
+
+                    // remove element
+                    $element.remove();
+                },
+
+                /**
+                 * update counter span
+                 * @method updateCounter
+                 * @param propertyName
+                 */
+                updateCounter: function(propertyName) {
+                    if (!!this.options.config[propertyName].counter) {
+                        $(this.options.config[propertyName].counter).text(this.getChildren(propertyName).length);
+                    }
+                },
+
+                /**
+                 * emit add event
+                 * @method emitAddEvent
+                 * @param {string} propertyName
+                 * @param {object} data
+                 */
+                emitAddEvent: function(propertyName, data) {
+                    $(this.form.$el).trigger(FORM_ADD, [propertyName, data]);
+                },
+
+                /**
+                 * emit remove event
+                 * @method emitRemoveEvent
+                 * @param {string} propertyName
+                 * @param {object} data
+                 */
+                emitRemoveEvent: function(propertyName, data) {
+                    $(this.form.$el).trigger(FORM_REMOVE, [propertyName, data]);
+                },
+
+                /**
+                 * checks collection for full and empty
+                 * @method checkFullAndEmpty
+                 * @param propertyName
+                 */
+                checkFullAndEmpty: function(propertyName) {
+                    var $addButton = $(this.options.config[propertyName].addButton),
+                        $removeButton = $(this.options.config[propertyName].removeButton),
+                        fullClass = this.options.fullClass,
+                        emptyClass = this.options.emptyClass;
+
+                    $addButton.removeClass(fullClass);
+                    $addButton.removeClass(emptyClass);
+                    $(this.$el).removeClass(fullClass);
+                    $(this.$el).removeClass(emptyClass);
+
+                    if (!!$addButton.length || !!$removeButton.length) {
+                        // if no add is possible add full style-classes
+                        if (!this.canAdd(propertyName)) {
+                            $addButton.addClass(fullClass);
+                            $(this.$el).addClass(fullClass);
+                        }
+
+                        // else, if no remove is possible add empty style-classes
+                        if (!this.canRemove(propertyName)) {
+                            $addButton.addClass(emptyClass);
+                            $(this.$el).addClass(emptyClass);
+                        }
                     }
                 },
 
@@ -91,7 +262,7 @@ define([
                     count = len;
 
                     for (i = 0; i < len; i++) {
-                        item = value[i] || {};
+                        item = value[i] || this.options.config[propertyName].defaultData || {};
 
                         this.addChild(i, item, templates.tpl, propertyName).then(resolve);
                     }
@@ -233,7 +404,7 @@ define([
                  * @returns {number}
                  */
                 getMinOccurs: function(propertyName) {
-                    return this.options.min;
+                    return this.options.config[propertyName].min || this.options.min;
                 },
 
                 /**
@@ -243,7 +414,7 @@ define([
                  * @returns {number}
                  */
                 getMaxOccurs: function(propertyName) {
-                    return this.options.max;
+                    return this.options.config[propertyName].max || this.options.max;
                 },
 
                 /**

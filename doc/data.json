@@ -48,25 +48,90 @@
                     "name": "options",
                     "description": "configuration object",
                     "type": "Object",
-                    "optional": true,
                     "props": [
                         {
                             "name": "min",
-                            "description": "min default min items",
+                            "description": "default min items",
                             "type": "Number",
                             "optional": true
                         },
                         {
                             "name": "max",
-                            "description": "max default max items",
+                            "description": "default max items",
                             "type": "Number",
                             "optional": true
                         },
                         {
-                            "name": "singleValue",
-                            "description": "singleValue property name of single value",
+                            "name": "fullClass",
+                            "description": "class for container if collection item count more than minimum",
                             "type": "String",
                             "optional": true
+                        },
+                        {
+                            "name": "emptyClass",
+                            "description": "class for container if collection item count is minimum",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "singleValue",
+                            "description": "property name of single value",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "config",
+                            "description": "configuration object (key is property name)",
+                            "type": "Object",
+                            "props": [
+                                {
+                                    "name": "tpl",
+                                    "description": "id to template for each item",
+                                    "type": "String"
+                                },
+                                {
+                                    "name": "emptyTpl",
+                                    "description": "id to empty template for collection",
+                                    "type": "String",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "addButton",
+                                    "description": "selector for add button",
+                                    "type": "String",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "removeButton",
+                                    "description": "selector for remove button",
+                                    "type": "String",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "counter",
+                                    "description": "selector for counter span",
+                                    "type": "String",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "min",
+                                    "description": "minimum count of items (overrides options.min)",
+                                    "type": "String",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "max",
+                                    "description": "maximum count of items (overrides options.max)",
+                                    "type": "String",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "defaultData",
+                                    "description": "data for new items",
+                                    "type": "String",
+                                    "optional": true
+                                }
+                            ]
                         }
                     ]
                 }
@@ -76,7 +141,47 @@
     "classitems": [
         {
             "file": "js/types/collection.js",
-            "line": 43,
+            "line": 56,
+            "description": "event emitted for new item in collection",
+            "itemtype": "event",
+            "name": "form-add",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "name of property has new item",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "data of new item",
+                    "type": "Object"
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 64,
+            "description": "event emitted for removed item in collection",
+            "itemtype": "event",
+            "name": "form-add",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "name of property has removed item",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "data of removed item",
+                    "type": "Object"
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 73,
             "description": "initialize templates",
             "itemtype": "method",
             "name": "initializeSub",
@@ -84,7 +189,134 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 68,
+            "line": 103,
+            "description": "bind dom event-handler",
+            "itemtype": "method",
+            "name": "bindDomEvents",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 120,
+            "description": "event handle for add button",
+            "itemtype": "method",
+            "name": "addClickHandler",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 140,
+            "description": "event handler for remove button",
+            "itemtype": "method",
+            "name": "removeClickHandler",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 162,
+            "description": "removes element from form and collection",
+            "itemtype": "method",
+            "name": "remove",
+            "params": [
+                {
+                    "name": "$element",
+                    "description": ""
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 177,
+            "description": "update counter span",
+            "itemtype": "method",
+            "name": "updateCounter",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": ""
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 188,
+            "description": "emit add event",
+            "itemtype": "method",
+            "name": "emitAddEvent",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 198,
+            "description": "emit remove event",
+            "itemtype": "method",
+            "name": "emitRemoveEvent",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 208,
+            "description": "checks collection for full and empty",
+            "itemtype": "method",
+            "name": "checkFullAndEmpty",
+            "params": [
+                {
+                    "name": "propertyName",
+                    "description": ""
+                }
+            ],
+            "class": "Collection"
+        },
+        {
+            "file": "js/types/collection.js",
+            "line": 239,
             "description": "maps given array (value) with given templates to this.$el",
             "itemtype": "method",
             "name": "internalSetValue",
@@ -113,7 +345,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 102,
+            "line": 273,
             "description": "add a child to this.$el but on",
             "itemtype": "method",
             "name": "addChild",
@@ -147,7 +379,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 150,
+            "line": 321,
             "description": "map value to this.$el",
             "itemtype": "method",
             "name": "setValue",
@@ -171,7 +403,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 171,
+            "line": 342,
             "description": "returns data array",
             "itemtype": "method",
             "name": "getValue",
@@ -195,7 +427,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 201,
+            "line": 372,
             "description": "validates this type of data",
             "itemtype": "method",
             "name": "validate",
@@ -207,7 +439,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 210,
+            "line": 381,
             "description": "indicates data to validate",
             "itemtype": "method",
             "name": "needsValidation",
@@ -219,7 +451,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 219,
+            "line": 390,
             "description": "returns children for given property",
             "itemtype": "method",
             "name": "getChildren",
@@ -238,7 +470,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 229,
+            "line": 400,
             "description": "returns min occurs",
             "itemtype": "method",
             "name": "getMinOccurs",
@@ -257,7 +489,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 239,
+            "line": 410,
             "description": "returns min occurs",
             "itemtype": "method",
             "name": "getMaxOccurs",
@@ -276,7 +508,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 249,
+            "line": 420,
             "description": "returns TRUE if a child can be added for given property",
             "itemtype": "method",
             "name": "canAdd",
@@ -288,7 +520,7 @@
         },
         {
             "file": "js/types/collection.js",
-            "line": 259,
+            "line": 430,
             "description": "returns TRUE if a child can be removed for given property",
             "itemtype": "method",
             "name": "canRemove",
@@ -300,7 +532,7 @@
         },
         {
             "file": "js/mapper.js",
-            "line": 146,
+            "line": 74,
             "description": "Returns a collection element for a given mapper-id",
             "params": [
                 {
@@ -317,7 +549,7 @@
         },
         {
             "file": "js/mapper.js",
-            "line": 160,
+            "line": 88,
             "description": "Delets an element from the DOM and the global object by a given unique-id",
             "params": [
                 {
@@ -334,7 +566,7 @@
         },
         {
             "file": "js/mapper.js",
-            "line": 312,
+            "line": 230,
             "description": "extracts data from $element or default form element",
             "params": [
                 {
@@ -356,7 +588,7 @@
         },
         {
             "file": "js/mapper.js",
-            "line": 329,
+            "line": 247,
             "description": "adds an element to a existing collection",
             "params": [
                 {
@@ -382,7 +614,7 @@
         },
         {
             "file": "js/mapper.js",
-            "line": 363,
+            "line": 281,
             "description": "Edits a field in an collection",
             "params": [
                 {
@@ -400,7 +632,7 @@
         },
         {
             "file": "js/mapper.js",
-            "line": 373,
+            "line": 291,
             "description": "Removes a field from a collection",
             "params": [
                 {
@@ -508,47 +740,47 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:68"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:102"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:150"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:171"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:201"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:210"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:219"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:229"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
             "line": " js/types/collection.js:239"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:249"
+            "line": " js/types/collection.js:273"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " js/types/collection.js:259"
+            "line": " js/types/collection.js:321"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:342"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:372"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:381"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:390"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:400"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:410"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:420"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " js/types/collection.js:430"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -564,27 +796,27 @@
         },
         {
             "message": "Missing item type\nReturns a collection element for a given mapper-id",
-            "line": " js/mapper.js:146"
+            "line": " js/mapper.js:74"
         },
         {
             "message": "Missing item type\nDelets an element from the DOM and the global object by a given unique-id",
-            "line": " js/mapper.js:160"
+            "line": " js/mapper.js:88"
         },
         {
             "message": "Missing item type\nextracts data from $element or default form element",
-            "line": " js/mapper.js:312"
+            "line": " js/mapper.js:230"
         },
         {
             "message": "Missing item type\nadds an element to a existing collection",
-            "line": " js/mapper.js:329"
+            "line": " js/mapper.js:247"
         },
         {
             "message": "Missing item type\nEdits a field in an collection",
-            "line": " js/mapper.js:363"
+            "line": " js/mapper.js:281"
         },
         {
             "message": "Missing item type\nRemoves a field from a collection",
-            "line": " js/mapper.js:373"
+            "line": " js/mapper.js:291"
         },
         {
             "message": "Missing item type\nParses the data of a element\nInspired by aurajs <http://aurajs.com>",
