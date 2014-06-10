@@ -82,4 +82,8 @@ require([
         alert('Should reset form!');
         form.mapper.setData({});
     });
+
+    $('#get-value').on('click', function() {
+        $('#json').text(JSON.stringify(form.mapper.getData(), null, 4));
+    });
 });

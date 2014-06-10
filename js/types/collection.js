@@ -9,10 +9,6 @@
  * @module husky-validation/type/collection
  */
 
-// TODO [TESTS] min / max for each collection in config
-// TODO [TESTS] add / remove handling (buttons)
-// TODO [TESTS] check full and empty
-// TODO [TESTS] empty template remove (set data add to collection)
 // TODO add / remove from collection function
 // TODO edit in collection
 
@@ -339,7 +335,7 @@ define([
                         $empty.attr('data-mapper-empty', propertyName);
                         this.$el.append($empty);
 
-                        // update counter and full/empty
+                        // update counter and full/empty classes
                         this.updateCounter(propertyName);
                         this.checkFullAndEmpty(propertyName);
 
@@ -349,7 +345,13 @@ define([
                     } else {
                         $('*[data-mapper-empty="' + propertyName + '"]').remove();
 
-                        return this.internalSetValue(templates, data, propertyName);
+                        dfd = this.internalSetValue(templates, data, propertyName);
+
+                        // update counter and full/empty classes
+                        this.updateCounter(propertyName);
+                        this.checkFullAndEmpty(propertyName);
+
+                        return dfd;
                     }
                 },
 
