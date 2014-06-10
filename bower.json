@@ -10,8 +10,10 @@
     ],
     "dependencies": {
         "requirejs": "2.1.*",
+        "requirejs-plugins": "1.0.*",
+        "requirejs-text": "2.0.*",
         "jquery": "2.1.*",
-        "globalize": "0.1.*",
+        "globalize": "1.0.*",
         "underscore": "~1.5.1"
     }
 }
