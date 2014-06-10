@@ -28,8 +28,8 @@
  * @param {string} [options.singleValue] property name of single value
  *
  * @param {object} options.config configuration object (key is property name)
- * @param {string} options.config.tpl id to template for each item
- * @param {string} [options.config.emptyTpl] id to empty template for collection
+ * @param {string} options.config.tpl selector to template for each item
+ * @param {string} [options.config.emptyTpl] selector to empty template for collection
  * @param {string} [options.config.addButton] selector for add button
  * @param {string} [options.config.removeButton] selector for remove button
  * @param {string} [options.config.counter] selector for counter span
@@ -89,8 +89,8 @@ define([
                         this.bindDomEvents(property);
 
                         // load template from dom
-                        $tpl = $('#' + this.options.config[property].tpl);
-                        $emptyTpl = $('#' + this.options.config[property].emptyTpl);
+                        $tpl = $(this.options.config[property].tpl);
+                        $emptyTpl = $(this.options.config[property].emptyTpl);
 
                         // save content from tpl
                         this.templates[property] = {
@@ -134,7 +134,7 @@ define([
                         }.bind(this));
                     }
 
-                    this.checkFullAndEmpty.call(this, propertyName);
+                    this.checkFullAndEmpty(propertyName);
                 },
 
                 /**
@@ -267,6 +267,7 @@ define([
                         this.addChild(i, item, templates.tpl, propertyName).then(resolve);
                     }
 
+                    this.updateCounter(propertyName);
                     return dfd.promise();
                 },
 
@@ -286,7 +287,7 @@ define([
                         index = this.getChildren(propertyName).length;
                     }
 
-                    if (this.canAdd()) {
+                    if (this.canAdd(propertyName)) {
                         // render child
                         options = $.extend({}, {index: index}, item);
                         template = _.template(template, options, form.options.delimiter);
@@ -322,19 +323,32 @@ define([
                  * map value to this.$el
                  * @method setValue
                  * @param {array} data
-                 * @param {string }propertyName
+                 * @param {string} propertyName
                  * @returns {object} deferred objects that´s indicates end of asynchronous functions
                  */
                 setValue: function(data, propertyName) {
-                    var templates = this.templates[propertyName], dfd;
+                    var templates = this.templates[propertyName], dfd, $empty;
                     if (data.length === 0) {
                         dfd = $.Deferred();
-                        this.$el.append(_.template(templates.emptyTpl));
+
+                        // remove children of property
+                        this.getChildren(propertyName).remove();
+
+                        // generate empty child
+                        $empty = $(_.template(templates.emptyTpl)());
+                        $empty.attr('data-mapper-empty', propertyName);
+                        this.$el.append($empty);
+
+                        // update counter and full/empty
+                        this.updateCounter(propertyName);
+                        this.checkFullAndEmpty(propertyName);
 
                         // resolve now
                         dfd.resolve();
                         return dfd.promise();
                     } else {
+                        $('*[data-mapper-empty="' + propertyName + '"]').remove();
+
                         return this.internalSetValue(templates, data, propertyName);
                     }
                 },
