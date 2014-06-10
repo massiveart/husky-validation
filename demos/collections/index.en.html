@@ -31,6 +31,37 @@
 
 		<div id="content">
 			<form id="content-form" class="grid">
+				<h1>Creator</h1>
+
+				<div class="grid-row">
+					<div class="grid-col-6">
+						<label for="firstName">First-Name</label>
+						<input type="text"
+							   class="form-element"
+							   id="firstName"
+							   data-mapper-property="firstName"/>
+					</div>
+
+					<div class="grid-col-6">
+						<label for="lastName">Last-Name</label>
+						<input type="text"
+							   class="form-element"
+							   id="lastName"
+							   data-mapper-property="lastName"/>
+					</div>
+				</div>
+
+				<div class="grid-row">
+					<div class="grid-col-6">
+						<label for="birthday">Birthday</label>
+						<input type="text"
+							   data-type="date"
+							   class="form-element"
+							   id="birthday"
+							   data-mapper-property="birthday"/>
+					</div>
+				</div>
+
 				<h1>Persons</h1>
 
 				<div id="persons"
@@ -83,7 +114,7 @@
 		</div>
 
 		<script src="../../assets/js/jquery.js"></script>
-		<script data-main="index.js" type="text/javascript" src="../../assets/js/require.js"></script>
+		<script data-main="index.en.js" type="text/javascript" src="../../assets/js/require.js"></script>
 	</body>
 </html>
 

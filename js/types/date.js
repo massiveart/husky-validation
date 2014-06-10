@@ -10,14 +10,15 @@
 
 define([
     'type/default',
-    'form/util'
-], function(Default, Util) {
+    'form/util',
+    'globalize'
+], function(Default, Util, Globalize) {
 
     'use strict';
 
     return function($el, options) {
         var defaults = {
-                format: 'd'     // possibilities f, F, t, T, d, D
+                format: { datetime: 'short' }
             },
 
             getDate = function(value) {
@@ -43,7 +44,7 @@ define([
 
                 // internationalization of view data: Globalize library
                 getViewData: function(value) {
-                    return Globalize.format(getDate(value), this.options.format);
+                    return Globalize.formatDate(getDate(value), this.options.format);
                 },
 
                 // internationalization of model data: Globalize library
