@@ -9,9 +9,8 @@
  */
 
 define([
-    'type/default',
-    'form/util'
-], function(Default, Util) {
+    'type/default'
+], function(Default) {
 
     'use strict';
 
@@ -25,7 +24,7 @@ define([
                 },
 
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.getValue();
 
                     if (val === '') {
                         return true;
