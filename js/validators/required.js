@@ -19,7 +19,10 @@ define([
         var defaults = { },
 
             result = $.extend(new Default($el, form, defaults, options, 'required'), {
-                validate: function(value) {
+                validate: function(value, recursion) {
+                    if (recursion && !value) {
+                        return false;
+                    }
                     if (!!this.data.required) {
                         var val = value || Util.getValue(this.$el), i;
                         // for checkboxes and select multiples.
@@ -27,7 +30,7 @@ define([
                         if ('object' === typeof val) {
                             for (i in val) {
                                 if (val.hasOwnProperty(i)) {
-                                    if (this.validate(val[i])) {
+                                    if (this.validate(val[i]), true) {
                                         return true;
                                     }
                                 }
@@ -35,8 +38,8 @@ define([
                             return false;
                         }
 
-                        // notNull && notBlank
-                        return val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+                        // notNull && notBlank && not undefined
+                        return typeof val !== 'undefined' && val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
                     }
                     return true;
                 }
