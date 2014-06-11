@@ -9,9 +9,8 @@
  */
 
 define([
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     'use strict';
 
@@ -24,7 +23,7 @@ define([
                         return false;
                     }
                     if (!!this.data.required) {
-                        var val = value || Util.getValue(this.$el), i;
+                        var val = value || this.data.element.getValue(), i;
                         // for checkboxes and select multiples.
                         // check there is at least one required value
                         if ('object' === typeof val) {
