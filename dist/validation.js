@@ -440,7 +440,9 @@ define('form/element',['form/util'], function(Util) {
 
             result = {
                 validate: function(force) {
-                    var result = true;
+                    var result = true,
+                        validated = false;
+
                     // only if value changed or force is set
                     if (force || that.needsValidation.call(this)) {
                         if (that.hasConstraints.call(this)) {
@@ -451,18 +453,26 @@ define('form/element',['form/util'], function(Util) {
                                     // TODO Messages
                                 }
                             });
+                            validated = true;
+                        }
+                    }
 
-                            // check type
-                            if (type !== null && !type.validate()) {
-                                result = false;
-                            }
+                    // check type
+                    if (!!type && type.needsValidation()) {
+                        if (!type.validate()) {
+                            result = false;
+                        }
+                        validated = true;
+                    }
 
-                            if (!result) {
-                                Util.debug('Field validate', !!result ? 'true' : 'false', this.$el);
-                            }
+                    // set css classes
+                    if (validated === true) {
+                        if (!result) {
+                            Util.debug('Field validate', !!result ? 'true' : 'false', this.$el);
                         }
                         that.setValid.call(this, result);
                     }
+
                     return result;
                 },
 
