@@ -10,22 +10,25 @@ define(['js/form', 'globalize'], function(Form) {
 
     'use strict';
 
-    var language = 'de',
-        form = new Form($('#contact-form'));
+    var language = 'en',
+        $contactForm = $('#contact-form'),
+        form = new Form($contactForm);
 
-    require(['cultures/globalize.culture.' + language], function() {
-        Globalize.culture(language);
-    }.bind(this));
+    if (language !== 'en') {
+        require(['cultures/globalize.culture.' + language], function() {
+            Globalize.culture(language);
+        }.bind(this));
+    }
 
     form.mapper.addCollectionFilter('phones', function(item) {
         return item.phone !== '';
     });
 
-    $('#contact-form').on('form-collection-init', function(e, property) {
+    $contactForm.on('form-collection-init', function(e, property) {
         console.log(property, 'initiated');
     });
 
-    $('#contact-form').on('submit', function() {
+    $contactForm.on('submit', function() {
         console.log(form.mapper.getData());
 
         return false;
