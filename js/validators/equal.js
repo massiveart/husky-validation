@@ -9,9 +9,8 @@
  */
 
 define([
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     'use strict';
 
@@ -77,7 +76,7 @@ define([
                 },
 
                 update: function() {
-                    var val = Util.getValue(this.$el),
+                    var val = this.data.element.getValue(),
                         result;
                     if (!!this.data.equal) {
                         result = validateElements(val);

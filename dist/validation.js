@@ -439,34 +439,40 @@ define('form/element',['form/util'], function(Util) {
 
             result = {
                 validate: function(force) {
+                    var result = true,
+                        validated = false;
+
                     // only if value changed or force is set
                     if (force || that.needsValidation.call(this)) {
-                        if (!that.hasConstraints.call(this)) {
-                            // delete state
-                            //that.reset.call(this);
-                            return true;
+                        if (that.hasConstraints.call(this)) {
+                            // check each validator
+                            $.each(validators, function (key, validator) {
+                                if (!validator.validate()) {
+                                    result = false;
+                                    // TODO Messages
+                                }
+                            });
+                            validated = true;
                         }
+                    }
 
-                        var result = true;
-                        // check each validator
-                        $.each(validators, function(key, validator) {
-                            if (!validator.validate()) {
-                                result = false;
-                                // TODO Messages
-                            }
-                        });
-
-                        // check type
-                        if (type !== null && !type.validate()) {
+                    // check type
+                    if (!!type && type.needsValidation()) {
+                        if (!type.validate()) {
                             result = false;
                         }
+                        validated = true;
+                    }
 
+                    // set css classes
+                    if (validated === true) {
                         if (!result) {
                             Util.debug('Field validate', !!result ? 'true' : 'false', this.$el);
                         }
                         that.setValid.call(this, result);
                     }
-                    return this.isValid();
+
+                    return result;
                 },
 
                 update: function() {
@@ -1699,9 +1705,8 @@ define('type/date',[
  */
 
 define('type/decimal',[
-    'type/default',
-    'form/util'
-], function(Default, Util) {
+    'type/default'
+], function(Default) {
 
     
 
@@ -1716,7 +1721,7 @@ define('type/decimal',[
                 },
 
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.getValue();
 
                     if (val === '') {
                         return true;
@@ -1765,7 +1770,7 @@ define('type/email',[
 
             typeInterface = {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.getValue();
                     if (val === '') {
                         return true;
                     }
@@ -1774,7 +1779,7 @@ define('type/email',[
                 },
 
                 needsValidation: function() {
-                    var val = this.$el.val();
+                    var val = this.getValue();
                     return val !== '';
                 }
             };
@@ -1807,7 +1812,7 @@ define('type/url',[
 
             typeInterface = {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.getValue();
                     if (val === '') {
                         return true;
                     }
@@ -1819,7 +1824,7 @@ define('type/url',[
                 },
 
                 needsValidation: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.getValue();
                     return val !== '';
                 }
             };
@@ -2205,9 +2210,8 @@ define('validator/default',[],function() {
  */
 
 define('validator/min',[
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     
 
@@ -2218,7 +2222,7 @@ define('validator/min',[
 
             result = $.extend(new Default($el, form, defaults, options, 'min'), {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.data.element.getValue();
                     return Number(val) >= this.data.min;
                 }
             });
@@ -2240,9 +2244,8 @@ define('validator/min',[
  */
 
 define('validator/max',[
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     
 
@@ -2253,7 +2256,7 @@ define('validator/max',[
 
             result = $.extend(new Default($el, form, defaults, options, 'max'), {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.data.element.getValue();
                     return Number(val) <= this.data.max;
                 }
             });
@@ -2275,9 +2278,8 @@ define('validator/max',[
  */
 
 define('validator/minLength',[
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     
 
@@ -2288,7 +2290,7 @@ define('validator/minLength',[
 
             result = $.extend(new Default($el, form, defaults, options, 'min-length'), {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.data.element.getValue();
                     return val.length >= this.data.minLength;
                 }
             });
@@ -2310,9 +2312,8 @@ define('validator/minLength',[
  */
 
 define('validator/maxLength',[
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     
 
@@ -2323,7 +2324,7 @@ define('validator/maxLength',[
 
             result = $.extend(new Default($el, form, defaults, options, 'max-length'), {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.data.element.getValue();
                     return val.length <= this.data.maxLength;
                 }
             });
@@ -2345,9 +2346,8 @@ define('validator/maxLength',[
  */
 
 define('validator/required',[
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     
 
@@ -2355,15 +2355,18 @@ define('validator/required',[
         var defaults = { },
 
             result = $.extend(new Default($el, form, defaults, options, 'required'), {
-                validate: function(value) {
+                validate: function(value, recursion) {
+                    if (recursion && !value) {
+                        return false;
+                    }
                     if (!!this.data.required) {
-                        var val = value || Util.getValue(this.$el), i;
+                        var val = value || this.data.element.getValue(), i;
                         // for checkboxes and select multiples.
                         // check there is at least one required value
                         if ('object' === typeof val) {
                             for (i in val) {
                                 if (val.hasOwnProperty(i)) {
-                                    if (this.validate(val[i])) {
+                                    if (this.validate(val[i]), true) {
                                         return true;
                                     }
                                 }
@@ -2371,8 +2374,8 @@ define('validator/required',[
                             return false;
                         }
 
-                        // notNull && notBlank
-                        return val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+                        // notNull && notBlank && not undefined
+                        return typeof val !== 'undefined' && val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
                     }
                     return true;
                 }
@@ -2452,7 +2455,7 @@ define('validator/unique',[
                 },
 
                 validate: function() {
-                    var val = Util.getValue(this.$el),
+                    var val = this.data.element.getValue(),
                         result;
                     if (!!this.data.unique) {
                         result = validateElements(val);
@@ -2464,7 +2467,7 @@ define('validator/unique',[
                 },
 
                 update: function() {
-                    var val = Util.getValue(this.$el),
+                    var val = this.data.element.getValue(),
                         result;
                     if (!!this.data.unique) {
                         result = validateElements(val);
@@ -2504,9 +2507,8 @@ define('validator/unique',[
  */
 
 define('validator/equal',[
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     
 
@@ -2572,7 +2574,7 @@ define('validator/equal',[
                 },
 
                 update: function() {
-                    var val = Util.getValue(this.$el),
+                    var val = this.data.element.getValue(),
                         result;
                     if (!!this.data.equal) {
                         result = validateElements(val);
@@ -2610,9 +2612,8 @@ define('validator/equal',[
  */
 
 define('validator/regex',[
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     
 
@@ -2626,7 +2627,7 @@ define('validator/regex',[
                     // TODO flags
                     var pattern = this.data.regex,
                         regex = new RegExp(pattern),
-                        val = Util.getValue(this.$el);
+                        val = this.data.element.getValue();
 
                     if (val === '') {
                         return true;

@@ -9,9 +9,8 @@
  */
 
 define([
-    'validator/default',
-    'form/util'
-], function(Default, Util) {
+    'validator/default'
+], function(Default) {
 
     'use strict';
 
@@ -22,7 +21,7 @@ define([
 
             result = $.extend(new Default($el, form, defaults, options, 'max-length'), {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.data.element.getValue();
                     return val.length <= this.data.maxLength;
                 }
             });

@@ -66,7 +66,7 @@ define([
                 },
 
                 validate: function() {
-                    var val = Util.getValue(this.$el),
+                    var val = this.data.element.getValue(),
                         result;
                     if (!!this.data.unique) {
                         result = validateElements(val);
@@ -78,7 +78,7 @@ define([
                 },
 
                 update: function() {
-                    var val = Util.getValue(this.$el),
+                    var val = this.data.element.getValue(),
                         result;
                     if (!!this.data.unique) {
                         result = validateElements(val);
