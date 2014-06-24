@@ -21,18 +21,16 @@ define(['js/form', 'globalize'], function(Form) {
     });
 
     $('#set-data').on('click', function() {
-//        form.mapper.setData({
-//            id: '5',
-//            title: 'Titel',
-//            country:'en',
-//            url: '/testurl',
-//            article: 'asdfasdf',
-//            region: {
-//                id: '5',
-//                name: 'Tirol'
-//            }
-//        });
-
-        form.mapper.setData('');
+        form.mapper.setData({
+            id: '5',
+            title: 'Titel',
+            country:'en',
+            url: '/testurl',
+            article: 'asdfasdf',
+            region: {
+                id: '5',
+                name: 'Tirol'
+            }
+        });
     });
 });

@@ -17,25 +17,25 @@ define([
     return function($el, options) {
         var defaults = {
                 id: 'id',
-                returnValue: null,
-                hiddenData: null
+                defaultValue: null
             },
 
             typeInterface = {
+
+                hiddenData: null,
+
                 setValue: function(value) {
-
-                    this.options.hiddenData = value;
-
-                    if (typeof value === 'object') {
+                    this.hiddenData = value;
+                    if (typeof value === 'object' && !!value[this.options.id]) {
                         this.$el.data('id', value[this.options.id]);
                     }
                 },
 
                 getValue: function() {
-                    if (this.options.hiddenData !== null) {
-                        return this.options.hiddenData;
+                    if (this.hiddenData !== null) {
+                        return this.hiddenData;
                     } else {
-                        return this.options.returnValue;
+                        return this.options.defaultValue;
                     }
                 },
 
