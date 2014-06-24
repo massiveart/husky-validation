@@ -21,6 +21,7 @@ require.config({
         'type/string': 'js/types/string',
         'type/date': 'js/types/date',
         'type/decimal': 'js/types/decimal',
+        'type/hiddenData': 'js/types/hiddenData',
         'type/email': 'js/types/email',
         'type/url': 'js/types/url',
         'type/label': 'js/types/label',
