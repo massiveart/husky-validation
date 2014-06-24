@@ -26,7 +26,7 @@ define([
 
                 setValue: function(value) {
                     this.hiddenData = value;
-                    if (typeof value === 'object' && !!value[this.options.id]) {
+                    if (!!value && typeof value === 'object' && !!value[this.options.id]) {
                         this.$el.data('id', value[this.options.id]);
                     }
                 },
