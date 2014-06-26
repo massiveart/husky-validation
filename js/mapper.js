@@ -25,6 +25,7 @@ define([
 
                     this.collections = [];
                     this.collectionsSet = {};
+                    this.emptyTemplates = {};
                     this.templates = {};
                     this.elements = [];
                     this.collectionsInitiated = $.Deferred();
@@ -41,7 +42,7 @@ define([
                     var $element = $(value),
                         element = $element.data('element'),
                         property = $element.data('mapper-property'),
-                        $newChild, collection,
+                        $newChild, collection, emptyTemplate,
                         dfd = $.Deferred(),
                         counter = 0,
                         resolve = function() {
@@ -98,12 +99,21 @@ define([
                         for (x = -1, len = property.length; ++x < len;) {
                             if (property[x].tpl === $newChild.id) {
                                 propertyName = property[x].data;
+                                emptyTemplate = property[x]['empty-tpl'];
+                            }
+                            // if child has empty template, set to empty templates
+                            if (property[x]['empty-tpl'] && property[x]['empty-tpl'] === $newChild.id) {
+                                this.emptyTemplates[property[x].data] = {
+                                    id: property[x]['empty-tpl'],
+                                    tpl: $child.html()
+                                };
                             }
                         }
+                        // check if template is set
                         if (!!propertyName) {
                             $newChild.propertyName = propertyName;
                             propertyCount = collection.element.getType().getMinOccurs();
-                            this.templates[propertyName] = {tpl: $newChild, collection: collection};
+                            this.templates[propertyName] = {tpl: $newChild, collection: collection, emptyTemplate: emptyTemplate};
                             // init default children
                             for (x = collection.element.getType().getMinOccurs() + 1; --x > 0;) {
                                 that.appendChildren.call(this, collection.$element, $newChild).then(function() {
@@ -153,6 +163,14 @@ define([
                         }.bind(this));
                     }
                     that.checkFullAndEmpty.call(this, propertyName);
+                },
+
+                addEmptyTemplate: function($element, propertyName) {
+                    if (this.emptyTemplates.hasOwnProperty(propertyName)) {
+                        var $emptyTemplate = $(this.emptyTemplates[propertyName].tpl);
+                        $emptyTemplate.attr('id', this.emptyTemplates[propertyName].id);
+                        $element.append($emptyTemplate);
+                    }
                 },
 
                 removeClick: function(event) {
@@ -262,6 +280,7 @@ define([
                     // remember first child remove the rest
                     var $element = collectionElement.$element,
                         $child = collectionElement.$child,
+                        $emptyTemplate,
                         count = collection.length,
                         dfd = $.Deferred(),
                         resolve = function() {
@@ -274,6 +293,8 @@ define([
 
                     // no element in collection
                     if (count === 0) {
+                        // check if empty template exists for that element and show it
+                        that.addEmptyTemplate.call(this, $element, $child.propertyName);
                         dfd.resolve();
                     } else {
                         if (collection.length < collectionElement.element.getType().getMinOccurs()) {
@@ -312,21 +333,27 @@ define([
                     $template.attr('data-mapper-property-tpl', $child.id);
                     $template.attr('data-mapper-id', _.uniqueId());
 
+                    // add template to element
+                    if (insertAfter) {
+                        $element.after($template);
+                    } else {
+                        $element.append($template);
+                    }
+
                     // add fields
-                    $.each($newFields, function(key, field) {
-                        element = form.addField($(field));
-                        if (insertAfter) {
-                            $element.after($template);
-                        } else {
-                            $element.append($template);
-                        }
-                        element.initialized.then(function() {
-                            counter--;
-                            if (counter === 0) {
-                                dfd.resolve($template);
-                            }
-                        });
-                    }.bind(this));
+                    if ($newFields.length > 0) {
+                        $.each($newFields, function(key, field) {
+                            element = form.addField($(field));
+                            element.initialized.then(function() {
+                                counter--;
+                                if (counter === 0) {
+                                    dfd.resolve($template);
+                                }
+                            });
+                        }.bind(this));
+                    } else {
+                        dfd.resolve($template);
+                    }
 
                     // if automatically set data after initialization ( needed for adding elements afterwards)
                     if (!!data) {
@@ -358,14 +385,16 @@ define([
                 /**
                  * Delets an element from the DOM and the global object by a given unique-id
                  * @param {number} mapperId
-                 * @return {boolean} true if an element was found and deleted
+                 * @return {boolean|string} if an element was found and deleted it returns its template-name, else it returns false
                  **/
                 deleteElementByMapperId: function(mapperId) {
-                    for (var i = -1, length = this.elements.length; ++i < length;) {
-                        if (this.elements[i].data('mapper-id') === mapperId) {
+                    var i, length, templateName;
+                    for (i = -1, length = this.elements.length; ++i < length;) {
+                        if (this.elements[i].data('mapper-id').toString() === mapperId.toString()) {
+                            templateName = this.elements[i].attr('data-mapper-property-tpl');
                             this.elements[i].remove();
                             this.elements.splice(i, 1);
-                            return true;
+                            return templateName;
                         }
                     }
                     return false;
@@ -549,13 +578,28 @@ define([
                     var template = this.templates[propertyName],
                         element = template.collection.$element,
                         insertAfterLast = false,
-                        lastElement;
+                        lastElement,
+                        $emptyTpl,
+                        dfd = $.Deferred();
+
                     // check if element exists and put it after last
                     if (!append && (lastElement = element.find('*[data-mapper-property-tpl="' + template.tpl.id + '"]').last()).length > 0) {
                         element = lastElement;
                         insertAfterLast = true;
                     }
-                    that.appendChildren.call(this, element, template.tpl, data, data, insertAfterLast);
+                    // check if empty template is set and lookup in dom
+                    if (template.emptyTemplate) {
+                        $emptyTpl = $(element).find('#'+template.emptyTemplate);
+                        if ($emptyTpl) {
+                            $emptyTpl.remove();
+                        }
+                    }
+
+                    that.appendChildren.call(this, element, template.tpl, data, data, insertAfterLast).then(function($element) {
+                        dfd.resolve($element);
+                    }.bind(this));
+
+                    return dfd;
                 },
 
                 /**
@@ -573,7 +617,21 @@ define([
                  * @param mapperId {Number} the unique Id of the field
                  */
                 removeFromCollection: function(mapperId) {
-                    that.deleteElementByMapperId.call(this, mapperId);
+                    var i,
+                        templateName = that.deleteElementByMapperId.call(this, mapperId);
+
+                    // check if collection still has elements with propertyName, else render empty Template
+                    if (form.$el.find('*[data-mapper-property-tpl='+templateName+']').length < 1) {
+                        // get collection with is owner of templateName
+                        for (i in this.templates) {
+                            // if emptyTemplates is set
+                            if (this.templates[i].tpl.id === templateName) {
+                                that.addEmptyTemplate.call(this, this.templates[i].collection.$element, i);
+                                return;
+                            }
+                        }
+                    }
+
                 }
             };
 

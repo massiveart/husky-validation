@@ -10,29 +10,32 @@ define(['js/form', 'globalize'], function(Form) {
 
     'use strict';
 
-    var language = 'de',
-        form = new Form($('#contact-form'));
+    var language = 'en',
+        $contactForm = $('#contact-form'),
+        form = new Form($contactForm);
 
-    require(['cultures/globalize.culture.' + language], function() {
-        Globalize.culture(language);
-    }.bind(this));
+    if (language !== 'en') {
+        require(['cultures/globalize.culture.' + language], function() {
+            Globalize.culture(language);
+        }.bind(this));
+    }
 
     form.mapper.addCollectionFilter('phones', function(item) {
         return item.phone !== '';
     });
 
-    $('#contact-form').on('form-collection-init', function(e, property) {
+    $contactForm.on('form-collection-init', function(e, property) {
         console.log(property, 'initiated');
     });
 
-    $('#contact-form').on('submit', function() {
+    $contactForm.on('submit', function() {
         console.log(form.mapper.getData());
 
         return false;
     });
 
     $('#send-mapperid').on('click', function() {
-        console.log(form.mapper.getData(true));
+        console.log(form.mapper.getData(undefined,true));
 
         return false;
     });
@@ -50,7 +53,22 @@ define(['js/form', 'globalize'], function(Form) {
     });
 
     $('#addemail').on('click', function() {
-       form.mapper.addToCollection('emails', {email:'test@test.com'});
+       form.mapper.addToCollection('emails', {email:'test@test.com'}).then(function($element) {
+           console.log($element);
+       });
+    });
+
+    $('#addempty').on('click', function() {
+       form.mapper.addToCollection('empty', {value:'dudldu'}).then(function($element) {
+           console.log($element);
+       });
+    });
+
+    $('#removeempty').on('click', function() {
+        var mapperId = $('body').find('*[data-mapper-property-tpl=empty-tpl]').eq(0).attr('data-mapper-id');
+        if (mapperId) {
+           form.mapper.removeFromCollection(parseInt(mapperId,10));
+        }
     });
 
     $('#addemailend').on('click', function() {
@@ -89,6 +107,7 @@ define(['js/form', 'globalize'], function(Form) {
                 lastName: 'Wachter',
                 birthDay: '2013-09-18T08:05:00',
                 wage: 1500,
+                disabled: 1,
                 country: {
                     id: 2,
                     name: 'CH'

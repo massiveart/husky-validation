@@ -9,14 +9,14 @@
  */
 
 define([
-    'type/default',
-    'form/util'
-], function(Default, Util) {
+    'type/default'
+], function(Default) {
 
     'use strict';
 
     return function($el, options) {
         var defaults = {
+                format: 'n', // n, d, c, p
                 regExp: /^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/
             },
 
@@ -25,13 +25,24 @@ define([
                 },
 
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.getValue();
 
                     if (val === '') {
                         return true;
                     }
 
                     return this.options.regExp.test(val);
+                },
+
+                getModelData: function(val) {
+                    return Globalize.parseFloat(val);
+                },
+
+                getViewData: function(val) {
+                    if(typeof val === 'string'){
+                        val = parseFloat(val);
+                    }
+                    return Globalize.format(val, this.options.format);
                 }
             };
 

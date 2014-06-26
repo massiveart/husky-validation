@@ -22,7 +22,7 @@ define([
 
             typeInterface = {
                 validate: function() {
-                    var val = Util.getValue(this.$el);
+                    var val = this.getValue();
                     if (val === '') {
                         return true;
                     }
@@ -31,7 +31,7 @@ define([
                 },
 
                 needsValidation: function() {
-                    var val = this.$el.val();
+                    var val = this.getValue();
                     return val !== '';
                 }
             };
