@@ -37,8 +37,15 @@ define([
                             return false;
                         }
 
+                        if(typeof val === 'undefined'){
+                            return false;
+                        }
+
+                        // the following condition works only for strings
+                        val = val.toString();
+
                         // notNull && notBlank && not undefined
-                        return typeof val !== 'undefined' && val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
+                        return val.length > 0 && '' !== val.replace(/^\s+/g, '').replace(/\s+$/g, '');
                     }
                     return true;
                 }
