@@ -1831,7 +1831,7 @@ define('type/mappingData',[
                 setValue: function(value) {
                     if (value !== null && typeof value !== 'object') {
                         this.$el.data('value', value);
-                        this.$el.text(this.getMappingValue(value));
+                        this.$el.text(this.getMappingValue(value) || this.options.defaultValue);
                     }
                 },
 
@@ -1856,19 +1856,16 @@ define('type/mappingData',[
 
                 getMappingValue: function(val) {
 
-                    var key, el, k, obj = this.options.mapping;
+                    var key, obj = this.options.mapping;
 
                     if (!!this.options.mapping) {
                         if (!!obj) {
                             for (key in this.options.mapping) {
-                                if (obj.hasOwnProperty(key)) {
-                                    el = obj[key];
-                                    for (k in el) {
-                                        if (!!obj[key][this.options.searchProperty] &&
-                                            !!obj[key][this.options.showProperty] &&
-                                            obj[key][this.options.searchProperty] === val) {
-                                            return obj[key][this.options.showProperty];
-                                        }
+                                if (!!obj.hasOwnProperty(key)) {
+                                    if (obj[key][this.options.searchProperty] !== null &&
+                                        obj[key][this.options.showProperty] !== null &&
+                                        String(obj[key][this.options.searchProperty]) === String(val)) {
+                                        return obj[key][this.options.showProperty];
                                     }
                                 }
                             }
