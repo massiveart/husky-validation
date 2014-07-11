@@ -22,7 +22,7 @@ define(['js/form', 'globalize'], function(Form) {
 
     $('#set-data').on('click', function() {
         form.mapper.setData({
-            currency: 3
+            currency: 2
         });
     });
 });
