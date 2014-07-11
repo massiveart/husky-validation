@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link href="../../../css/validation.css" rel="stylesheet">
+        <link href="../../../assets/css/husky.min.css" rel="stylesheet">
+
+        <style type="text/css">
+            #content {
+                margin-left: auto;
+                margin-right: auto;
+                width: 800px;
+                margin-top: 100px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="content">
+            <form id="content-form" class="grid">
+                <div class="grid-row">
+                    <label for="currency" class="pointer required">Title</label>
+                    <span id="currency" data-form="true"
+                          data-type="mappingData"
+                          data-mapper-property="currency"
+                          data-type-mapping='{"EUR":{"id":1,"name":"EURO"},"CHF":{"id":2,"name":"CHF"}}'
+                          data-type-search-property="id"
+                          data-type-show-property="name"
+                          data-type-default-value="none"></span>
+                </div>
+                <input type="submit" value="SEND"/>
+                <input type="button" value="SET" id="set-data"/>
+            </form>
+        </div>
+
+        <script src="../../../assets/js/jquery.js"></script>
+        <script src="../../../assets/js/underscore.js"></script>
+        <script data-main="app.js" type="text/javascript" src="../../../assets/js/require.js"></script>
+    </body>
+</html>
