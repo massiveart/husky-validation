@@ -35,11 +35,17 @@ define([
                 },
 
                 getModelData: function(val) {
+                    if(val === '') {
+                        return '';
+                    }
                     return Globalize.parseFloat(val);
                 },
 
                 getViewData: function(val) {
                     if(typeof val === 'string'){
+                        if(val === '') {
+                            return '';
+                        }
                         val = parseFloat(val);
                     }
                     return Globalize.format(val, this.options.format);
