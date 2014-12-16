@@ -29,7 +29,7 @@ define([
                         if ('object' === typeof val) {
                             for (i in val) {
                                 if (val.hasOwnProperty(i)) {
-                                    if (this.validate(val[i]), true) {
+                                    if (this.validate(val[i], true)) {
                                         return true;
                                     }
                                 }
