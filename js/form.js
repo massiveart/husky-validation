@@ -109,8 +109,12 @@ define([
                         that.addField.call(this, value).initialized.then(resolve.bind(this));
                     }.bind(this));
 
-                    $.each(Util.getGroupedFields($el || this.$el), function(key, value) {
-                        that.addGroupedFields.call(this, value);
+                    $.each(Util.getCheckboxes($el || this.$el), function(key, value) {
+                        that.addGroupedFields.call(this, key, value, false);
+                    }.bind(this));
+
+                    $.each(Util.getRadios($el || this.$el), function(key, value) {
+                        that.addGroupedFields.call(this, key, value, true);
                     }.bind(this));
 
                     return dfd.promise();
@@ -132,19 +136,20 @@ define([
 
                     this.elements.push(element);
                     Util.debug('Element created', options);
+
                     return element;
                 },
 
-                addGroupedFields: function(selector) {
-                    var $element = $(selector),
-                        options = Util.parseData($element, '', this.options),
-                        elementName = $element.prop('name');
+                addGroupedFields: function(key, selectors, single) {
+                    this.elementGroups[key] = new ElementGroup(
+                        selectors.map(function(selector) {
+                            var $element = $(selector),
+                                options = Util.parseData($element, '', this.options);
 
-                    if (!this.elementGroups.hasOwnProperty(elementName)) {
-                        this.elementGroups[elementName] = new ElementGroup();
-                    }
-
-                    this.elementGroups[elementName].addElement(new Element($element, this, options));
+                            return new Element($element, this, options);
+                        }.bind(this)),
+                        single
+                    );
                 }
             },
 

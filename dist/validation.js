@@ -10,7 +10,7 @@
 
 define('form/util',[], function() {
 
-    
+    'use strict';
 
     var ignoredKeys = [
         'form',
@@ -22,7 +22,28 @@ define('form/util',[], function() {
 
         // get form fields
         getFields: function(element) {
-            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="collection"], *[contenteditable="true"]');
+            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"], [type="checkbox"], [type="radio"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="collection"], *[contenteditable="true"]');
+        },
+
+        findGroupedFieldsBySelector: function(element, filter) {
+            var groupedFields = {};
+
+            $(element).find(filter).each(function(key, field) {
+                if (!groupedFields[field.name]) {
+                    groupedFields[field.name] = [];
+                }
+                groupedFields[field.name].push(field);
+            });
+
+            return groupedFields;
+        },
+
+        getCheckboxes: function(element) {
+            return this.findGroupedFieldsBySelector(element, 'input[type="checkbox"]');
+        },
+
+        getRadios: function(element) {
+            return this.findGroupedFieldsBySelector(element, 'input[type="radio"]');
         },
 
         /**
@@ -205,9 +226,7 @@ define('form/util',[], function() {
         isNumeric: function(str) {
             return str.match(/-?\d+(.\d+)?/);
         }
-
     };
-
 });
 
 /*
@@ -222,7 +241,7 @@ define('form/util',[], function() {
 
 define('form/element',['form/util'], function(Util) {
 
-    
+    'use strict';
 
     return function(el, form, options) {
 
@@ -597,6 +616,78 @@ define('form/element',['form/util'], function(Util) {
 });
 
 /*
+ * This file is part of Husky Validation.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+define('form/elementGroup',[],function() {
+    'use strict';
+
+    var setMultipleValue = function(elements, values) {
+            elements.forEach(function(element) {
+                values.forEach(function(value) {
+                    if (element.$el.val() === value) {
+                        element.$el.prop('checked', true);
+                    }
+                });
+            });
+        },
+
+        setSingleValue = function(elements, value) {
+            for (var i = -1; ++i < elements.length;) {
+                if (elements[i].$el.val() === value) {
+                    elements[i].$el.prop('checked', true);
+
+                    return;
+                }
+            }
+        };
+
+    return function(elements, singleValue) {
+        return {
+            getValue: function() {
+                var value = [];
+                elements.forEach(function(element) {
+                    if (element.$el.is(':checked')) {
+                        value.push(element.$el.val());
+                    }
+                });
+
+                if (!!singleValue) {
+                    if (value.length > 1) {
+                        throw new Error('Single value element group cannot return more than one value');
+                    }
+
+                    return value[0];
+                }
+
+                return value;
+            },
+
+            setValue: function(values) {
+                if (!!singleValue && !!$.isArray(values)) {
+                    throw new Error('Single value element cannot be set to an array value');
+                }
+
+                if (!singleValue && !$.isArray(values)) {
+                    throw new Error('Field with multiple values cannot be set to a single value');
+                }
+
+                if ($.isArray(values)) {
+                    setMultipleValue.call(this, elements, values);
+                } else {
+                    setSingleValue.call(this, elements, values);
+                }
+            }
+        }
+    };
+});
+
+/*
  * This file is part of the Husky Validation.
  *
  * (c) MASSIVE ART WebServices GmbH
@@ -610,7 +701,7 @@ define('form/validation',[
     'form/util'
 ], function(Util) {
 
-    
+    'use strict';
 
     return function(form) {
         var valid,
@@ -710,7 +801,7 @@ define('form/mapper',[
     'form/util'
 ], function(Util) {
 
-    
+    'use strict';
 
     return function(form) {
 
@@ -725,8 +816,6 @@ define('form/mapper',[
                     this.collectionsSet = {};
                     this.emptyTemplates = {};
                     this.templates = {};
-                    this.elements = [];
-                    this.collectionsInitiated = $.Deferred();
 
                     form.initialized.then(function() {
                         var selector = '*[data-type="collection"]',
@@ -811,7 +900,11 @@ define('form/mapper',[
                         if (!!propertyName) {
                             $newChild.propertyName = propertyName;
                             propertyCount = collection.element.getType().getMinOccurs();
-                            this.templates[propertyName] = {tpl: $newChild, collection: collection, emptyTemplate: emptyTemplate};
+                            this.templates[propertyName] = {
+                                tpl: $newChild,
+                                collection: collection,
+                                emptyTemplate: emptyTemplate
+                            };
                             // init default children
                             for (x = collection.element.getType().getMinOccurs() + 1; --x > 0;) {
                                 that.appendChildren.call(this, collection.$element, $newChild).then(function() {
@@ -888,8 +981,8 @@ define('form/mapper',[
                 },
 
                 checkFullAndEmpty: function(propertyName) {
-                    var $addButton = $("[data-mapper-add='"+ propertyName +"']"),
-                        $removeButton = $("[data-mapper-remove='"+ propertyName +"']"),
+                    var $addButton = $("[data-mapper-add='" + propertyName + "']"),
+                        $removeButton = $("[data-mapper-remove='" + propertyName + "']"),
                         tpl = this.templates[propertyName].tpl,
                         collection = this.templates[propertyName].collection,
                         fullClass = collection.element.$el.data('mapper-full-class') || 'full',
@@ -906,7 +999,7 @@ define('form/mapper',[
                             $addButton.addClass(fullClass);
                             $(collection.element.$el).addClass(fullClass);
 
-                        // else, if no remove is possible add empty style-classes
+                            // else, if no remove is possible add empty style-classes
                         } else if (!collection.element.getType().canRemove(tpl.id)) {
                             $addButton.addClass(emptyClass);
                             $(collection.element.$el).addClass(emptyClass);
@@ -933,7 +1026,7 @@ define('form/mapper',[
                         type = $el.data('type'),
                         property = $el.data('mapper-property'),
                         element = $el.data('element'),
-                        result, item,
+                        result,
                         filtersAction;
 
 
@@ -954,19 +1047,30 @@ define('form/mapper',[
                         result = [];
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
-                                item = that.getData($(value));
-                                    // only set mapper-id if explicitly set
+                                var $elements = $(value).find('*[data-mapper-property]'),
+                                    elements = [],
+                                    data = {};
+
+                                $elements.each(function(key, child) {
+                                    elements.push($(child).data('element'));
+                                });
+
+                                elements.forEach(function(element){
+                                    that.addDataFromElement.call(this, element, data, returnMapperId);
+                                });
+
+                                // only set mapper-id if explicitly set
                                 if (!!returnMapperId) {
-                                    item.mapperId = value.dataset.mapperId;
+                                    data.mapperId = value.dataset.mapperId;
                                 }
 
-                                var keys = Object.keys(item);
+                                var keys = Object.keys(data);
                                 if (keys.length === 1) { // for value only collection
-                                    if (item[keys[0]] !== '') {
-                                        result.push(item[keys[0]]);
+                                    if (data[keys[0]] !== '') {
+                                        result.push(data[keys[0]]);
                                     }
-                                } else if (!filtersAction || filtersAction(item)) {
-                                    result.push(item);
+                                } else if (!filtersAction || filtersAction(data)) {
+                                    result.push(data);
                                 }
                             }
                         }.bind(this));
@@ -978,7 +1082,6 @@ define('form/mapper',[
                     // remember first child remove the rest
                     var $element = collectionElement.$element,
                         $child = collectionElement.$child,
-                        $emptyTemplate,
                         count = collection.length,
                         dfd = $.Deferred(),
                         resolve = function() {
@@ -1061,7 +1164,7 @@ define('form/mapper',[
                     }
 
                     // push element to global array
-                    this.elements.push($template);
+                    this.collections.push($template);
 
                     return dfd.promise();
                 },
@@ -1072,9 +1175,9 @@ define('form/mapper',[
                  * @return {Object|null} the dom object or null
                  **/
                 getElementByMapperId: function(mapperId) {
-                    for (var i = -1, length = this.elements.length; ++i < length;) {
-                        if (this.elements[i].data('mapper-id') === mapperId) {
-                            return this.elements[i];
+                    for (var i = -1, length = this.collections.length; ++i < length;) {
+                        if (this.collections[i].data('mapper-id') === mapperId) {
+                            return this.collections[i];
                         }
                     }
                     return null;
@@ -1087,11 +1190,11 @@ define('form/mapper',[
                  **/
                 deleteElementByMapperId: function(mapperId) {
                     var i, length, templateName;
-                    for (i = -1, length = this.elements.length; ++i < length;) {
-                        if (this.elements[i].data('mapper-id').toString() === mapperId.toString()) {
-                            templateName = this.elements[i].attr('data-mapper-property-tpl');
-                            this.elements[i].remove();
-                            this.elements.splice(i, 1);
+                    for (i = -1, length = this.collections.length; ++i < length;) {
+                        if (this.collections[i].data('mapper-id').toString() === mapperId.toString()) {
+                            templateName = this.collections[i].attr('data-mapper-property-tpl');
+                            this.collections[i].remove();
+                            this.collections.splice(i, 1);
                             return templateName;
                         }
                     }
@@ -1106,46 +1209,6 @@ define('form/mapper',[
 
                     // remove element
                     $element.remove();
-                },
-
-                getData: function($el, returnMapperId) {
-                    if (!$el) {
-                        $el = form.$el;
-                    }
-
-                    var data = { }, $childElement, property, parts,
-
-                    // search field with mapper property
-                        selector = '*[data-mapper-property]',
-                        $elements = $el.find(selector);
-
-                    // do it while elements exists
-                    while ($elements.length > 0) {
-                        // get first
-                        $childElement = $($elements.get(0));
-                        property = $childElement.data('mapper-property');
-
-                        if ($.isArray(property)) {
-                            $.each(property, function(i, prop) {
-                                data[prop.data] = that.processData.call(this, $childElement, prop, returnMapperId);
-                            }.bind(this));
-                        } else if (property.match(/.*\..*/)) {
-                            parts = property.split('.');
-                            data[parts[0]] = {};
-                            data[parts[0]][parts[1]] = that.processData.call(this, $childElement);
-                        } else {
-                            // process it
-                            data[property] = that.processData.call(this, $childElement);
-                        }
-
-                        // remove element itself
-                        $elements = $elements.not($childElement);
-
-                        // remove child elements
-                        $elements = $elements.not($childElement.find(selector));
-                    }
-
-                    return data;
                 },
 
                 setData: function(data, $el) {
@@ -1205,6 +1268,9 @@ define('form/mapper',[
                                 that.setCollectionData.call(this, value, collection).then(function() {
                                     resolve();
                                 });
+                            } else if (form.elementGroups.hasOwnProperty(key)) {
+                                form.elementGroups[key].setValue(value);
+                                resolve();
                             } else {
                                 // search field with mapper property
                                 selector = '*[data-mapper-property="' + key + '"]';
@@ -1236,8 +1302,26 @@ define('form/mapper',[
                     }
 
                     return dfd.promise();
-                }
+                },
 
+                addDataFromElement: function(element, data, returnMapperId) {
+                    var $element = element.$el,
+                        property = $element.data('mapper-property'),
+                        parts;
+
+                    if ($.isArray(property)) {
+                        $.each(property, function(i, prop) {
+                            data[prop.data] = that.processData.call(this, $element, prop, returnMapperId);
+                        }.bind(this));
+                    } else if (property.match(/.*\..*/)) {
+                        parts = property.split('.');
+                        data[parts[0]] = {};
+                        data[parts[0]][parts[1]] = that.processData.call(this, $element);
+                    } else {
+                        // process it
+                        data[property] = that.processData.call(this, $element);
+                    }
+                }
             },
 
         // define mapper interface
@@ -1251,11 +1335,23 @@ define('form/mapper',[
 
                 /**
                  * extracts data from $element or default form element
-                 *  @param {Object} [$el=undefined] element to select data from
-                 *  @param {Boolean} [returnMapperId=false] returnMapperId
+                 * @param {Object} [$el=undefined] element to select data from
+                 * @param {Boolean} [returnMapperId=false] returnMapperId
                  */
                 getData: function($el, returnMapperId) {
-                    return that.getData.call(this, $el, returnMapperId);
+                    var data = {};
+
+                    form.elements.forEach(function(element) {
+                        that.addDataFromElement.call(this, element, data, returnMapperId);
+                    }.bind(this));
+
+                    for(var key in form.elementGroups) {
+                        if (form.elementGroups.hasOwnProperty(key)) {
+                            data[key] = form.elementGroups[key].getValue();
+                        }
+                    }
+
+                    return data;
                 },
 
                 addCollectionFilter: function(name, callback) {
@@ -1287,7 +1383,7 @@ define('form/mapper',[
                     }
                     // check if empty template is set and lookup in dom
                     if (template.emptyTemplate) {
-                        $emptyTpl = $(element).find('#'+template.emptyTemplate);
+                        $emptyTpl = $(element).find('#' + template.emptyTemplate);
                         if ($emptyTpl) {
                             $emptyTpl.remove();
                         }
@@ -1319,7 +1415,7 @@ define('form/mapper',[
                         templateName = that.deleteElementByMapperId.call(this, mapperId);
 
                     // check if collection still has elements with propertyName, else render empty Template
-                    if (form.$el.find('*[data-mapper-property-tpl='+templateName+']').length < 1) {
+                    if (form.$el.find('*[data-mapper-property-tpl=' + templateName + ']').length < 1) {
                         // get collection with is owner of templateName
                         for (i in this.templates) {
                             // if emptyTemplates is set
@@ -1355,6 +1451,7 @@ require.config({
         'form/mapper': 'js/mapper',
         'form/validation': 'js/validation',
         'form/element': 'js/element',
+        'form/elementGroup': 'js/elementGroup',
         'form/util': 'js/util',
 
         'type/default': 'js/types/default',
@@ -1385,12 +1482,13 @@ require.config({
 
 define('form',[
     'form/element',
+    'form/elementGroup',
     'form/validation',
     'form/mapper',
     'form/util'
-], function(Element, Validation, Mapper, Util) {
+], function(Element, ElementGroup, Validation, Mapper, Util) {
 
-    
+    'use strict';
 
     return function(el, options) {
         var defaults = {
@@ -1445,7 +1543,15 @@ define('form',[
 
                     $.each(Util.getFields($el || this.$el), function(key, value) {
                         requireCounter++;
-                        that.addField.call(this, value, false).initialized.then(resolve.bind(this));
+                        that.addField.call(this, value).initialized.then(resolve.bind(this));
+                    }.bind(this));
+
+                    $.each(Util.getCheckboxes($el || this.$el), function(key, value) {
+                        that.addGroupedFields.call(this, key, value, false);
+                    }.bind(this));
+
+                    $.each(Util.getRadios($el || this.$el), function(key, value) {
+                        that.addGroupedFields.call(this, key, value, true);
                     }.bind(this));
 
                     return dfd.promise();
@@ -1467,12 +1573,26 @@ define('form',[
 
                     this.elements.push(element);
                     Util.debug('Element created', options);
+
                     return element;
+                },
+
+                addGroupedFields: function(key, selectors, single) {
+                    this.elementGroups[key] = new ElementGroup(
+                        selectors.map(function(selector) {
+                            var $element = $(selector),
+                                options = Util.parseData($element, '', this.options);
+
+                            return new Element($element, this, options);
+                        }.bind(this)),
+                        single
+                    );
                 }
             },
 
             result = {
                 elements: [],
+                elementGroups: {},
                 options: {},
                 validation: false,
                 mapper: false,
@@ -1535,7 +1655,7 @@ define('type/default',[
     'form/util'
 ],function(Util) {
 
-    
+    'use strict';
 
     return function($el, defaults, options, name, typeInterface, form) {
 
@@ -1611,7 +1731,7 @@ define('type/string',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = { },
@@ -1645,7 +1765,7 @@ define('type/date',[
     'form/util'
 ], function(Default, Util) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -1707,7 +1827,7 @@ define('type/decimal',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -1765,7 +1885,7 @@ define('type/hiddenData',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -1819,7 +1939,7 @@ define('type/mappingData',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -1894,7 +2014,7 @@ define('type/email',[
     'form/util'
 ], function(Default, Util) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -1936,7 +2056,7 @@ define('type/url',[
     'form/util'
 ], function(Default, Util) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -1980,7 +2100,7 @@ define('type/label',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -2043,7 +2163,7 @@ define('type/select',[
     'form/util'
 ], function(Default, Util) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -2103,7 +2223,7 @@ define('type/readonly-select',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -2184,7 +2304,7 @@ define('type/collection',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -2242,7 +2362,7 @@ define('type/attributes',[
     'type/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, options) {
         var defaults = {
@@ -2282,7 +2402,7 @@ define('type/attributes',[
 
 define('validator/default',[],function() {
 
-    
+    'use strict';
 
     return function($el, form, defaults, options, name) {
 
@@ -2346,7 +2466,7 @@ define('validator/min',[
     'validator/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
         var defaults = {
@@ -2380,7 +2500,7 @@ define('validator/max',[
     'validator/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
         var defaults = {
@@ -2414,7 +2534,7 @@ define('validator/minLength',[
     'validator/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
         var defaults = {
@@ -2448,7 +2568,7 @@ define('validator/maxLength',[
     'validator/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
         var defaults = {
@@ -2482,7 +2602,7 @@ define('validator/required',[
     'validator/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
         var defaults = { },
@@ -2542,7 +2662,7 @@ define('validator/unique',[
     'form/util'
 ], function(Default, Util) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
 
@@ -2650,7 +2770,7 @@ define('validator/equal',[
     'validator/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
         var defaults = {
@@ -2755,7 +2875,7 @@ define('validator/regex',[
     'validator/default'
 ], function(Default) {
 
-    
+    'use strict';
 
     return function($el, form, element, options) {
         var defaults = {

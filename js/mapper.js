@@ -479,6 +479,9 @@ define([
                                 that.setCollectionData.call(this, value, collection).then(function() {
                                     resolve();
                                 });
+                            } else if (form.elementGroups.hasOwnProperty(key)) {
+                                form.elementGroups[key].setValue(value);
+                                resolve();
                             } else {
                                 // search field with mapper property
                                 selector = '*[data-mapper-property="' + key + '"]';
@@ -552,6 +555,12 @@ define([
                     form.elements.forEach(function(element) {
                         that.addDataFromElement.call(this, element, data, returnMapperId);
                     }.bind(this));
+
+                    for(var key in form.elementGroups) {
+                        if (form.elementGroups.hasOwnProperty(key)) {
+                            data[key] = form.elementGroups[key].getValue();
+                        }
+                    }
 
                     return data;
                 },
