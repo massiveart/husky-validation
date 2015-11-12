@@ -14,6 +14,7 @@ require.config({
         'form/mapper': 'js/mapper',
         'form/validation': 'js/validation',
         'form/element': 'js/element',
+        'form/elementGroup': 'js/elementGroup',
         'form/util': 'js/util',
 
         'type/default': 'js/types/default',
@@ -44,10 +45,11 @@ require.config({
 
 define([
     'form/element',
+    'form/elementGroup',
     'form/validation',
     'form/mapper',
     'form/util'
-], function(Element, Validation, Mapper, Util) {
+], function(Element, ElementGroup, Validation, Mapper, Util) {
 
     'use strict';
 
@@ -104,7 +106,11 @@ define([
 
                     $.each(Util.getFields($el || this.$el), function(key, value) {
                         requireCounter++;
-                        that.addField.call(this, value, false).initialized.then(resolve.bind(this));
+                        that.addField.call(this, value).initialized.then(resolve.bind(this));
+                    }.bind(this));
+
+                    $.each(Util.getGroupedFields($el || this.$el), function(key, value) {
+                        that.addGroupedFields.call(this, value);
                     }.bind(this));
 
                     return dfd.promise();
@@ -127,11 +133,24 @@ define([
                     this.elements.push(element);
                     Util.debug('Element created', options);
                     return element;
+                },
+
+                addGroupedFields: function(selector) {
+                    var $element = $(selector),
+                        options = Util.parseData($element, '', this.options),
+                        elementName = $element.prop('name');
+
+                    if (!this.elementGroups.hasOwnProperty(elementName)) {
+                        this.elementGroups[elementName] = new ElementGroup();
+                    }
+
+                    this.elementGroups[elementName].addElement(new Element($element, this, options));
                 }
             },
 
             result = {
                 elements: [],
+                elementGroups: {},
                 options: {},
                 validation: false,
                 mapper: false,
