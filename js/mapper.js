@@ -40,7 +40,7 @@ define([
                     var $element = $(value),
                         element = $element.data('element'),
                         property = $element.data('mapper-property'),
-                        $newChild, collection, emptyTemplate,
+                        newChild, collection, emptyTemplate,
                         dfd = $.Deferred(),
                         counter = 0,
                         resolve = function() {
@@ -55,7 +55,7 @@ define([
                             property = [property];
                             $element.data('mapper-property', property);
                         } else {
-                            throw "no valid mapper-property value";
+                            throw 'no valid mapper-property value';
                         }
                     }
 
@@ -91,16 +91,16 @@ define([
                             throw 'template has to be defined as <script>';
                         }
 
-                        $newChild = {tpl: $child.html(), id: $child.attr('id'), collection: collection};
-                        element.$children[i] = $newChild;
+                        newChild = {tpl: $child.html(), id: $child.attr('id'), collection: collection};
+                        element.$children[i] = newChild;
 
                         for (x = -1, len = property.length; ++x < len;) {
-                            if (property[x].tpl === $newChild.id) {
+                            if (property[x].tpl === newChild.id) {
                                 propertyName = property[x].data;
                                 emptyTemplate = property[x]['empty-tpl'];
                             }
                             // if child has empty template, set to empty templates
-                            if (property[x]['empty-tpl'] && property[x]['empty-tpl'] === $newChild.id) {
+                            if (property[x]['empty-tpl'] && property[x]['empty-tpl'] === newChild.id) {
                                 this.emptyTemplates[property[x].data] = {
                                     id: property[x]['empty-tpl'],
                                     tpl: $child.html()
@@ -109,18 +109,18 @@ define([
                         }
                         // check if template is set
                         if (!!propertyName) {
-                            $newChild.propertyName = propertyName;
+                            newChild.propertyName = propertyName;
                             propertyCount = collection.element.getType().getMinOccurs();
                             this.templates[propertyName] = {
-                                tpl: $newChild,
+                                tpl: newChild,
                                 collection: collection,
                                 emptyTemplate: emptyTemplate
                             };
                             // init default children
                             for (x = collection.element.getType().getMinOccurs() + 1; --x > 0;) {
-                                that.appendChildren.call(this, collection.$element, $newChild).then(function() {
+                                that.appendChildren.call(this, collection.$element, newChild).then(function() {
                                     // set counter
-                                    $('#current-counter-' + propertyName).text(collection.element.getType().getChildren($newChild.id).length);
+                                    $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(newChild.id).length);
                                     resolveElement();
                                 }.bind(this));
                             }
@@ -258,16 +258,11 @@ define([
                         result = [];
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
-                                var $elements = $(value).find('*[data-mapper-property]'),
-                                    elements = [],
+                                var elements = $(value).data('collection').childElements,
                                     data = {};
 
-                                $elements.each(function(key, child) {
-                                    elements.push($(child).data('element'));
-                                });
-
-                                elements.forEach(function(element){
-                                    that.addDataFromElement.call(this, element, data, returnMapperId);
+                                elements.forEach(function(child) {
+                                    that.addDataFromElement.call(this, child, data, returnMapperId);
                                 });
 
                                 // only set mapper-id if explicitly set
@@ -331,10 +326,11 @@ define([
                     return dfd.promise();
                 },
 
-                appendChildren: function($element, $child, tplOptions, data, insertAfter) {
-                    var index = $child.collection.element.getType().getChildren($child.id).length,
+                appendChildren: function($element, child, tplOptions, data, insertAfter) {
+                    var clonedChild = $.extend(true, {}, child),
+                        index = clonedChild.collection.element.getType().getChildren(clonedChild.id).length,
                         options = $.extend({}, {index: index}, tplOptions || {}),
-                        template = _.template($child.tpl, options, form.options.delimiter),
+                        template = _.template(clonedChild.tpl, options, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
                         dfd = $.Deferred(),
@@ -342,7 +338,7 @@ define([
                         element;
 
                     // adding
-                    $template.attr('data-mapper-property-tpl', $child.id);
+                    $template.attr('data-mapper-property-tpl', clonedChild.id);
                     $template.attr('data-mapper-id', _.uniqueId());
 
                     // add template to element
@@ -352,10 +348,13 @@ define([
                         $element.append($template);
                     }
 
+                    clonedChild.collection.childElements = [];
                     // add fields
                     if ($newFields.length > 0) {
                         $.each($newFields, function(key, field) {
-                            element = form.addField($(field));
+                            element = form.createField($(field));
+                            // TODO also add checkboxes and radios
+                            clonedChild.collection.childElements.push(element);
                             element.initialized.then(function() {
                                 counter--;
                                 if (counter === 0) {
@@ -366,6 +365,10 @@ define([
                     } else {
                         dfd.resolve($template);
                     }
+
+                    $template.data('collection', clonedChild.collection);
+
+                    form.addGroupedFields($template);
 
                     // if automatically set data after initialization ( needed for adding elements afterwards)
                     if (!!data) {

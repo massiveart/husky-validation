@@ -108,21 +108,47 @@
                 <div class="block1-element grid-row">
                     <div class="grid-col-11">
                         <div class="block block-block1">
+                            <div class="grid-row form-group">
+                                <label class="pointer required">Single select</label>
 
+                                <div class="grid-row small">
+                                    <label class="choice">
+                                        <input type="checkbox"
+                                               id="option1"
+                                               name="multiple-option"
+                                               value="option1"
+                                               data-mapper-property="multiple-option"/>
+                                        <span class="icon"></span>
+                                        male
+                                    </label>
+                                </div>
+
+                                <div class="grid-row small">
+                                    <label class="choice">
+                                        <input type="checkbox"
+                                               id="option2"
+                                               name="multiple-option"
+                                               value="option2"
+                                               data-mapper-property="multiple-option"/>
+                                        <span class="icon"></span>
+                                        female
+                                    </label>
+                                </div>
+                            </div>
 
                             <div class="grid-row form-group">
-                                <label for="block1" class="pointer required">Title</label>
+                                <label class="pointer required">Title</label>
 
-                                <input id="block1" type="text" class="form-element preview-update trigger-save-button"
+                                <input type="text" class="form-element preview-update trigger-save-button"
                                        data-mapper-property="title"
                                        data-validation-required="true"/>
                             </div>
 
 
                             <div class="grid-row form-group">
-                                <label for="block1" class="pointer required">Article</label>
+                                <label class="pointer required">Article</label>
 
-                                <textarea id="block1" class="form-element preview-update trigger-save-button"
+                                <textarea class="form-element preview-update trigger-save-button"
                                           data-mapper-property="article"
                                           data-validation-required="true"></textarea>
                             </div>

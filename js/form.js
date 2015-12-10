@@ -109,13 +109,7 @@ define([
                         that.addField.call(this, value).initialized.then(resolve.bind(this));
                     }.bind(this));
 
-                    $.each(Util.getCheckboxes($el || this.$el), function(key, value) {
-                        that.addGroupedFields.call(this, key, value, false);
-                    }.bind(this));
-
-                    $.each(Util.getRadios($el || this.$el), function(key, value) {
-                        that.addGroupedFields.call(this, key, value, true);
-                    }.bind(this));
+                    that.addGroupedFields.call(this, $el);
 
                     return dfd.promise();
                 },
@@ -129,10 +123,15 @@ define([
                     }
                 },
 
-                addField: function(selector) {
+                createField: function(selector) {
                     var $element = $(selector),
-                        options = Util.parseData($element, '', this.options),
-                        element = new Element($element, this, options);
+                        options = Util.parseData($element, '', this.options);
+
+                    return new Element($element, this, options);
+                },
+
+                addField: function(selector) {
+                    var element = this.createField(selector);
 
                     this.elements.push(element);
                     Util.debug('Element created', options);
@@ -140,7 +139,7 @@ define([
                     return element;
                 },
 
-                addGroupedFields: function(key, selectors, single) {
+                addSingleGroupedField: function(key, selectors, single) {
                     this.elementGroups[key] = new ElementGroup(
                         selectors.map(function(selector) {
                             var $element = $(selector),
@@ -150,6 +149,16 @@ define([
                         }.bind(this)),
                         single
                     );
+                },
+
+                addGroupedFields: function($el) {
+                    $.each(Util.getCheckboxes($el || this.$el), function(key, value) {
+                        that.addSingleGroupedField.call(this, key, value, false);
+                    }.bind(this));
+
+                    $.each(Util.getRadios($el || this.$el), function(key, value) {
+                        that.addSingleGroupedField.call(this, key, value, true);
+                    }.bind(this));
                 }
             },
 
@@ -159,6 +168,16 @@ define([
                 options: {},
                 validation: false,
                 mapper: false,
+
+                createField: function(selector) {
+                    var element = that.createField(selector);
+
+                    element.initialized.then(function() {
+                        element.fieldAdded(element);
+                    }.bind(this));
+
+                    return element;
+                },
 
                 addField: function(selector) {
                     var element = that.addField.call(this, selector);
@@ -172,6 +191,10 @@ define([
                     }.bind(this));
 
                     return element;
+                },
+
+                addGroupedFields: function($el) {
+                    return that.addGroupedFields.call(this, $el);
                 },
 
                 initFields: function($el) {
