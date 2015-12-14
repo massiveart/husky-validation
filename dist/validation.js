@@ -731,7 +731,7 @@ define('form/validation',[
         // define validation interface
             result = {
                 validate: function(force) {
-                    var result = true;
+                    var result = true, i;
                     // validate each element
                     $.each(form.elements, function(key, element) {
                         if (!element.validate(force)) {
@@ -739,6 +739,14 @@ define('form/validation',[
                             result = false;
                         }
                     });
+
+                    for (i = 1; i < form.mapper.collections.length; i++) {
+                        $.each(form.mapper.collections[i].data('collection').childElements, function(key, childElement) {
+                            if (!childElement.validate(force)) {
+                                result = false;
+                            }
+                        });
+                    }
 
                     that.setValid.call(this, result);
                     Util.debug('Validation', !!result ? 'success' : 'error');
