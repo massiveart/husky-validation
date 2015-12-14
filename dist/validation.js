@@ -1048,11 +1048,19 @@ define('form/mapper',[
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 var elements = $(value).data('collection').childElements,
-                                    data = {};
+                                    elementGroups = $(value).data('collection').childElementGroups,
+                                    data = {},
+                                    key;
 
                                 elements.forEach(function(child) {
                                     that.addDataFromElement.call(this, child, data, returnMapperId);
                                 });
+
+                                for (key in elementGroups) {
+                                    if (elementGroups.hasOwnProperty(key)) {
+                                        data[key] = elementGroups[key].getValue();
+                                    }
+                                }
 
                                 // only set mapper-id if explicitly set
                                 if (!!returnMapperId) {
@@ -1122,6 +1130,8 @@ define('form/mapper',[
                         template = _.template(clonedChild.tpl, options, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
+                        $radioFields = Util.getRadios($template),
+                        $checkboxFields = Util.getCheckboxes($template),
                         dfd = $.Deferred(),
                         counter = $newFields.length,
                         element;
@@ -1138,11 +1148,11 @@ define('form/mapper',[
                     }
 
                     clonedChild.collection.childElements = [];
+                    clonedChild.collection.childElementGroups = {};
                     // add fields
                     if ($newFields.length > 0) {
-                        $.each($newFields, function(key, field) {
+                        $newFields.each(function(key, field) {
                             element = form.createField($(field));
-                            // TODO also add checkboxes and radios
                             clonedChild.collection.childElements.push(element);
                             element.initialized.then(function() {
                                 counter--;
@@ -1155,9 +1165,19 @@ define('form/mapper',[
                         dfd.resolve($template);
                     }
 
-                    $template.data('collection', clonedChild.collection);
+                    if ($radioFields.length > 0) {
+                        $.each($radioFields, function(key, field) {
+                            clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, true);
+                        });
+                    }
+                    if (_.size($checkboxFields) > 0) {
+                        $.each($checkboxFields, function(key, field) {
+                            clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, false);
+                        });
+                    }
 
-                    form.addGroupedFields($template);
+
+                    $template.data('collection', clonedChild.collection);
 
                     // if automatically set data after initialization ( needed for adding elements afterwards)
                     if (!!data) {
@@ -1570,6 +1590,18 @@ define('form',[
                     return new Element($element, this, options);
                 },
 
+                createFieldGroup: function(selectors, single) {
+                    return new ElementGroup(
+                        selectors.map(function(selector) {
+                            var $element = $(selector),
+                                options = Util.parseData($element, '', this.options);
+
+                            return new Element($element, this, options);
+                        }.bind(this)),
+                        single
+                    );
+                },
+
                 addField: function(selector) {
                     var element = this.createField(selector);
 
@@ -1580,15 +1612,7 @@ define('form',[
                 },
 
                 addSingleGroupedField: function(key, selectors, single) {
-                    this.elementGroups[key] = new ElementGroup(
-                        selectors.map(function(selector) {
-                            var $element = $(selector),
-                                options = Util.parseData($element, '', this.options);
-
-                            return new Element($element, this, options);
-                        }.bind(this)),
-                        single
-                    );
+                    this.elementGroups[key] = this.createFieldGroup(selectors, single);
                 },
 
                 addGroupedFields: function($el) {
@@ -1617,6 +1641,10 @@ define('form',[
                     }.bind(this));
 
                     return element;
+                },
+
+                createFieldGroup: function(selectors, single) {
+                    return that.createFieldGroup(selectors, single);
                 },
 
                 addField: function(selector) {

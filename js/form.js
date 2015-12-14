@@ -130,6 +130,18 @@ define([
                     return new Element($element, this, options);
                 },
 
+                createFieldGroup: function(selectors, single) {
+                    return new ElementGroup(
+                        selectors.map(function(selector) {
+                            var $element = $(selector),
+                                options = Util.parseData($element, '', this.options);
+
+                            return new Element($element, this, options);
+                        }.bind(this)),
+                        single
+                    );
+                },
+
                 addField: function(selector) {
                     var element = this.createField(selector);
 
@@ -140,15 +152,7 @@ define([
                 },
 
                 addSingleGroupedField: function(key, selectors, single) {
-                    this.elementGroups[key] = new ElementGroup(
-                        selectors.map(function(selector) {
-                            var $element = $(selector),
-                                options = Util.parseData($element, '', this.options);
-
-                            return new Element($element, this, options);
-                        }.bind(this)),
-                        single
-                    );
+                    this.elementGroups[key] = this.createFieldGroup(selectors, single);
                 },
 
                 addGroupedFields: function($el) {
@@ -177,6 +181,10 @@ define([
                     }.bind(this));
 
                     return element;
+                },
+
+                createFieldGroup: function(selectors, single) {
+                    return that.createFieldGroup(selectors, single);
                 },
 
                 addField: function(selector) {

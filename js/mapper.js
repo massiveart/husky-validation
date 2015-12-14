@@ -259,11 +259,19 @@ define([
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 var elements = $(value).data('collection').childElements,
-                                    data = {};
+                                    elementGroups = $(value).data('collection').childElementGroups,
+                                    data = {},
+                                    key;
 
                                 elements.forEach(function(child) {
                                     that.addDataFromElement.call(this, child, data, returnMapperId);
                                 });
+
+                                for (key in elementGroups) {
+                                    if (elementGroups.hasOwnProperty(key)) {
+                                        data[key] = elementGroups[key].getValue();
+                                    }
+                                }
 
                                 // only set mapper-id if explicitly set
                                 if (!!returnMapperId) {
@@ -333,6 +341,8 @@ define([
                         template = _.template(clonedChild.tpl, options, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
+                        $radioFields = Util.getRadios($template),
+                        $checkboxFields = Util.getCheckboxes($template),
                         dfd = $.Deferred(),
                         counter = $newFields.length,
                         element;
@@ -349,11 +359,11 @@ define([
                     }
 
                     clonedChild.collection.childElements = [];
+                    clonedChild.collection.childElementGroups = {};
                     // add fields
                     if ($newFields.length > 0) {
-                        $.each($newFields, function(key, field) {
+                        $newFields.each(function(key, field) {
                             element = form.createField($(field));
-                            // TODO also add checkboxes and radios
                             clonedChild.collection.childElements.push(element);
                             element.initialized.then(function() {
                                 counter--;
@@ -366,9 +376,19 @@ define([
                         dfd.resolve($template);
                     }
 
-                    $template.data('collection', clonedChild.collection);
+                    if ($radioFields.length > 0) {
+                        $.each($radioFields, function(key, field) {
+                            clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, true);
+                        });
+                    }
+                    if (_.size($checkboxFields) > 0) {
+                        $.each($checkboxFields, function(key, field) {
+                            clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, false);
+                        });
+                    }
 
-                    form.addGroupedFields($template);
+
+                    $template.data('collection', clonedChild.collection);
 
                     // if automatically set data after initialization ( needed for adding elements afterwards)
                     if (!!data) {
