@@ -1595,7 +1595,7 @@ define('form',[
                     var $element = $(selector),
                         options = Util.parseData($element, '', this.options);
 
-                    return new Element($element, this, options);
+                    return new Element($element, result, options);
                 },
 
                 createFieldGroup: function(selectors, single) {
@@ -1604,7 +1604,7 @@ define('form',[
                             var $element = $(selector),
                                 options = Util.parseData($element, '', this.options);
 
-                            return new Element($element, this, options);
+                            return new Element($element, result, options);
                         }.bind(this)),
                         single
                     );

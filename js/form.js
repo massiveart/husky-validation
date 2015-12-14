@@ -89,8 +89,6 @@ define([
                     }
 
                     this.$el.data('form-object', this);
-                    Util.debug('Form', this);
-                    Util.debug('Elements', this.elements);
                 },
 
                 // initialize field objects
@@ -127,7 +125,7 @@ define([
                     var $element = $(selector),
                         options = Util.parseData($element, '', this.options);
 
-                    return new Element($element, this, options);
+                    return new Element($element, result, options);
                 },
 
                 createFieldGroup: function(selectors, single) {
@@ -136,7 +134,7 @@ define([
                             var $element = $(selector),
                                 options = Util.parseData($element, '', this.options);
 
-                            return new Element($element, this, options);
+                            return new Element($element, result, options);
                         }.bind(this)),
                         single
                     );

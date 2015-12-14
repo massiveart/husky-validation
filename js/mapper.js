@@ -376,7 +376,7 @@ define([
                         dfd.resolve($template);
                     }
 
-                    if ($radioFields.length > 0) {
+                    if (_.size($radioFields) > 0) {
                         $.each($radioFields, function(key, field) {
                             clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, true);
                         });
