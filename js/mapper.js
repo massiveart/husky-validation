@@ -260,8 +260,7 @@ define([
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 var elements = $(value).data('collection').childElements,
                                     elementGroups = $(value).data('collection').childElementGroups,
-                                    data = {},
-                                    key;
+                                    data = {};
 
                                 elements.forEach(function(child) {
                                     that.addDataFromElement.call(this, child, data, returnMapperId);

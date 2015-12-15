@@ -26,13 +26,14 @@ define('form/util',[], function() {
         },
 
         findGroupedFieldsBySelector: function(element, filter) {
-            var groupedFields = {};
+            var groupedFields = {}, fieldName;
 
             $(element).find(filter).each(function(key, field) {
-                if (!groupedFields[field.name]) {
-                    groupedFields[field.name] = [];
+                fieldName = $(field).data('mapper-property');
+                if (!groupedFields[fieldName]) {
+                    groupedFields[fieldName] = [];
                 }
-                groupedFields[field.name].push(field);
+                groupedFields[fieldName].push(field);
             });
 
             return groupedFields;
@@ -1057,8 +1058,7 @@ define('form/mapper',[
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
                                 var elements = $(value).data('collection').childElements,
                                     elementGroups = $(value).data('collection').childElementGroups,
-                                    data = {},
-                                    key;
+                                    data = {};
 
                                 elements.forEach(function(child) {
                                     that.addDataFromElement.call(this, child, data, returnMapperId);
@@ -1173,7 +1173,7 @@ define('form/mapper',[
                         dfd.resolve($template);
                     }
 
-                    if ($radioFields.length > 0) {
+                    if (_.size($radioFields) > 0) {
                         $.each($radioFields, function(key, field) {
                             clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, true);
                         });
@@ -1557,8 +1557,6 @@ define('form',[
                     }
 
                     this.$el.data('form-object', this);
-                    Util.debug('Form', this);
-                    Util.debug('Elements', this.elements);
                 },
 
                 // initialize field objects

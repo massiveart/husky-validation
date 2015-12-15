@@ -26,13 +26,14 @@ define([], function() {
         },
 
         findGroupedFieldsBySelector: function(element, filter) {
-            var groupedFields = {};
+            var groupedFields = {}, fieldName;
 
             $(element).find(filter).each(function(key, field) {
-                if (!groupedFields[field.name]) {
-                    groupedFields[field.name] = [];
+                fieldName = $(field).data('mapper-property');
+                if (!groupedFields[fieldName]) {
+                    groupedFields[fieldName] = [];
                 }
-                groupedFields[field.name].push(field);
+                groupedFields[fieldName].push(field);
             });
 
             return groupedFields;
