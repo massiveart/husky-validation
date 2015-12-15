@@ -1092,7 +1092,7 @@ define('form/mapper',[
                 setCollectionData: function(collection, collectionElement) {
                     // remember first child remove the rest
                     var $element = collectionElement.$element,
-                        $child = collectionElement.$child,
+                        child = this.templates[collectionElement.key].tpl,
                         count = collection.length,
                         dfd = $.Deferred(),
                         resolve = function() {
@@ -1101,23 +1101,24 @@ define('form/mapper',[
                                 dfd.resolve();
                             }
                         },
-                        x, len;
+                        x,
+                        length;
 
                     // no element in collection
                     if (count === 0) {
                         // check if empty template exists for that element and show it
-                        that.addEmptyTemplate.call(this, $element, $child.propertyName);
+                        that.addEmptyTemplate.call(this, $element, child.propertyName);
                         dfd.resolve();
                     } else {
                         if (collection.length < collectionElement.element.getType().getMinOccurs()) {
-                            for (x = collectionElement.element.getType().getMinOccurs() + 1, len = collection.length; --x > len;) {
+                            for (x = collectionElement.element.getType().getMinOccurs() + 1, length = collection.length; --x > length;) {
                                 collection.push({});
                             }
                         }
 
                         // foreach collection elements: create a new dom element, call setData recursively
                         $.each(collection, function(key, value) {
-                            that.appendChildren.call(this, $element, $child, value).then(function($newElement) {
+                            that.appendChildren.call(this, $element, child, value).then(function($newElement) {
                                 that.setData.call(this, value, $newElement).then(function() {
                                     resolve();
                                 }.bind(this));
@@ -1286,7 +1287,7 @@ define('form/mapper',[
                             // if field is a collection
                             if ($.isArray(value) && this.templates.hasOwnProperty(key)) {
                                 collection = this.templates[key].collection;
-                                collection.$child = this.templates[key].tpl;
+                                collection.key = key;
 
                                 // if first element of collection, clear collection
                                 if (!this.collectionsSet.hasOwnProperty(collection.id)) {

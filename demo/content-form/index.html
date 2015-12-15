@@ -101,7 +101,7 @@
 
         <h2>Block1</h2>
 
-        <div id="block1" data-type="collection" data-type-min="2"
+        <div id="block1" data-type="collection" data-type-min="1"
              data-type-max="5"
              data-mapper-property='{"data": "block1", "tpl": "block1-tpl"}'>
             <script id="block1-tpl" type="text/template">
@@ -115,7 +115,7 @@
                                     <label class="choice">
                                         <input type="radio"
                                                id="option1"
-                                               name="single-option_<~= index ~>"
+                                               name="single-option-2_<~= index ~>"
                                                value="option1"
                                                data-mapper-property="multiple-option-property"/>
                                         <span class="icon"></span>
@@ -127,6 +127,71 @@
                                     <label class="choice">
                                         <input type="radio"
                                                id="option2"
+                                               name="single-option-2_<~= index ~>"
+                                               value="option2"
+                                               data-mapper-property="multiple-option-property"/>
+                                        <span class="icon"></span>
+                                        Option 2
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="grid-row form-group">
+                                <label class="pointer required">Title</label>
+
+                                <input type="text" class="form-element preview-update trigger-save-button"
+                                       data-mapper-property="title"
+                                       data-validation-required="true"/>
+                            </div>
+
+
+                            <div class="grid-row form-group">
+                                <label class="pointer required">Article</label>
+
+                                <textarea class="form-element preview-update trigger-save-button"
+                                          data-mapper-property="article"
+                                          data-validation-required="true"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid-col-1 m-top-15">
+                        <div class="mapper-remove-block1 pointer" data-mapper-remove="block1">
+                            <span class="icon-remove"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </script>
+        </div>
+
+        <h2>Block2</h2>
+
+        <div id="block2" data-type="collection" data-type-min="1"
+             data-type-max="5"
+             data-mapper-property='{"data": "block2", "tpl": "block2-tpl"}'>
+            <script id="block2-tpl" type="text/template">
+                <div class="block1-element grid-row">
+                    <div class="grid-col-11">
+                        <div class="block block-block1">
+                            <div class="grid-row form-group">
+                                <label class="pointer required">Single select</label>
+
+                                <div class="grid-row small">
+                                    <label class="choice">
+                                        <input type="radio"
+                                               id="option3"
+                                               name="single-option_<~= index ~>"
+                                               value="option1"
+                                               data-mapper-property="multiple-option-property"/>
+                                        <span class="icon"></span>
+                                        Option 1
+                                    </label>
+                                </div>
+
+                                <div class="grid-row small">
+                                    <label class="choice">
+                                        <input type="radio"
+                                               id="option4"
                                                name="single-option_<~= index ~>"
                                                value="option2"
                                                data-mapper-property="multiple-option-property"/>
