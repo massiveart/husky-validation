@@ -42,7 +42,7 @@ define([
         // define validation interface
             result = {
                 validate: function(force) {
-                    var result = true, i;
+                    var result = true;
                     // validate each element
                     $.each(form.elements, function(key, element) {
                         if (!element.validate(force)) {
@@ -51,13 +51,15 @@ define([
                         }
                     });
 
-                    for (i = 1; i < form.mapper.collections.length; i++) {
-                        $.each(form.mapper.collections[i].data('collection').childElements, function(key, childElement) {
-                            if (!childElement.validate(force)) {
-                                result = false;
-                            }
+                    $.each(form.mapper.collections, function(i, collection) {
+                        $.each(collection.items, function(j, item) {
+                            $.each(item.data('collection').childElements, function(k, childElement) {
+                                if (!childElement.validate(force)) {
+                                    result = false;
+                                }
+                            });
                         });
-                    }
+                    });
 
                     that.setValid.call(this, result);
                     Util.debug('Validation', !!result ? 'success' : 'error');

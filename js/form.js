@@ -155,7 +155,12 @@ define([
 
                 addGroupedFields: function($el) {
                     $.each(Util.getCheckboxes($el || this.$el), function(key, value) {
-                        that.addSingleGroupedField.call(this, key, value, false);
+                        if (value.length > 1) {
+                            that.addSingleGroupedField.call(this, key, value, false);
+                        } else {
+                            // backwards compatibility: single checkbox are handled as boolean values
+                            that.addField.call(this, value);
+                        }
                     }.bind(this));
 
                     $.each(Util.getRadios($el || this.$el), function(key, value) {
