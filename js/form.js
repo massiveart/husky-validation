@@ -14,6 +14,7 @@ require.config({
         'form/mapper': 'js/mapper',
         'form/validation': 'js/validation',
         'form/element': 'js/element',
+        'form/elementGroup': 'js/elementGroup',
         'form/util': 'js/util',
 
         'type/default': 'js/types/default',
@@ -44,10 +45,11 @@ require.config({
 
 define([
     'form/element',
+    'form/elementGroup',
     'form/validation',
     'form/mapper',
     'form/util'
-], function(Element, Validation, Mapper, Util) {
+], function(Element, ElementGroup, Validation, Mapper, Util) {
 
     'use strict';
 
@@ -87,8 +89,6 @@ define([
                     }
 
                     this.$el.data('form-object', this);
-                    Util.debug('Form', this);
-                    Util.debug('Elements', this.elements);
                 },
 
                 // initialize field objects
@@ -104,8 +104,10 @@ define([
 
                     $.each(Util.getFields($el || this.$el), function(key, value) {
                         requireCounter++;
-                        that.addField.call(this, value, false).initialized.then(resolve.bind(this));
+                        that.addField.call(this, value).initialized.then(resolve.bind(this));
                     }.bind(this));
+
+                    that.addGroupedFields.call(this, $el);
 
                     return dfd.promise();
                 },
@@ -119,22 +121,74 @@ define([
                     }
                 },
 
-                addField: function(selector) {
+                createField: function(selector) {
                     var $element = $(selector),
-                        options = Util.parseData($element, '', this.options),
-                        element = new Element($element, this, options);
+                        options = Util.parseData($element, '', this.options);
+
+                    return new Element($element, result, options);
+                },
+
+                createFieldGroup: function(selectors, single) {
+                    return new ElementGroup(
+                        selectors.map(function(selector) {
+                            var $element = $(selector),
+                                options = Util.parseData($element, '', this.options);
+
+                            return new Element($element, result, options);
+                        }.bind(this)),
+                        single
+                    );
+                },
+
+                addField: function(selector) {
+                    var element = this.createField(selector);
 
                     this.elements.push(element);
                     Util.debug('Element created', options);
+
                     return element;
+                },
+
+                addSingleGroupedField: function(key, selectors, single) {
+                    this.elementGroups[key] = this.createFieldGroup(selectors, single);
+                },
+
+                addGroupedFields: function($el) {
+                    $.each(Util.getCheckboxes($el || this.$el), function(key, value) {
+                        if (value.length > 1) {
+                            that.addSingleGroupedField.call(this, key, value, false);
+                        } else {
+                            // backwards compatibility: single checkbox are handled as boolean values
+                            that.addField.call(this, value);
+                        }
+                    }.bind(this));
+
+                    $.each(Util.getRadios($el || this.$el), function(key, value) {
+                        that.addSingleGroupedField.call(this, key, value, true);
+                    }.bind(this));
                 }
             },
 
             result = {
                 elements: [],
+                elementGroups: {},
                 options: {},
                 validation: false,
                 mapper: false,
+
+                createField: function(selector) {
+                    var element = that.createField(selector);
+
+                    element.initialized.then(function() {
+                        element.fieldAdded(element);
+                    }.bind(this));
+
+                    return element;
+                },
+
+                createFieldGroup: function(selectors, single) {
+                    return that.createFieldGroup(selectors, single);
+                },
 
                 addField: function(selector) {
                     var element = that.addField.call(this, selector);
@@ -148,6 +202,10 @@ define([
                     }.bind(this));
 
                     return element;
+                },
+
+                addGroupedFields: function($el) {
+                    return that.addGroupedFields.call(this, $el);
                 },
 
                 initFields: function($el) {

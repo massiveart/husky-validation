@@ -14,6 +14,7 @@ module.exports = function(grunt) {
                 'form/mapper': 'js/mapper',
                 'form/validation': 'js/validation',
                 'form/element': 'js/element',
+                'form/elementGroup': 'js/elementGroup',
                 'form/util': 'js/util',
 
                 'type/default': 'js/types/default',

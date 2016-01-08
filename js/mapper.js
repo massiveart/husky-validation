@@ -27,8 +27,6 @@ define([
                     this.collectionsSet = {};
                     this.emptyTemplates = {};
                     this.templates = {};
-                    this.elements = [];
-                    this.collectionsInitiated = $.Deferred();
 
                     form.initialized.then(function() {
                         var selector = '*[data-type="collection"]',
@@ -42,7 +40,7 @@ define([
                     var $element = $(value),
                         element = $element.data('element'),
                         property = $element.data('mapper-property'),
-                        $newChild, collection, emptyTemplate,
+                        newChild, collection, emptyTemplate,
                         dfd = $.Deferred(),
                         counter = 0,
                         resolve = function() {
@@ -57,7 +55,7 @@ define([
                             property = [property];
                             $element.data('mapper-property', property);
                         } else {
-                            throw "no valid mapper-property value";
+                            throw 'no valid mapper-property value';
                         }
                     }
 
@@ -72,7 +70,8 @@ define([
                         id: _.uniqueId('collection_'),
                         property: property,
                         $element: $element,
-                        element: element
+                        element: element,
+                        items: []
                     };
                     this.collections.push(collection);
 
@@ -93,16 +92,16 @@ define([
                             throw 'template has to be defined as <script>';
                         }
 
-                        $newChild = {tpl: $child.html(), id: $child.attr('id'), collection: collection};
-                        element.$children[i] = $newChild;
+                        newChild = {tpl: $child.html(), id: $child.attr('id'), collection: collection};
+                        element.$children[i] = newChild;
 
                         for (x = -1, len = property.length; ++x < len;) {
-                            if (property[x].tpl === $newChild.id) {
+                            if (property[x].tpl === newChild.id) {
                                 propertyName = property[x].data;
                                 emptyTemplate = property[x]['empty-tpl'];
                             }
                             // if child has empty template, set to empty templates
-                            if (property[x]['empty-tpl'] && property[x]['empty-tpl'] === $newChild.id) {
+                            if (property[x]['empty-tpl'] && property[x]['empty-tpl'] === newChild.id) {
                                 this.emptyTemplates[property[x].data] = {
                                     id: property[x]['empty-tpl'],
                                     tpl: $child.html()
@@ -111,14 +110,18 @@ define([
                         }
                         // check if template is set
                         if (!!propertyName) {
-                            $newChild.propertyName = propertyName;
+                            newChild.propertyName = propertyName;
                             propertyCount = collection.element.getType().getMinOccurs();
-                            this.templates[propertyName] = {tpl: $newChild, collection: collection, emptyTemplate: emptyTemplate};
+                            this.templates[propertyName] = {
+                                tpl: newChild,
+                                collection: collection,
+                                emptyTemplate: emptyTemplate,
+                            };
                             // init default children
                             for (x = collection.element.getType().getMinOccurs() + 1; --x > 0;) {
-                                that.appendChildren.call(this, collection.$element, $newChild).then(function() {
+                                that.appendChildren.call(this, collection, newChild).then(function() {
                                     // set counter
-                                    $('#current-counter-' + propertyName).text(collection.element.getType().getChildren($newChild.id).length);
+                                    $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(newChild.id).length);
                                     resolveElement();
                                 }.bind(this));
                             }
@@ -156,7 +159,7 @@ define([
                         collection = this.templates[propertyName].collection;
 
                     if (collection.element.getType().canAdd(tpl.id)) {
-                        that.appendChildren.call(this, collection.$element, tpl).then(function() {
+                        that.appendChildren.call(this, collection, tpl).then(function() {
                             // set counter
                             $('#current-counter-' + propertyName).text(collection.element.getType().getChildren(tpl.id).length);
                             that.emitAddEvent(propertyName, null);
@@ -190,8 +193,8 @@ define([
                 },
 
                 checkFullAndEmpty: function(propertyName) {
-                    var $addButton = $("[data-mapper-add='"+ propertyName +"']"),
-                        $removeButton = $("[data-mapper-remove='"+ propertyName +"']"),
+                    var $addButton = $("[data-mapper-add='" + propertyName + "']"),
+                        $removeButton = $("[data-mapper-remove='" + propertyName + "']"),
                         tpl = this.templates[propertyName].tpl,
                         collection = this.templates[propertyName].collection,
                         fullClass = collection.element.$el.data('mapper-full-class') || 'full',
@@ -208,7 +211,7 @@ define([
                             $addButton.addClass(fullClass);
                             $(collection.element.$el).addClass(fullClass);
 
-                        // else, if no remove is possible add empty style-classes
+                            // else, if no remove is possible add empty style-classes
                         } else if (!collection.element.getType().canRemove(tpl.id)) {
                             $addButton.addClass(emptyClass);
                             $(collection.element.$el).addClass(emptyClass);
@@ -235,7 +238,7 @@ define([
                         type = $el.data('type'),
                         property = $el.data('mapper-property'),
                         element = $el.data('element'),
-                        result, item,
+                        result,
                         filtersAction;
 
 
@@ -256,19 +259,32 @@ define([
                         result = [];
                         $.each($el.children(), function(key, value) {
                             if (!collection || collection.tpl === value.dataset.mapperPropertyTpl) {
-                                item = that.getData($(value));
-                                    // only set mapper-id if explicitly set
-                                if (!!returnMapperId) {
-                                    item.mapperId = value.dataset.mapperId;
+                                var elements = $(value).data('collection').childElements,
+                                    elementGroups = $(value).data('collection').childElementGroups,
+                                    data = {};
+
+                                elements.forEach(function(child) {
+                                    that.addDataFromElement.call(this, child, data, returnMapperId);
+                                });
+
+                                for (key in elementGroups) {
+                                    if (elementGroups.hasOwnProperty(key)) {
+                                        data[key] = elementGroups[key].getValue();
+                                    }
                                 }
 
-                                var keys = Object.keys(item);
+                                // only set mapper-id if explicitly set
+                                if (!!returnMapperId) {
+                                    data.mapperId = value.dataset.mapperId;
+                                }
+
+                                var keys = Object.keys(data);
                                 if (keys.length === 1) { // for value only collection
-                                    if (item[keys[0]] !== '') {
-                                        result.push(item[keys[0]]);
+                                    if (data[keys[0]] !== '') {
+                                        result.push(data[keys[0]]);
                                     }
-                                } else if (!filtersAction || filtersAction(item)) {
-                                    result.push(item);
+                                } else if (!filtersAction || filtersAction(data)) {
+                                    result.push(data);
                                 }
                             }
                         }.bind(this));
@@ -276,12 +292,11 @@ define([
                     }
                 },
 
-                setCollectionData: function(collection, collectionElement) {
+                setCollectionData: function(data, collection) {
                     // remember first child remove the rest
-                    var $element = collectionElement.$element,
-                        $child = collectionElement.$child,
-                        $emptyTemplate,
-                        count = collection.length,
+                    var $element = collection.$element,
+                        child = this.templates[collection.key].tpl,
+                        count = data.length,
                         dfd = $.Deferred(),
                         resolve = function() {
                             count--;
@@ -289,23 +304,28 @@ define([
                                 dfd.resolve();
                             }
                         },
-                        x, len;
+                        x,
+                        length;
 
                     // no element in collection
                     if (count === 0) {
                         // check if empty template exists for that element and show it
-                        that.addEmptyTemplate.call(this, $element, $child.propertyName);
+                        that.addEmptyTemplate.call(this, $element, child.propertyName);
                         dfd.resolve();
                     } else {
-                        if (collection.length < collectionElement.element.getType().getMinOccurs()) {
-                            for (x = collectionElement.element.getType().getMinOccurs() + 1, len = collection.length; --x > len;) {
-                                collection.push({});
+                        if (data.length < collection.element.getType().getMinOccurs()) {
+                            for (x = collection.element.getType().getMinOccurs() + 1, length = data.length; --x > length;) {
+                                data.push({});
                             }
                         }
 
+                        // FIXME the old DOM elements should be reused, instead of generated over and over again
+                        // remove all prefilled items from the collection, because the DOM elements are recreated
+                        collection.items = [];
+
                         // foreach collection elements: create a new dom element, call setData recursively
-                        $.each(collection, function(key, value) {
-                            that.appendChildren.call(this, $element, $child, value).then(function($newElement) {
+                        $.each(data, function(key, value) {
+                            that.appendChildren.call(this, collection, child, value).then(function($newElement) {
                                 that.setData.call(this, value, $newElement).then(function() {
                                     resolve();
                                 }.bind(this));
@@ -314,36 +334,44 @@ define([
                     }
 
                     // set current length of collection
-                    $('#current-counter-' + $element.attr('id')).text(collection.length);
-                    that.checkFullAndEmpty.call(this, collectionElement.property[0].data);
+                    $('#current-counter-' + $element.attr('id')).text(data.length);
+                    that.checkFullAndEmpty.call(this, collection.property[0].data);
                     return dfd.promise();
                 },
 
-                appendChildren: function($element, $child, tplOptions, data, insertAfter) {
-                    var index = $child.collection.element.getType().getChildren($child.id).length,
+                appendChildren: function(collection, child, tplOptions, data, insertAfter) {
+                    var clonedChild = $.extend(true, {}, child),
+                        index = clonedChild.collection.element.getType().getChildren(clonedChild.id).length,
                         options = $.extend({}, {index: index}, tplOptions || {}),
-                        template = _.template($child.tpl, options, form.options.delimiter),
+                        template = _.template(clonedChild.tpl, options, form.options.delimiter),
                         $template = $(template),
                         $newFields = Util.getFields($template),
+                        $radioFields = Util.getRadios($template),
+                        $checkboxFields = Util.getCheckboxes($template),
                         dfd = $.Deferred(),
                         counter = $newFields.length,
+                        $element = collection.$element,
+                        $lastElement,
                         element;
 
                     // adding
-                    $template.attr('data-mapper-property-tpl', $child.id);
+                    $template.attr('data-mapper-property-tpl', clonedChild.id);
                     $template.attr('data-mapper-id', _.uniqueId());
 
                     // add template to element
-                    if (insertAfter) {
-                        $element.after($template);
+                    if (insertAfter && ($lastElement = $element.find('*[data-mapper-property-tpl="' + clonedChild.id + '"]').last()).length > 0) {
+                        $lastElement.after($template);
                     } else {
                         $element.append($template);
                     }
 
+                    clonedChild.collection.childElements = [];
+                    clonedChild.collection.childElementGroups = {};
                     // add fields
                     if ($newFields.length > 0) {
-                        $.each($newFields, function(key, field) {
-                            element = form.addField($(field));
+                        $newFields.each(function(key, field) {
+                            element = form.createField($(field));
+                            clonedChild.collection.childElements.push(element);
                             element.initialized.then(function() {
                                 counter--;
                                 if (counter === 0) {
@@ -355,6 +383,19 @@ define([
                         dfd.resolve($template);
                     }
 
+                    if (_.size($radioFields) > 0) {
+                        $.each($radioFields, function(key, field) {
+                            clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, true);
+                        });
+                    }
+                    if (_.size($checkboxFields) > 0) {
+                        $.each($checkboxFields, function(key, field) {
+                            clonedChild.collection.childElementGroups[key] = form.createFieldGroup(field, false);
+                        });
+                    }
+
+                    $template.data('collection', clonedChild.collection);
+
                     // if automatically set data after initialization ( needed for adding elements afterwards)
                     if (!!data) {
                         dfd.then(function() {
@@ -362,8 +403,7 @@ define([
                         }.bind(this));
                     }
 
-                    // push element to global array
-                    this.elements.push($template);
+                    collection.items.push($template);
 
                     return dfd.promise();
                 },
@@ -374,11 +414,14 @@ define([
                  * @return {Object|null} the dom object or null
                  **/
                 getElementByMapperId: function(mapperId) {
-                    for (var i = -1, length = this.elements.length; ++i < length;) {
-                        if (this.elements[i].data('mapper-id') === mapperId) {
-                            return this.elements[i];
+                    for (var i = -1, iLength = this.collections.length; ++i < iLength;) {
+                        for (var j = -1, jLength = this.collections[i].items.length; ++j < jLength;) {
+                            if (this.collections[i].items[j].data('mapper-id') === mapperId) {
+                                return this.collections[i].items[j];
+                            }
                         }
                     }
+
                     return null;
                 },
 
@@ -388,16 +431,23 @@ define([
                  * @return {boolean|string} if an element was found and deleted it returns its template-name, else it returns false
                  **/
                 deleteElementByMapperId: function(mapperId) {
-                    var i, length, templateName;
-                    for (i = -1, length = this.elements.length; ++i < length;) {
-                        if (this.elements[i].data('mapper-id').toString() === mapperId.toString()) {
-                            templateName = this.elements[i].attr('data-mapper-property-tpl');
-                            this.elements[i].remove();
-                            this.elements.splice(i, 1);
-                            return templateName;
-                        }
-                    }
-                    return false;
+                    var templateName;
+
+                    $.each(this.collections, function(i, collection) {
+                        $.each(collection.items, function(j, item) {
+                            if (item.data('mapper-id').toString() !== mapperId.toString()) {
+                                return true;
+                            }
+
+                            templateName = item.attr('data-mapper-property-tpl');
+                            item.remove();
+                            collection.items.splice(j, 1);
+
+                            return false;
+                        });
+                    }.bind(this));
+
+                    return templateName;
                 },
 
                 remove: function($element) {
@@ -408,46 +458,6 @@ define([
 
                     // remove element
                     $element.remove();
-                },
-
-                getData: function($el, returnMapperId) {
-                    if (!$el) {
-                        $el = form.$el;
-                    }
-
-                    var data = { }, $childElement, property, parts,
-
-                    // search field with mapper property
-                        selector = '*[data-mapper-property]',
-                        $elements = $el.find(selector);
-
-                    // do it while elements exists
-                    while ($elements.length > 0) {
-                        // get first
-                        $childElement = $($elements.get(0));
-                        property = $childElement.data('mapper-property');
-
-                        if ($.isArray(property)) {
-                            $.each(property, function(i, prop) {
-                                data[prop.data] = that.processData.call(this, $childElement, prop, returnMapperId);
-                            }.bind(this));
-                        } else if (property.match(/.*\..*/)) {
-                            parts = property.split('.');
-                            data[parts[0]] = {};
-                            data[parts[0]][parts[1]] = that.processData.call(this, $childElement);
-                        } else {
-                            // process it
-                            data[property] = that.processData.call(this, $childElement);
-                        }
-
-                        // remove element itself
-                        $elements = $elements.not($childElement);
-
-                        // remove child elements
-                        $elements = $elements.not($childElement.find(selector));
-                    }
-
-                    return data;
                 },
 
                 setData: function(data, $el) {
@@ -494,12 +504,12 @@ define([
                             // if field is a collection
                             if ($.isArray(value) && this.templates.hasOwnProperty(key)) {
                                 collection = this.templates[key].collection;
-                                collection.$child = this.templates[key].tpl;
+                                collection.key = key;
 
                                 // if first element of collection, clear collection
                                 if (!this.collectionsSet.hasOwnProperty(collection.id)) {
                                     collection.$element.children().each(function(key, value) {
-                                        that.remove.call(this, $(value));
+                                        $(value).remove();
                                     }.bind(this));
                                 }
                                 this.collectionsSet[collection.id] = true;
@@ -507,6 +517,9 @@ define([
                                 that.setCollectionData.call(this, value, collection).then(function() {
                                     resolve();
                                 });
+                            } else if (form.elementGroups.hasOwnProperty(key)) {
+                                form.elementGroups[key].setValue(value);
+                                resolve();
                             } else {
                                 // search field with mapper property
                                 selector = '*[data-mapper-property="' + key + '"]';
@@ -538,8 +551,46 @@ define([
                     }
 
                     return dfd.promise();
-                }
+                },
 
+                addDataFromElement: function(element, data, returnMapperId) {
+                    var $element = element.$el,
+                        property = $element.data('mapper-property'),
+                        parts;
+
+                    if (!property) {
+                        return;
+                    }
+
+                    if ($.isArray(property)) {
+                        $.each(property, function(i, prop) {
+                            data[prop.data] = that.processData.call(this, $element, prop, returnMapperId);
+                        }.bind(this));
+                    } else if (property.match(/.*\..*/)) {
+                        parts = property.split('.');
+                        data[parts[0]] = {};
+                        data[parts[0]][parts[1]] = that.processData.call(this, $element);
+                    } else {
+                        // process it
+                        data[property] = that.processData.call(this, $element);
+                    }
+                },
+
+                getDataFromElements: function(elements, elementGroups, returnMapperId) {
+                    var data = {};
+
+                    elements.forEach(function(element) {
+                        that.addDataFromElement.call(this, element, data, returnMapperId);
+                    }.bind(this));
+
+                    for (var key in elementGroups) {
+                        if (elementGroups.hasOwnProperty(key)) {
+                            data[key] = elementGroups[key].getValue();
+                        }
+                    }
+
+                    return data;
+                }
             },
 
         // define mapper interface
@@ -553,11 +604,20 @@ define([
 
                 /**
                  * extracts data from $element or default form element
-                 *  @param {Object} [$el=undefined] element to select data from
-                 *  @param {Boolean} [returnMapperId=false] returnMapperId
+                 * @param {Object} [$el=undefined] element to select data from
+                 * @param {Boolean} [returnMapperId=false] returnMapperId
                  */
                 getData: function($el, returnMapperId) {
-                    return that.getData.call(this, $el, returnMapperId);
+                    if (!!$el && !!$el.data('mapper-id')) {
+                        var collection = that.getElementByMapperId.call(this, $el.data('mapper-id')).data('collection');
+                        return that.getDataFromElements(
+                            collection.childElements,
+                            collection.childElementGroups,
+                            returnMapperId
+                        );
+                    } else {
+                        return that.getDataFromElements(form.elements, form.elementGroups, returnMapperId);
+                    }
                 },
 
                 addCollectionFilter: function(name, callback) {
@@ -583,19 +643,18 @@ define([
                         dfd = $.Deferred();
 
                     // check if element exists and put it after last
-                    if (!append && (lastElement = element.find('*[data-mapper-property-tpl="' + template.tpl.id + '"]').last()).length > 0) {
-                        element = lastElement;
+                    if (!append) {
                         insertAfterLast = true;
                     }
                     // check if empty template is set and lookup in dom
                     if (template.emptyTemplate) {
-                        $emptyTpl = $(element).find('#'+template.emptyTemplate);
+                        $emptyTpl = $(element).find('#' + template.emptyTemplate);
                         if ($emptyTpl) {
                             $emptyTpl.remove();
                         }
                     }
 
-                    that.appendChildren.call(this, element, template.tpl, data, data, insertAfterLast).then(function($element) {
+                    that.appendChildren.call(this, template.collection, template.tpl, data, data, insertAfterLast).then(function($element) {
                         dfd.resolve($element);
                     }.bind(this));
 
@@ -621,7 +680,7 @@ define([
                         templateName = that.deleteElementByMapperId.call(this, mapperId);
 
                     // check if collection still has elements with propertyName, else render empty Template
-                    if (form.$el.find('*[data-mapper-property-tpl='+templateName+']').length < 1) {
+                    if (form.$el.find('*[data-mapper-property-tpl=' + templateName + ']').length < 1) {
                         // get collection with is owner of templateName
                         for (i in this.templates) {
                             // if emptyTemplates is set
