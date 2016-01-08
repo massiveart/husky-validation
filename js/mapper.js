@@ -421,6 +421,7 @@ define([
                             }
                         }
                     }
+
                     return null;
                 },
 
@@ -508,7 +509,7 @@ define([
                                 // if first element of collection, clear collection
                                 if (!this.collectionsSet.hasOwnProperty(collection.id)) {
                                     collection.$element.children().each(function(key, value) {
-                                        $(value).remove();Reso
+                                        $(value).remove();
                                     }.bind(this));
                                 }
                                 this.collectionsSet[collection.id] = true;

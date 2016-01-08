@@ -30,7 +30,7 @@ define(function() {
             }
         };
 
-    return function(elements, singleValue) {
+    return function(elements, isSingleValue) {
         return {
             getValue: function() {
                 var value = [];
@@ -40,7 +40,7 @@ define(function() {
                     }
                 });
 
-                if (!!singleValue) {
+                if (!!isSingleValue) {
                     if (value.length > 1) {
                         throw new Error('Single value element group cannot return more than one value');
                     }
@@ -52,11 +52,11 @@ define(function() {
             },
 
             setValue: function(values) {
-                if (!!singleValue && !!$.isArray(values)) {
+                if (!!isSingleValue && !!$.isArray(values)) {
                     throw new Error('Single value element cannot be set to an array value');
                 }
 
-                if (!singleValue && !$.isArray(values)) {
+                if (!isSingleValue && !$.isArray(values)) {
                     throw new Error('Field with multiple values cannot be set to a single value');
                 }
 
