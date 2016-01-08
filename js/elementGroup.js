@@ -31,7 +31,7 @@ define(function() {
         };
 
     return function(elements, isSingleValue) {
-        return {
+        var result = {
             getValue: function() {
                 var value = [];
                 elements.forEach(function(element) {
@@ -66,6 +66,12 @@ define(function() {
                     setSingleValue.call(this, elements, values);
                 }
             }
-        }
+        };
+
+        elements.forEach(function(element) {
+            element.$el.data('elementGroup', result);
+        });
+
+        return result;
     };
 });
