@@ -51,6 +51,16 @@ define([
                         }
                     });
 
+                    $.each(form.mapper.collections, function(i, collection) {
+                        $.each(collection.items, function(j, item) {
+                            $.each(item.data('collection').childElements, function(k, childElement) {
+                                if (!childElement.validate(force)) {
+                                    result = false;
+                                }
+                            });
+                        });
+                    });
+
                     that.setValid.call(this, result);
                     Util.debug('Validation', !!result ? 'success' : 'error');
                     return result;

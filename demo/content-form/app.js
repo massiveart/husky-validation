@@ -58,6 +58,10 @@ define(['js/form', 'globalize'], function(Form) {
                 "title": "That´s my title",
                 "url": "/",
                 "article": "Article writing is boring",
+                "interest": [
+                    "interest2"
+                ],
+                "gender": "female",
                 "block1": [
                     {
                         "title": "The first article",

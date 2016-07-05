@@ -34,12 +34,6 @@ define(['js/form', 'globalize'], function(Form) {
         return false;
     });
 
-    $('#send-mapperid').on('click', function() {
-        console.log(form.mapper.getData(undefined,true));
-
-        return false;
-    });
-
     $('#setnull').on('click', function() {
         console.log('started setnull');
 

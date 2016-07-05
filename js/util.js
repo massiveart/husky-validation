@@ -22,7 +22,29 @@ define([], function() {
 
         // get form fields
         getFields: function(element) {
-            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="collection"], *[contenteditable="true"]');
+            return $(element).find('input:not([data-form="false"], [type="submit"], [type="button"], [type="checkbox"], [type="radio"]), textarea:not([data-form="false"]), select:not([data-form="false"]), *[data-form="true"], *[data-type="collection"], *[contenteditable="true"]');
+        },
+
+        findGroupedFieldsBySelector: function(element, filter) {
+            var groupedFields = {}, fieldName;
+
+            $(element).find(filter).each(function(key, field) {
+                fieldName = $(field).data('mapper-property');
+                if (!groupedFields[fieldName]) {
+                    groupedFields[fieldName] = [];
+                }
+                groupedFields[fieldName].push(field);
+            });
+
+            return groupedFields;
+        },
+
+        getCheckboxes: function(element) {
+            return this.findGroupedFieldsBySelector(element, 'input[type="checkbox"]');
+        },
+
+        getRadios: function(element) {
+            return this.findGroupedFieldsBySelector(element, 'input[type="radio"]');
         },
 
         /**
@@ -205,7 +227,5 @@ define([], function() {
         isNumeric: function(str) {
             return str.match(/-?\d+(.\d+)?/);
         }
-
     };
-
 });
